@@ -308,9 +308,9 @@
                         <div class="text-xs text-gray-500">${v.horas_atual} h</div>
                     </td>
                     <td class="px-6 py-4 text-right">
-                        <button class="text-gray-400 hover:text-brand transition-colors" title="Ver Mapa do Veículo">
-                            <i data-lucide="map" class="w-5 h-5"></i>
-                        </button>
+                        <a href="mapa-veiculo.html?id=${v.id}" class="text-gray-400 hover:text-brand transition-colors" title="Ver Mapa do Veículo">
+    <i data-lucide="map" class="w-5 h-5"></i>
+</a>
                     </td>
                 `;
                 tabela.appendChild(tr);
