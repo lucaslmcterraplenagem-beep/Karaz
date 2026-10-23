@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa do Veículo | LK Pneus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: { brand: '#ea580c', darkbg: '#0f172a', darkcard: '#1e293b' }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 dark:bg-darkbg dark:text-gray-100 font-sans h-screen flex overflow-hidden transition-colors duration-300 antialiased">
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="w-64 bg-white dark:bg-darkcard border-r border-gray-200 dark:border-slate-700 transition-all duration-300 flex flex-col z-20">
+        <div>
+            <div class="h-16 flex items-center justify-center border-b border-gray-200 dark:border-slate-700">
+                <h1 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">LK <span class="text-brand">Pneus</span></h1>
+            </div>
+            <nav class="p-3 space-y-1">
+                <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
+                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i><span class="menu-text text-sm">Dashboard</span>
+                </a>
+                <a href="veiculos.html" class="flex items-center gap-3 px-3 py-2.5 bg-brand/10 text-brand rounded-md font-medium transition-colors">
+                    <i data-lucide="truck" class="w-5 h-5"></i><span class="menu-text text-sm">Veículos</span>
+                </a>
+                <a href="#" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
+                    <i data-lucide="circle-dot" class="w-5 h-5"></i><span class="menu-text text-sm">Pneus</span>
+                </a>
+                <a href="#" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
+                    <i data-lucide="wrench" class="w-5 h-5"></i><span class="menu-text text-sm">Ordens de Serviço</span>
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <div class="flex-1 flex flex-col h-screen overflow-hidden">
+        <header class="h-16 bg-white dark:bg-darkcard border-b border-gray-200 dark:border-slate-700 flex items-center justify-between px-6 transition-colors duration-300">
+            <div class="flex items-center gap-4">
+                <a href="veiculos.html" class="p-1.5 text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors rounded-md bg-gray-100 dark:bg-slate-800">
+                    <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                </a>
+                <div>
+                    <h2 class="text-base font-semibold text-gray-800 dark:text-gray-200" id="titulo-veiculo">Carregando...</h2>
+                    <p class="text-xs text-gray-500" id="subtitulo-veiculo">...</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-5">
+                <button id="toggle-theme" class="p-1.5 text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors">
+                    <i data-lucide="moon" class="w-5 h-5 hidden dark:block"></i><i data-lucide="sun" class="w-5 h-5 block dark:hidden"></i>
+                </button>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-6 bg-gray-50 dark:bg-darkbg flex flex-col items-center justify-center">
+            
+            <!-- AVISO DE CONFIGURAÇÃO -->
+            <div class="mb-6 bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-sm p-3 rounded-lg flex items-center gap-2 max-w-2xl text-center">
+                <i data-lucide="info" class="w-5 h-5 shrink-0"></i>
+                <p>Este é o mapa visual. Os pneus estão coloridos por saúde (Verde: Bom, Amarelo: Atenção, Vermelho: Crítico). Clique em um pneu para ver detalhes.</p>
+            </div>
+
+            <!-- CHASSI DO VEÍCULO (Desenhado via CSS) -->
+            <div class="relative bg-slate-300 dark:bg-slate-700 rounded-3xl p-8 shadow-xl border-4 border-slate-400 dark:border-slate-600 transition-all duration-500" id="chassi">
+                
+                <!-- Cabine (Frente) -->
+                <div class="absolute -top-16 left-1/2 -translate-x-1/2 w-3/4 h-20 bg-slate-400 dark:bg-slate-600 rounded-t-2xl border-4 border-b-0 border-slate-500 dark:border-slate-500 flex items-center justify-center">
+                    <span class="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-widest">Frente</span>
+                </div>
+
+                <!-- Onde os eixos serão renderizados via JavaScript -->
+                <div id="eixos-container" class="space-y-12 relative z-10 w-64">
+                    <!-- Os eixos e pneus entram aqui -->
+                </div>
+            </div>
+
+            <!-- Legenda -->
+            <div class="mt-8 flex gap-6 text-sm">
+                <div class="flex items-center gap-2"><div class="w-4 h-4 rounded bg-green-500"></div> Bom</div>
+                <div class="flex items-center gap-2"><div class="w-4 h-4 rounded bg-yellow-500"></div> Atenção</div>
+                <div class="flex items-center gap-2"><div class="w-4 h-4 rounded bg-red-500"></div> Trocar</div>
+                <div class="flex items-center gap-2"><div class="w-4 h-4 rounded bg-gray-400 border border-gray-500"></div> Vazio</div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/supabase-client.js"></script>
+    <script>
+        lucide.createIcons();
+
+        // UI Lógica (Menu e Tema)
+        const html = document.documentElement;
+        if (localStorage.theme === 'light') html.classList.remove('dark');
+        document.getElementById('toggle-theme').addEventListener('click', () => {
+            html.classList.toggle('dark');
+            localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
+        });
+
+        // --- LÓGICA DO MAPA ---
+        const urlParams = new URLSearchParams(window.location.search);
+        const veiculoId = urlParams.get('id');
+
+        async function carregarMapa() {
+            if (!veiculoId) {
+                alert("Veículo não encontrado.");
+                window.location.href = "veiculos.html";
+                return;
+            }
+
+            // Busca os dados do veículo
+            const { data: veiculo, error } = await supabaseClient
+                .from('veiculos')
+                .select('*')
+                .eq('id', veiculoId)
+                .single();
+
+            if (error || !veiculo) {
+                alert("Erro ao carregar veículo.");
+                return;
+            }
+
+            // Atualiza os títulos
+            document.getElementById('titulo-veiculo').innerText = `${veiculo.placa} - ${veiculo.modelo}`;
+            document.getElementById('subtitulo-veiculo').innerText = `${veiculo.marca} | ${veiculo.tipo.toUpperCase()} | ${veiculo.quantidade_eixos} Eixos`;
+
+            // Desenha os eixos e pneus
+            const container = document.getElementById('eixos-container');
+            container.innerHTML = '';
+
+            // Lógica simples: Distribui os pneus entre os eixos
+            // (Ex: 3 eixos, 10 pneus = 2 no primeiro, 4 no segundo, 4 no terceiro)
+            let eixos = veiculo.quantidade_eixos;
+            let pneusTotal = veiculo.quantidade_pneus;
+            
+            // Se for caminhão, assume direção simples (2) e tração dupla (4)
+            let pneusPorEixo = [];
+            if (veiculo.tipo === 'caminhao' || veiculo.tipo === 'carreta') {
+                if (eixos >= 1) pneusPorEixo.push(2); // 1º Eixo (Direção)
+                let restantes = pneusTotal - 2;
+                let eixosRestantes = eixos - 1;
+                for(let i=0; i<eixosRestantes; i++) {
+                    let noEixo = Math.min(4, restantes); // Máximo 4 por eixo traseiro
+                    pneusPorEixo.push(noEixo);
+                    restantes -= noEixo;
+                }
+            } else {
+                // Para carros e máquinas, divide igualmente
+                let porEixo = Math.round(pneusTotal / eixos);
+                for(let i=0; i<eixos; i++) pneusPorEixo.push(porEixo);
+            }
+
+            // Renderiza cada eixo
+            pneusPorEixo.forEach((qtdPneus, index) => {
+                const eixoDiv = document.createElement('div');
+                eixoDiv.className = "relative flex justify-between items-center w-full";
+                
+                // Linha do eixo (chassi)
+                eixoDiv.innerHTML = `<div class="absolute top-1/2 left-0 w-full h-4 bg-slate-400 dark:bg-slate-600 -translate-y-1/2 rounded-full z-0"></div>`;
+
+                // Renderiza os pneus daquele eixo
+                let htmlPneus = '';
+                for (let i = 0; i < qtdPneus; i++) {
+                    // Simulação de cores de saúde (para testes visuais)
+                    let cor = 'bg-green-500 border-green-600'; // Bom
+                    if (i === 1) cor = 'bg-yellow-500 border-yellow-600'; // Atenção
+                    if (i === 3) cor = 'bg-red-500 border-red-600'; // Crítico
+
+                    // Adiciona o pneu
+                    htmlPneus += `
+                        <div class="relative z-10 w-10 h-16 rounded-md border-2 shadow-md cursor-pointer hover:scale-110 transition-transform ${cor}" 
+                             title="Pneu ${index+1}º Eixo - Posição ${i+1}">
+                        </div>
+                    `;
+                }
+                eixoDiv.innerHTML += `<div class="w-full flex justify-between gap-2 px-2">${htmlPneus}</div>`;
+                container.appendChild(eixoDiv);
+            });
+        }
+
+        carregarMapa();
+    </script>
+</body>
+</html>
