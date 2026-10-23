@@ -367,8 +367,21 @@
 
             const { data, error } = await supabaseClient.from('veiculos').insert([novoVeiculo]).select();
 
-            if (error) {
-                erroDiv.innerText = error.message;
+                        if (error) {
+                let mensagemErro = error.message;
+                
+                // Traduzindo os erros do banco para português
+                if (mensagemErro.includes("veiculos_placa_key")) {
+                    mensagemErro = "Erro: Esta Placa já está cadastrada em outro veículo.";
+                } else if (mensagemErro.includes("veiculos_chassi_key")) {
+                    mensagemErro = "Erro: Este Chassi já está cadastrado em outro veículo.";
+                } else if (mensagemErro.includes("row-level security policy")) {
+                    mensagemErro = "Acesso negado: Você não tem permissão de Administrador.";
+                } else if (mensagemErro.includes("null value in column")) {
+                    mensagemErro = "Erro: Algum campo obrigatório ficou em branco.";
+                }
+
+                erroDiv.innerText = mensagemErro;
                 erroDiv.classList.remove('hidden');
                 btn.innerHTML = 'Finalizar Cadastro';
                 btn.disabled = false;
