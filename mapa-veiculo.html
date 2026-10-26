@@ -4,13 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mapa do Veículo | Karaz</title>
-        <script>
-        // Evita o flash de tema na troca de páginas
-        if (localStorage.theme === 'light') {
-            document.documentElement.classList.remove('dark');
-        } else {
-            document.documentElement.classList.add('dark');
-        }
+    <script>
+        if (localStorage.theme === 'light') { document.documentElement.classList.remove('dark'); } 
+        else { document.documentElement.classList.add('dark'); }
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,7 +23,6 @@
 </head>
 <body class="bg-gray-100 text-gray-800 dark:bg-darkbg dark:text-gray-100 font-sans h-screen flex overflow-hidden transition-colors duration-300 antialiased">
 
-    <!-- SIDEBAR -->
     <aside class="w-64 bg-white dark:bg-darkcard border-r border-gray-200 dark:border-slate-700 transition-all duration-300 flex flex-col z-20">
         <div>
             <div class="h-16 flex items-center justify-center border-b border-gray-200 dark:border-slate-700">
@@ -50,13 +45,10 @@
         </div>
     </aside>
 
-    <!-- CONTEÚDO PRINCIPAL -->
     <div class="flex-1 flex flex-col h-screen overflow-hidden">
         <header class="h-16 bg-white dark:bg-darkcard border-b border-gray-200 dark:border-slate-700 flex items-center justify-between px-6 transition-colors duration-300">
             <div class="flex items-center gap-4">
-                <a href="veiculos.html" class="p-1.5 text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors rounded-md bg-gray-100 dark:bg-slate-800">
-                    <i data-lucide="arrow-left" class="w-5 h-5"></i>
-                </a>
+                <a href="veiculos.html" class="p-1.5 text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors rounded-md bg-gray-100 dark:bg-slate-800"><i data-lucide="arrow-left" class="w-5 h-5"></i></a>
                 <h2 class="text-base font-semibold text-gray-800 dark:text-gray-200">Mapa de Pneus</h2>
             </div>
             <div class="flex items-center gap-5">
@@ -71,15 +63,11 @@
         </header>
 
         <main class="flex-1 overflow-y-auto p-6 bg-gray-50 dark:bg-darkbg">
-            <!-- Layout Grid: Mapa (2/3) e Painel de Info (1/3) -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
                 
-                <!-- COLUNA DO MAPA -->
-                <div class="lg:col-span-2 bg-white dark:bg-darkcard rounded-xl border border-gray-200 dark:border-slate-700 p-6 flex flex-col items-center justify-center relative overflow-hidden">
+                <div class="lg:col-span-2 bg-white dark:bg-darkcard rounded-xl border border-gray-200 dark:border-slate-700 p-6 flex flex-col items-center justify-start relative overflow-hidden pt-12">
                     
-                    <!-- Cabeçalho do Mapa -->
                     <div class="absolute top-6 left-6 flex items-center gap-4">
-                        <!-- PLACA MERCOSUL -->
                         <div class="inline-flex flex-col border-2 border-gray-900 dark:border-white rounded-md overflow-hidden w-28 shadow-sm">
                             <div class="bg-[#003399] text-white text-[9px] text-center font-bold py-0.5 tracking-widest">BRASIL</div>
                             <div id="placa-visual" class="bg-white text-black text-center font-bold text-xl leading-none py-1.5 uppercase">...</div>
@@ -90,27 +78,31 @@
                         </div>
                     </div>
 
-                    <!-- CHASSI DESENHADO -->
-                    <div class="relative bg-slate-200 dark:bg-slate-800 rounded-3xl p-8 shadow-inner border-2 border-slate-300 dark:border-slate-700 mt-20" id="chassi">
-                        <div class="absolute -top-14 left-1/2 -translate-x-1/2 w-3/4 h-16 bg-slate-300 dark:bg-slate-700 rounded-t-2xl border-2 border-b-0 border-slate-400 dark:border-slate-600 flex items-center justify-center">
-                            <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Frente</span>
+                    <!-- NOVO CHASSI ESTILO "T" DA IMAGEM -->
+                    <div class="relative mt-24 mb-10 flex flex-col items-center">
+                        
+                        <!-- Cabine (Frente) -->
+                        <div class="w-48 h-14 bg-slate-200 dark:bg-slate-700 rounded-t-xl border-4 border-b-0 border-slate-400 dark:border-slate-500 flex items-center justify-center z-10 relative shadow-sm">
+                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Frente</span>
                         </div>
-                        <div id="eixos-container" class="space-y-10 relative z-10 w-80 flex flex-col items-center">
-                            <!-- Renderizado via JS -->
+
+                        <!-- Container dos Eixos -->
+                        <div id="eixos-container" class="relative w-full flex flex-col items-center gap-12 pt-4 pb-12 z-0">
+                            <!-- Linha central vertical (Chassi) -->
+                            <div class="absolute top-0 bottom-0 left-1/2 w-4 bg-slate-400 dark:bg-slate-500 -translate-x-1/2 z-0 rounded-b-xl"></div>
+                            <!-- Eixos entram aqui via JS -->
                         </div>
                     </div>
 
                     <div class="mt-8 flex gap-6 text-sm text-gray-500">
-                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded bg-green-500"></div> Bom</div>
-                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded bg-yellow-500"></div> Atenção</div>
-                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded bg-red-500"></div> Trocar</div>
-                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded border-2 border-dashed border-gray-400"></div> Vazio (+)</div>
+                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-green-500"></div> Bom</div>
+                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-yellow-500"></div> Atenção</div>
+                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-red-500"></div> Trocar</div>
+                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full border-2 border-dashed border-gray-400"></div> Vazio</div>
                     </div>
                 </div>
 
-                <!-- COLUNA DE INFORMAÇÕES -->
                 <div class="flex flex-col gap-4">
-                    <!-- Card do Veículo -->
                     <div class="bg-white dark:bg-darkcard p-5 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm">
                         <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 border-b border-gray-200 dark:border-slate-700 pb-2">Dados do Veículo</h4>
                         <div class="space-y-3">
@@ -129,7 +121,6 @@
                         </div>
                     </div>
 
-                    <!-- Card do Pneu Selecionado (Oculto por padrão) -->
                     <div id="painel-pneu" class="bg-white dark:bg-darkcard p-5 rounded-xl border-2 border-brand shadow-lg transition-all duration-300 opacity-50 pointer-events-none">
                         <div class="flex justify-between items-start mb-4 border-b border-gray-200 dark:border-slate-700 pb-2">
                             <h4 class="text-sm font-bold text-brand uppercase tracking-wider">Pneu Selecionado</h4>
@@ -145,15 +136,15 @@
         </main>
     </div>
 
-    <!-- MODAL DE INSTALAÇÃO DE PNEU -->
+    <!-- MODAL INSTALAR PNEU -->
     <div id="modal-instalar" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-md border border-gray-200 dark:border-slate-700">
             <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center">
-                <h3 class="text-lg font-semibold text-brand">Instalar Pneu no Veículo</h3>
+                <h3 class="text-lg font-semibold text-brand">Instalar Pneu</h3>
                 <button onclick="fecharModal()" class="text-gray-400 hover:text-red-500"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div class="p-6">
-                <p class="text-sm text-gray-500 mb-4">Selecione um pneu do estoque para instalar na posição <strong class="text-brand" id="posicao-selecionada"></strong>:</p>
+                <p class="text-sm text-gray-500 mb-4">Selecione um pneu para a posição <strong class="text-brand" id="posicao-selecionada"></strong>:</p>
                 <div id="lista-estoque" class="space-y-2 max-h-60 overflow-y-auto pr-2"></div>
             </div>
         </div>
@@ -163,7 +154,6 @@
     <script>
         lucide.createIcons();
         
-        // --- UI LÓGICA ---
         supabaseClient.auth.getSession().then(({ data: { session } }) => {
             if (!session) { window.location.href = "login.html"; } 
             else { document.getElementById('user-email').innerText = session.user.email; }
@@ -176,11 +166,9 @@
         const html = document.documentElement;
         if (localStorage.theme === 'light') html.classList.remove('dark');
         document.getElementById('toggle-theme').addEventListener('click', () => {
-            html.classList.toggle('dark');
-            localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
+            html.classList.toggle('dark'); localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
         });
 
-        // --- LÓGICA DO MAPA ---
         const urlParams = new URLSearchParams(window.location.search);
         const veiculoId = urlParams.get('id');
         let veiculoAtual = null;
@@ -195,18 +183,16 @@
             if (error || !veiculo) { alert("Erro ao carregar veículo."); return window.location.href = "veiculos.html"; }
             veiculoAtual = veiculo;
 
-            // Preenche os dados laterais
             document.getElementById('placa-visual').innerText = veiculo.placa;
             document.getElementById('modelo-visual').innerText = veiculo.modelo;
             document.getElementById('marca-visual').innerText = veiculo.marca;
             document.getElementById('info-km').innerText = new Intl.NumberFormat('pt-BR').format(veiculo.km_atual) + ' km';
             document.getElementById('info-horas').innerText = veiculo.horas_atual + ' h';
-            document.getElementById('info-config').innerText = `${veiculo.quantidade_eixos} Eixos / ${veiculo.quantidade_pneus} Pneus`;
+            let configStr = veiculo.configuracao_eixos ? veiculo.configuracao_eixos.replace(/,/g, '-') : `${veiculo.quantidade_pneus} Pneus`;
+            document.getElementById('info-config').innerText = `${veiculo.quantidade_eixos} Eixos / ${veiculo.quantidade_pneus} Pneus (${configStr})`;
 
-            // Busca pneus e a última calibragem de cada um
             const { data: pneus } = await supabaseClient.from('pneus').select('*').eq('veiculo_id', veiculoId);
             
-            // Para cada pneu, busca a última calibragem
             if (pneus) {
                 for (let p of pneus) {
                     const { data: calib } = await supabaseClient.from('calibragens').select('pressao_psi, created_at').eq('pneu_id', p.id).order('created_at', { ascending: false }).limit(1);
@@ -228,96 +214,56 @@
             const container = document.getElementById('eixos-container');
             container.innerHTML = '';
 
-            let eixos = veiculoAtual.quantidade_eixos || 2;
-            let pneusTotal = veiculoAtual.quantidade_pneus || 4;
-            let estepes = veiculoAtual.quantidade_estepes || 0;
-            
-            let pneusPorEixo = [];
-            if (veiculoAtual.tipo === 'caminhao' || veiculoAtual.tipo === 'carreta') {
-                if (eixos >= 1) pneusPorEixo.push(2);
-                let restantes = pneusTotal - 2;
-                let eixosRestantes = eixos - 1;
-                for(let i=0; i<eixosRestantes; i++) {
-                    let noEixo = Math.min(4, restantes);
-                    pneusPorEixo.push(noEixo);
-                    restantes -= noEixo;
-                }
+            let configArr = [];
+            if(veiculoAtual.configuracao_eixos) {
+                configArr = veiculoAtual.configuracao_eixos.split(',');
             } else {
-                let porEixo = Math.round(pneusTotal / eixos);
-                for(let i=0; i<eixos; i++) pneusPorEixo.push(porEixo);
+                let eixos = veiculoAtual.quantidade_eixos || 2;
+                for(let i=0; i<eixos; i++) configArr.push(i===0 ? 2 : 4);
             }
+            let estepes = veiculoAtual.quantidade_estepes || 0;
 
-            // Desenha Eixos
-            pneusPorEixo.forEach((qtd, indexEixo) => {
+            configArr.forEach((qtdStr, indexEixo) => {
+                let qtd = parseInt(qtdStr);
+                
                 const eixoDiv = document.createElement('div');
-                eixoDiv.className = "relative flex justify-between items-center w-full";
-                eixoDiv.innerHTML = `<div class="absolute top-1/2 left-0 w-full h-3 bg-slate-300 dark:bg-slate-600 -translate-y-1/2 rounded-full z-0"></div>`;
+                // O eixo é a barra horizontal
+                eixoDiv.className = "relative flex justify-between items-center w-full px-2 z-10";
+                eixoDiv.innerHTML = `<div class="absolute top-1/2 left-0 w-full h-4 bg-slate-400 dark:bg-slate-500 -translate-y-1/2 rounded-full z-0"></div>`;
 
                 let htmlPneus = '';
-                for (let i = 1; i <= qtd; i++) {
-                    const posicao = `E${indexEixo+1}-${i}`;
-                    const pneuAqui = pneusDoVeiculo.find(p => p.posicao === posicao);
+                let pneusPorLado = qtd / 2;
+                
+                let ladoEsquerdoHtml = '<div class="flex gap-2">';
+                let ladoDireitoHtml = '<div class="flex gap-2">';
 
-                    if (pneuAqui) {
-                        let sulco = pneuAqui.sulco_atual !== null ? pneuAqui.sulco_atual : pneuAqui.sulco_inicial;
-                        let cor = 'bg-green-500 border-green-600 text-white';
-                        if (sulco <= 5) cor = 'bg-yellow-500 border-yellow-600 text-white';
-                        if (sulco <= 3) cor = 'bg-red-500 border-red-600 text-white';
-                        
-                        let ringClass = pneuSelecionadoInfo && pneuSelecionadoInfo.id === pneuAqui.id ? 'ring-4 ring-brand scale-110 z-30' : 'hover:scale-105 z-10';
-
-                        // Informações dentro do pneu
-                        htmlPneus += `
-                            <div onclick="selecionarPneu('${pneuAqui.id}')" class="relative w-14 h-20 rounded-md border-2 shadow-md cursor-pointer transition-transform ${cor} ${ringClass} flex flex-col items-center justify-between py-1">
-                                <span class="text-[10px] font-bold leading-none">${pneuAqui.numero_fogo}</span>
-                                <span class="text-[9px] font-medium leading-none">${pneuAqui.pressao_atual > 0 ? pneuAqui.pressao_atual + ' PSI' : 'S/P'}</span>
-                                <span class="text-[10px] font-bold leading-none bg-black/20 px-1 rounded">${sulco}mm</span>
-                            </div>
-                        `;
-                    } else {
-                        htmlPneus += `
-                            <div onclick="abrirModalInstalar('${posicao}')" class="relative z-10 w-14 h-20 rounded-md border-2 border-dashed border-gray-400 dark:border-gray-500 bg-gray-100/50 dark:bg-slate-800/50 shadow-inner cursor-pointer hover:bg-brand/10 hover:border-brand transition-colors flex items-center justify-center group">
-                                <i data-lucide="plus" class="w-5 h-5 text-gray-400 group-hover:text-brand"></i>
-                            </div>
-                        `;
-                    }
+                for (let i = 1; i <= pneusPorLado; i++) {
+                    // O design de pílula (rounded-full) e tamanho w-12 h-20
+                    const posEsq = `E${indexEixo+1}-E${i}`; 
+                    const pneuEsq = pneusDoVeiculo.find(p => p.posicao === posEsq);
+                    ladoEsquerdoHtml += gerarPneuHTML(pneuEsq, posEsq);
+                    
+                    const posDir = `E${indexEixo+1}-D${i}`;
+                    const pneuDir = pneusDoVeiculo.find(p => p.posicao === posDir);
+                    ladoDireitoHtml += gerarPneuHTML(pneuDir, posDir);
                 }
-                eixoDiv.innerHTML += `<div class="w-full flex justify-between gap-2 px-2">${htmlPneus}</div>`;
+                
+                ladoEsquerdoHtml += '</div>';
+                ladoDireitoHtml += '</div>';
+
+                eixoDiv.innerHTML += `${ladoEsquerdoHtml}<div class="w-12"></div>${ladoDireitoHtml}`;
                 container.appendChild(eixoDiv);
             });
 
-            // Desenha Estepes
             if (estepes > 0) {
                 const estepeDiv = document.createElement('div');
-                estepeDiv.className = "mt-6 pt-4 border-t-2 border-slate-300 dark:border-slate-600 border-dashed w-full";
+                estepeDiv.className = "mt-10 pt-6 border-t-2 border-slate-300 dark:border-slate-600 border-dashed w-full z-10";
                 
                 let htmlEstepes = '';
                 for (let i = 1; i <= estepes; i++) {
                     const posicao = `ESTEPE-${i}`;
                     const pneuAqui = pneusDoVeiculo.find(p => p.posicao === posicao);
-
-                    if (pneuAqui) {
-                        let sulco = pneuAqui.sulco_atual !== null ? pneuAqui.sulco_atual : pneuAqui.sulco_inicial;
-                        let cor = 'bg-green-500 border-green-600 text-white';
-                        if (sulco <= 5) cor = 'bg-yellow-500 border-yellow-600 text-white';
-                        if (sulco <= 3) cor = 'bg-red-500 border-red-600 text-white';
-                        
-                        let ringClass = pneuSelecionadoInfo && pneuSelecionadoInfo.id === pneuAqui.id ? 'ring-4 ring-brand scale-110 z-30' : 'hover:scale-105 z-10';
-
-                        htmlEstepes += `
-                            <div onclick="selecionarPneu('${pneuAqui.id}')" class="relative w-14 h-20 rounded-md border-2 shadow-md cursor-pointer transition-transform ${cor} ${ringClass} flex flex-col items-center justify-between py-1">
-                                <span class="text-[10px] font-bold leading-none">${pneuAqui.numero_fogo}</span>
-                                <span class="text-[9px] font-medium leading-none">${pneuAqui.pressao_atual > 0 ? pneuAqui.pressao_atual + ' PSI' : 'S/P'}</span>
-                                <span class="text-[10px] font-bold leading-none bg-black/20 px-1 rounded">${sulco}mm</span>
-                            </div>
-                        `;
-                    } else {
-                        htmlEstepes += `
-                            <div onclick="abrirModalInstalar('${posicao}')" class="relative z-10 w-14 h-20 rounded-md border-2 border-dashed border-gray-400 dark:border-gray-500 bg-gray-100/50 dark:bg-slate-800/50 shadow-inner cursor-pointer hover:bg-brand/10 hover:border-brand transition-colors flex items-center justify-center group">
-                                <i data-lucide="plus" class="w-5 h-5 text-gray-400 group-hover:text-brand"></i>
-                            </div>
-                        `;
-                    }
+                    htmlEstepes += gerarPneuHTML(pneuAqui, posicao, true);
                 }
                 estepeDiv.innerHTML = `<p class="text-[10px] text-center text-slate-500 mb-2 font-bold uppercase tracking-widest">Estepe</p><div class="flex justify-center gap-4">${htmlEstepes}</div>`;
                 container.appendChild(estepeDiv);
@@ -325,12 +271,34 @@
             lucide.createIcons();
         }
 
-        // --- AÇÕES ---
-        
-        // Seleciona o pneu e mostra no painel lateral
+        function gerarPneuHTML(pneu, posicao, isEstepe = false) {
+            if (pneu) {
+                let sulco = pneu.sulco_atual !== null ? pneu.sulco_atual : pneu.sulco_inicial;
+                let cor = 'bg-green-500 border-green-600 text-white';
+                if (sulco <= 5) cor = 'bg-yellow-500 border-yellow-600 text-white';
+                if (sulco <= 3) cor = 'bg-red-500 border-red-600 text-white';
+                
+                let ringClass = pneuSelecionadoInfo && pneuSelecionadoInfo.id === pneu.id ? 'ring-4 ring-brand scale-110 z-30' : 'hover:scale-105 z-20';
+
+                // Formato de pílula igual ao seu desenho
+                return `
+                    <div onclick="selecionarPneu('${pneu.id}')" class="relative w-12 h-20 rounded-full border-2 shadow-md cursor-pointer transition-transform ${cor} ${ringClass} flex flex-col items-center justify-center py-1">
+                        <span class="text-[9px] font-bold leading-none">${pneu.numero_fogo}</span>
+                        <span class="text-[8px] font-medium leading-none opacity-80 mt-1">${pneu.pressao_atual > 0 ? pneu.pressao_atual : 'S/P'}</span>
+                        <span class="text-[9px] font-bold leading-none bg-black/20 px-1 rounded mt-1">${sulco}mm</span>
+                    </div>
+                `;
+            } else {
+                return `
+                    <div onclick="abrirModalInstalar('${posicao}')" class="relative z-10 w-12 h-20 rounded-full border-2 border-dashed border-gray-400 dark:border-gray-500 bg-gray-200/50 dark:bg-slate-800/50 shadow-inner cursor-pointer hover:bg-brand/10 hover:border-brand transition-colors flex items-center justify-center group">
+                        <i data-lucide="plus" class="w-5 h-5 text-gray-400 group-hover:text-brand"></i>
+                    </div>
+                `;
+            }
+        }
+
         function selecionarPneu(id) {
             pneuSelecionadoInfo = pneusDoVeiculo.find(p => p.id === id);
-            
             const painel = document.getElementById('painel-pneu');
             const conteudo = document.getElementById('conteudo-pneu');
             
@@ -374,17 +342,16 @@
                 </div>
             `;
             lucide.createIcons();
-            renderizarChassi(); // Re-renderiza para aplicar o anel de seleção
+            renderizarChassi(); 
         }
 
-        // Redireciona para a OS passando os dados
         function abrirOS(pneuId, posicao) {
             window.location.href = `ordens-servico.html?veiculo_id=${veiculoId}&pneu_saindo_id=${pneuId}&posicao=${posicao}`;
         }
 
         async function abrirModalInstalar(posicao) {
             pneuSlotSelecionado = posicao;
-            document.getElementById('posicao-selecionada').innerText = posicao;
+            document.getElementById('posicao-selecionada').innerText = posicao.replace('E', 'Eixo ').replace('-E', ' - Esq ').replace('-D', ' - Dir ');
             document.getElementById('modal-instalar').classList.remove('hidden');
             const lista = document.getElementById('lista-estoque');
             lista.innerHTML = '<p class="text-sm text-gray-500 text-center py-4">Buscando pneus...</p>';
@@ -440,7 +407,7 @@
             }]);
 
             fecharModal();
-            pneuSelecionadoInfo = null; // Limpa seleção
+            pneuSelecionadoInfo = null;
             document.getElementById('painel-pneu').classList.add('opacity-50', 'pointer-events-none');
             document.getElementById('conteudo-pneu').innerHTML = '<p class="text-gray-500 text-center py-4">Clique em um pneu no mapa para ver os detalhes.</p>';
             
