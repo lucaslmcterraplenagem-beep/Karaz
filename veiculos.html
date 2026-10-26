@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Veículos | Karaz Sistema</title>
     
-    <!-- Bibliotecas para Exportação -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
@@ -73,25 +72,31 @@
 
         <main class="flex-1 overflow-y-auto p-6 bg-gray-50 dark:bg-darkbg">
             
-            <!-- DASHBOARDS DE VEÍCULOS -->
+            <!-- DASHBOARDS / FILTROS RÁPIDOS -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                <div class="bg-white dark:bg-darkcard p-4 rounded-lg border border-gray-200 dark:border-slate-700">
+                <!-- Card Total -->
+                <div onclick="toggleFiltro('total', this)" class="card-filtro bg-white dark:bg-darkcard p-4 rounded-lg border-2 border-transparent hover:border-gray-300 dark:hover:border-slate-600 cursor-pointer transition-all">
                     <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Total de Veículos</p>
                     <p class="text-2xl font-bold text-gray-900 dark:text-white" id="kpi-total-veiculos">0</p>
                 </div>
-                <div class="bg-white dark:bg-darkcard p-4 rounded-lg border border-gray-200 dark:border-slate-700 flex flex-col justify-center">
-                    <div class="flex items-center gap-1 text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">
-                        Sem Aferição há >
-                        <input type="number" id="input-dias-afericao" value="30" min="1" class="w-12 bg-gray-100 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded text-center text-gray-800 dark:text-gray-200 focus:outline-none focus:border-brand py-0.5">
-                        dias
+                
+                <!-- Card Sem Aferição -->
+                <div onclick="toggleFiltro('sem_afericao', this)" class="card-filtro bg-white dark:bg-darkcard p-4 rounded-lg border-2 border-transparent hover:border-orange-300 dark:hover:border-orange-700 cursor-pointer transition-all flex flex-col justify-between border-l-4 border-l-orange-500">
+                    <div class="flex justify-between items-start">
+                        <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Sem Aferição há ></p>
+                        <input type="number" id="input-dias-afericao" value="30" min="1" onclick="event.stopPropagation()" oninput="calcularKPIs()" class="w-12 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded text-center text-xs text-gray-800 dark:text-gray-200 focus:outline-none focus:border-brand py-0.5 -mt-1">
                     </div>
                     <p class="text-2xl font-bold text-orange-500" id="kpi-sem-afericao">0</p>
                 </div>
-                <div class="bg-white dark:bg-darkcard p-4 rounded-lg border border-gray-200 dark:border-slate-700">
+
+                <!-- Card Atenção -->
+                <div onclick="toggleFiltro('atencao', this)" class="card-filtro bg-white dark:bg-darkcard p-4 rounded-lg border-2 border-transparent hover:border-yellow-300 dark:hover:border-yellow-700 cursor-pointer transition-all border-l-4 border-l-yellow-500">
                     <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Pneus em Atenção</p>
                     <p class="text-2xl font-bold text-yellow-500" id="kpi-pneus-atencao">0</p>
                 </div>
-                <div class="bg-white dark:bg-darkcard p-4 rounded-lg border border-gray-200 dark:border-slate-700">
+
+                <!-- Card Trocar -->
+                <div onclick="toggleFiltro('trocar', this)" class="card-filtro bg-white dark:bg-darkcard p-4 rounded-lg border-2 border-transparent hover:border-red-300 dark:hover:border-red-700 cursor-pointer transition-all border-l-4 border-l-red-500">
                     <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Pneus p/ Trocar</p>
                     <p class="text-2xl font-bold text-red-500" id="kpi-pneus-trocar">0</p>
                 </div>
@@ -112,22 +117,22 @@
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="bg-gray-50 dark:bg-slate-800/50 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider">
-                            <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Saúde / Pneus</th>
+                            <th class="px-4 py-3 font-medium border-b border-gray-200 dark:border-slate-700 w-36">Saúde</th>
                             <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Placa / Prefixo</th>
                             <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Modelo</th>
-                            <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Eixos / Config</th>
+                            <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Eixos / Pneus</th>
                             <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">KM / Horas</th>
                             <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700 text-center">Ações</th>
                         </tr>
                     </thead>
                     <tbody id="tabela-veiculos" class="text-sm divide-y divide-gray-200 dark:divide-slate-700"></tbody>
                 </table>
-                <div id="aviso-vazio" class="p-8 text-center text-gray-500 dark:text-gray-400 text-sm hidden">Nenhum veículo cadastrado ainda.</div>
+                <div id="aviso-vazio" class="p-8 text-center text-gray-500 dark:text-gray-400 text-sm hidden">Nenhum veículo encontrado.</div>
             </div>
         </main>
     </div>
 
-    <!-- MODAL DE CADASTRO/EDIÇÃO -->
+    <!-- MODAL DE CADASTRO/EDIÇÃO DE VEÍCULO (MANTIDO DO CÓDIGO ANTERIOR) -->
     <div id="modal-veiculo" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-4xl border border-gray-200 dark:border-slate-700 overflow-hidden">
             <div class="px-6 pt-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center">
@@ -186,7 +191,7 @@
                     </div>
                 </div>
 
-                <!-- ABA 2: NOVA CONFIGURAÇÃO DE PNEUS -->
+                <!-- ABA 2 -->
                 <div id="tab-content-2" class="p-6 space-y-4 hidden">
                     <div class="grid grid-cols-3 gap-4 mb-4">
                         <div>
@@ -203,7 +208,6 @@
                         </div>
                     </div>
                     
-                    <!-- ÁREA DINÂMICA DOS EIXOS -->
                     <div class="flex gap-6">
                         <div class="flex-1">
                             <label class="block text-sm font-medium mb-2">Pneus por Eixo (Frente para Trás)</label>
@@ -212,7 +216,6 @@
                             </div>
                         </div>
                         
-                        <!-- MINI MAPA DE VISUALIZAÇÃO -->
                         <div class="w-48 bg-slate-100 dark:bg-slate-800 rounded-lg p-4 flex flex-col items-center justify-center border border-gray-200 dark:border-slate-700">
                             <p class="text-[10px] uppercase font-bold text-gray-500 mb-2">Prévia</p>
                             <div id="mini-mapa" class="flex flex-col items-center gap-2">
@@ -233,7 +236,7 @@
         </div>
     </div>
 
-    <!-- MODAL DE HISTÓRICO -->
+    <!-- MODAL DE HISTÓRICO (MANTIDO DO CÓDIGO ANTERIOR) -->
     <div id="modal-historico" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-6xl border border-gray-200 dark:border-slate-700 overflow-hidden flex flex-col max-h-[90vh]">
             <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-800/30">
@@ -291,6 +294,7 @@
         let todosHistoricos = [];
         let veiculoEditandoId = null;
         let veiculoHistoricoAtual = null;
+        let filtroAtivo = null; // Pode ser 'total', 'sem_afericao', 'atencao', 'trocar'
 
         // --- UI LÓGICA ---
         supabaseClient.auth.getSession().then(({ data: { session } }) => {
@@ -318,11 +322,31 @@
             html.classList.toggle('dark'); localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
         });
 
+        // --- LÓGICA DE FILTROS DOS CARDS ---
+        function toggleFiltro(tipo, elementoCard) {
+            // Se clicar no mesmo, desativa o filtro
+            if (filtroAtivo === tipo) {
+                filtroAtivo = null;
+            } else {
+                filtroAtivo = tipo;
+            }
+            
+            // Atualiza a borda de todos os cards
+            document.querySelectorAll('.card-filtro').forEach(card => {
+                card.classList.remove('border-brand', 'ring-1', 'ring-brand/30');
+            });
+
+            // Adiciona a borda laranja no card ativo
+            if (filtroAtivo) {
+                elementoCard.classList.add('border-brand', 'ring-1', 'ring-brand/30');
+            }
+
+            renderizarTabela();
+        }
+
         // --- LÓGICA DE DADOS E KPIs ---
         const tabela = document.getElementById('tabela-veiculos');
         const avisoVazio = document.getElementById('aviso-vazio');
-        
-        document.getElementById('input-dias-afericao').addEventListener('input', calcularKPIs);
 
         async function carregarDados() {
             const { data: veiculos } = await supabaseClient.from('veiculos').select('*').order('created_at', { ascending: false });
@@ -332,11 +356,12 @@
             todosPneus = pneus || [];
 
             calcularKPIs();
-            renderizarTabela(todosVeiculos);
+            renderizarTabela();
         }
 
         function calcularKPIs() {
-            document.getElementById('kpi-total-veiculos').innerText = todosVeiculos.length;
+            let ativos = todosVeiculos.filter(v => v.ativo); // Considera apenas ativos para os KPIs
+            document.getElementById('kpi-total-veiculos').innerText = ativos.length;
 
             let qtdAtencao = 0;
             let qtdTrocar = 0;
@@ -354,7 +379,7 @@
             let hoje = new Date();
             let semAfericao = 0;
             
-            todosVeiculos.forEach(v => {
+            ativos.forEach(v => {
                 let dataCadastro = new Date(v.created_at);
                 let diffDias = Math.floor((hoje - dataCadastro) / (1000 * 60 * 60 * 24));
                 if (diffDias > diasLimite) semAfericao++;
@@ -362,42 +387,105 @@
             document.getElementById('kpi-sem-afericao').innerText = semAfericao;
         }
 
-        function renderizarTabela(lista) {
+        function renderizarTabela() {
+            const termoBusca = document.getElementById('input-busca').value.toLowerCase();
             tabela.innerHTML = '';
-            if (lista.length === 0) { avisoVazio.classList.remove('hidden'); return; }
+            
+            let listaFiltrada = todosVeiculos.filter(v => {
+                // 1. Filtro de Texto
+                const matchTexto = v.placa.toLowerCase().includes(termoBusca) || 
+                                   v.modelo.toLowerCase().includes(termoBusca) ||
+                                   (v.prefixo && v.prefixo.toLowerCase().includes(termoBusca));
+                if (!matchTexto) return false;
+
+                // 2. Filtro de Card
+                if (!filtroAtivo) return true; // Se não tem filtro ativo, mostra todos
+                if (filtroAtivo === 'total') return v.ativo; // "Total" mostra só os ativos (igual ao dashboard)
+
+                if (!v.ativo) return false; // Filtros de alerta só mostram veículos ativos
+
+                const pneusDoVeiculo = todosPneus.filter(p => p.veiculo_id === v.id);
+                
+                if (filtroAtivo === 'sem_afericao') {
+                    let diasLimite = parseInt(document.getElementById('input-dias-afericao').value) || 30;
+                    let dataCadastro = new Date(v.created_at);
+                    let diffDias = Math.floor((new Date() - dataCadastro) / (1000 * 60 * 60 * 24));
+                    return diffDias > diasLimite;
+                }
+
+                if (filtroAtivo === 'atencao') {
+                    return pneusDoVeiculo.some(p => {
+                        let s = p.sulco_atual !== null ? p.sulco_atual : p.sulco_inicial;
+                        return s > 3 && s <= 5;
+                    });
+                }
+
+                if (filtroAtivo === 'trocar') {
+                    return pneusDoVeiculo.some(p => {
+                        let s = p.sulco_atual !== null ? p.sulco_atual : p.sulco_inicial;
+                        return s <= 3;
+                    });
+                }
+                
+                return true;
+            });
+
+            if (listaFiltrada.length === 0) { 
+                avisoVazio.classList.remove('hidden'); 
+                return; 
+            }
             avisoVazio.classList.add('hidden');
 
-            lista.forEach(v => {
+            listaFiltrada.forEach(v => {
                 const pneusDoVeiculo = todosPneus.filter(p => p.veiculo_id === v.id);
+                
+                // Lógica de Saúde do Veículo
                 let corBolinha = 'bg-gray-400';
+                let textoStatus = 'Sem pneus';
+                let corTexto = 'text-gray-500';
                 let qtdTrocar = 0;
+                let temAtencao = false;
 
                 if (pneusDoVeiculo.length > 0) {
                     corBolinha = 'bg-green-500';
+                    textoStatus = 'Em dia';
+                    corTexto = 'text-green-500';
+                    
                     pneusDoVeiculo.forEach(p => {
                         let sulco = p.sulco_atual !== null ? p.sulco_atual : p.sulco_inicial;
                         if (sulco <= 3) {
                             qtdTrocar++;
                             corBolinha = 'bg-red-500';
+                            textoStatus = `${qtdTrocar} p/ trocar`;
+                            corTexto = 'text-red-500';
+                            temAtencao = true;
                         } else if (sulco <= 5 && corBolinha !== 'bg-red-500') {
                             corBolinha = 'bg-yellow-500';
+                            textoStatus = 'Atenção';
+                            corTexto = 'text-yellow-500';
+                            temAtencao = true;
                         }
                     });
                 }
 
-                let configVisual = v.configuracao_eixos ? v.configuracao_eixos.replace(/,/g, '-') : `${v.quantidade_pneus} Pneus`;
+                // Veículo inativo fica com opacidade menor
+                const rowClass = v.ativo ? "hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors" : "opacity-50 bg-gray-100 dark:bg-slate-800/20";
+                const configVisual = v.configuracao_eixos ? v.configuracao_eixos.replace(/,/g, '-') : `${v.quantidade_pneus} Pneus`;
 
                 const tr = document.createElement('tr');
-                tr.className = "hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors";
+                tr.className = rowClass;
                 tr.innerHTML = `
-                    <td class="px-6 py-4">
+                    <td class="px-4 py-4 w-36">
                         <div class="flex items-center gap-2">
-                            <div class="w-3 h-3 rounded-full ${corBolinha} shadow-sm"></div>
-                            ${qtdTrocar > 0 ? `<span class="text-[10px] font-bold bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded">${qtdTrocar} trocar</span>` : ''}
+                            <div class="w-2.5 h-2.5 rounded-full ${corBolinha} shadow-sm shrink-0"></div>
+                            <span class="text-xs font-medium ${corTexto} whitespace-nowrap">${textoStatus}</span>
                         </div>
                     </td>
                     <td class="px-6 py-4">
-                        <div class="font-bold text-gray-900 dark:text-white uppercase">${v.placa}</div>
+                        <div class="font-bold text-gray-900 dark:text-white uppercase flex items-center gap-2">
+                            ${v.placa}
+                            ${!v.ativo ? '<span class="text-[10px] bg-gray-200 dark:bg-slate-700 px-1.5 py-0.5 rounded text-gray-500">INATIVO</span>' : ''}
+                        </div>
                         <div class="text-xs text-gray-500">${v.prefixo || 'S/ Prefixo'}</div>
                     </td>
                     <td class="px-6 py-4">
@@ -419,6 +507,9 @@
                         <button onclick="editarVeiculo('${v.id}')" class="text-gray-400 hover:text-blue-500 transition-colors" title="Editar">
                             <i data-lucide="edit" class="w-5 h-5"></i>
                         </button>
+                        <button onclick="toggleAtivoVeiculo('${v.id}', ${v.ativo})" class="text-gray-400 ${v.ativo ? 'hover:text-red-500' : 'hover:text-green-500'} transition-colors" title="${v.ativo ? 'Inativar Veículo' : 'Ativar Veículo'}">
+                            <i data-lucide="power" class="w-5 h-5"></i>
+                        </button>
                         <button onclick="abrirHistorico('${v.id}')" class="text-gray-400 hover:text-orange-500 transition-colors" title="Histórico">
                             <i data-lucide="history" class="w-5 h-5"></i>
                         </button>
@@ -429,17 +520,24 @@
             lucide.createIcons();
         }
 
-        document.getElementById('input-busca').addEventListener('input', (e) => {
-            const termo = e.target.value.toLowerCase();
-            const filtrados = todosVeiculos.filter(v => 
-                v.placa.toLowerCase().includes(termo) || 
-                v.modelo.toLowerCase().includes(termo) ||
-                (v.prefixo && v.prefixo.toLowerCase().includes(termo))
-            );
-            renderizarTabela(filtrados);
-        });
+        document.getElementById('input-busca').addEventListener('input', renderizarTabela);
 
-        // --- MODAL CADASTRO/EDIÇÃO ---
+        // --- LÓGICA DE INATIVAR VEÍCULO ---
+        async function toggleAtivoVeiculo(id, statusAtual) {
+            const novoStatus = !statusAtual;
+            const confirm = window.confirm(`Deseja realmente ${novoStatus ? 'ATIVAR' : 'INATIVAR'} este veículo?`);
+            if(!confirm) return;
+
+            const { error } = await supabaseClient.from('veiculos').update({ ativo: novoStatus }).eq('id', id);
+            
+            if (error) {
+                alert("Erro ao atualizar status: " + error.message);
+            } else {
+                carregarDados(); // Recarrega a lista
+            }
+        }
+
+        // --- LÓGICA DE EDIÇÃO E CADASTRO ---
         const modal = document.getElementById('modal-veiculo');
         const form = document.getElementById('form-veiculo');
         const tab1 = document.getElementById('tab-content-1');
