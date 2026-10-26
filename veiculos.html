@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Veículos | Karaz</title>
+    <title>Veículos | Karaz Sistema</title>
+    
+    <!-- Bibliotecas para Exportação -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -24,11 +29,11 @@
 </head>
 <body class="bg-gray-100 text-gray-800 dark:bg-darkbg dark:text-gray-100 font-sans h-screen flex overflow-hidden transition-colors duration-300 antialiased">
 
-    <!-- SIDEBAR (Mesmo código de antes) -->
+    <!-- SIDEBAR -->
     <aside id="sidebar" class="w-64 bg-white dark:bg-darkcard border-r border-gray-200 dark:border-slate-700 transition-all duration-300 flex flex-col z-20">
         <div>
             <div class="h-16 flex items-center justify-center border-b border-gray-200 dark:border-slate-700">
-                <h1 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">Karaz <span class="text-brand">Pneus</span></h1>
+                <h1 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">Karaz <span class="text-brand">Sistema</span></h1>
             </div>
             <nav class="p-3 space-y-1">
                 <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
@@ -38,7 +43,7 @@
                     <i data-lucide="truck" class="w-5 h-5"></i><span class="menu-text text-sm">Veículos</span>
                 </a>
                 <a href="pneus.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
-                    <i data-lucide="circle-dot" class="w-5 h-5"></i><span class="menu-text text-sm">Pneus</span>
+                    <i data-lucide="disc" class="w-5 h-5"></i><span class="menu-text text-sm">Pneus</span>
                 </a>
                 <a href="ordens-servico.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
                     <i data-lucide="wrench" class="w-5 h-5"></i><span class="menu-text text-sm">Ordens de Serviço</span>
@@ -86,7 +91,7 @@
                             <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Modelo</th>
                             <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Eixos / Pneus</th>
                             <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">KM / Horas</th>
-                            <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Ações</th>
+                            <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700 text-center">Ações</th>
                         </tr>
                     </thead>
                     <tbody id="tabela-veiculos" class="text-sm divide-y divide-gray-200 dark:divide-slate-700"></tbody>
@@ -96,11 +101,9 @@
         </main>
     </div>
 
-    <!-- MODAL DE CADASTRO EM 2 ABAS -->
-    <div id="modal-veiculo" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+    <!-- MODAL DE CADASTRO/EDIÇÃO DE VEÍCULO -->
+    <div id="modal-veiculo" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-2xl border border-gray-200 dark:border-slate-700 overflow-hidden">
-            
-            <!-- Cabeçalho do Modal com Abas -->
             <div class="px-6 pt-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center">
                 <div class="flex gap-6">
                     <button type="button" id="tab-btn-1" class="pb-3 text-brand border-b-2 border-brand font-medium text-sm transition-colors">1. Dados Básicos</button>
@@ -110,11 +113,11 @@
             </div>
             
             <form id="form-veiculo">
-                <!-- ABA 1: DADOS BÁSICOS -->
+                <!-- ABA 1 -->
                 <div id="tab-content-1" class="p-6 space-y-4">
                     <div class="grid grid-cols-3 gap-4">
                         <div>
-                            <label class="block text-sm font-medium mb-1">Placa (Única)</label>
+                            <label class="block text-sm font-medium mb-1">Placa <span class="text-red-500">*</span></label>
                             <input type="text" id="placa" required class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand uppercase">
                         </div>
                         <div>
@@ -128,17 +131,17 @@
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium mb-1">Modelo</label>
+                            <label class="block text-sm font-medium mb-1">Modelo <span class="text-red-500">*</span></label>
                             <input type="text" id="modelo" required class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium mb-1">Marca</label>
+                            <label class="block text-sm font-medium mb-1">Marca <span class="text-red-500">*</span></label>
                             <input type="text" id="marca" required class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
                         </div>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium mb-1">Ano</label>
+                            <label class="block text-sm font-medium mb-1">Ano <span class="text-red-500">*</span></label>
                             <input type="number" id="ano" required class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
                         </div>
                         <div>
@@ -153,29 +156,29 @@
                     </div>
                     <div class="pt-4 flex justify-end gap-3 border-t border-gray-200 dark:border-slate-700 mt-2">
                         <button type="button" onclick="fecharModal()" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-md transition-colors">Cancelar</button>
-                        <button type="button" onclick="irParaAba2()" class="px-4 py-2 text-sm font-medium text-white bg-brand hover:bg-orange-700 rounded-md transition-colors">Próximo Passo →</button>
+                        <button type="button" id="btn-proximo" onclick="irParaAba2()" class="px-4 py-2 text-sm font-medium text-white bg-brand hover:bg-orange-700 rounded-md transition-colors">Próximo Passo →</button>
                     </div>
                 </div>
 
-                <!-- ABA 2: CONFIGURAÇÃO DE PNEUS -->
+                <!-- ABA 2 -->
                 <div id="tab-content-2" class="p-6 space-y-4 hidden">
                     <div class="grid grid-cols-3 gap-4">
                         <div>
-                            <label class="block text-sm font-medium mb-1">Quantidade de Eixos</label>
+                            <label class="block text-sm font-medium mb-1">Qtd. de Eixos <span class="text-red-500">*</span></label>
                             <input type="number" id="eixos" required min="2" value="2" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium mb-1">Quantidade de Pneus</label>
+                            <label class="block text-sm font-medium mb-1">Qtd. de Pneus <span class="text-red-500">*</span></label>
                             <input type="number" id="qtd_pneus" required min="4" value="6" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium mb-1">Estepes</label>
+                            <label class="block text-sm font-medium mb-1">Estepes <span class="text-red-500">*</span></label>
                             <input type="number" id="estepes" required min="0" value="0" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
                         </div>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium mb-1">KM Atual</label>
+                            <label class="block text-sm font-medium mb-1">KM Atual <span class="text-red-500">*</span></label>
                             <input type="number" id="km" required class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
                         </div>
                         <div>
@@ -183,9 +186,8 @@
                             <input type="number" id="horas" value="0" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
                         </div>
                     </div>
-
+                    <p id="aviso-bloqueio" class="text-xs text-brand hidden mt-2"><i data-lucide="info" class="w-3 h-3 inline"></i> Eixos, Pneus, Estepes e KM não podem ser alterados após o cadastro inicial.</p>
                     <div id="erro-modal" class="hidden text-red-500 text-sm bg-red-500/10 p-3 rounded-md"></div>
-
                     <div class="pt-4 flex justify-between border-t border-gray-200 dark:border-slate-700 mt-2">
                         <button type="button" onclick="voltarParaAba1()" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-md transition-colors">← Voltar</button>
                         <button type="submit" id="btn-salvar" class="px-4 py-2 text-sm font-medium text-white bg-brand hover:bg-orange-700 rounded-md transition-colors">Finalizar Cadastro</button>
@@ -195,96 +197,96 @@
         </div>
     </div>
 
-    <!-- SCRIPTS -->
+    <!-- MODAL DE HISTÓRICO -->
+    <div id="modal-historico" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-5xl border border-gray-200 dark:border-slate-700 overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-800/30">
+                <h3 class="text-lg font-bold text-brand flex items-center gap-2"><i data-lucide="history" class="w-5 h-5"></i> Histórico do Veículo</h3>
+                <div class="flex gap-2">
+                    <button onclick="exportarPDF()" class="bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white px-3 py-1.5 rounded text-xs font-medium transition-colors flex items-center gap-1">
+                        <i data-lucide="file-text" class="w-4 h-4"></i> PDF
+                    </button>
+                    <button onclick="exportarExcel()" class="bg-green-500/10 text-green-500 hover:bg-green-500 hover:text-white px-3 py-1.5 rounded text-xs font-medium transition-colors flex items-center gap-1">
+                        <i data-lucide="table" class="w-4 h-4"></i> Excel
+                    </button>
+                    <button onclick="fecharModalHistorico()" class="text-gray-400 hover:text-red-500 ml-4"><i data-lucide="x" class="w-6 h-6"></i></button>
+                </div>
+            </div>
+            
+            <div class="p-4 border-b border-gray-200 dark:border-slate-700 bg-white dark:bg-darkcard flex flex-wrap gap-4 text-sm">
+                <span class="font-medium text-gray-500">Colunas Visíveis:</span>
+                <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" checked onchange="toggleColuna('col-data', this.checked)" class="rounded text-brand focus:ring-brand"> Data</label>
+                <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" checked onchange="toggleColuna('col-evento', this.checked)" class="rounded text-brand focus:ring-brand"> Evento</label>
+                <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" checked onchange="toggleColuna('col-desc', this.checked)" class="rounded text-brand focus:ring-brand"> Descrição</label>
+                <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" checked onchange="toggleColuna('col-km', this.checked)" class="rounded text-brand focus:ring-brand"> KM</label>
+                <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" checked onchange="toggleColuna('col-user', this.checked)" class="rounded text-brand focus:ring-brand"> Usuário</label>
+            </div>
+
+            <div class="flex-1 overflow-auto p-6 bg-gray-50 dark:bg-darkbg" id="area-tabela-historico">
+                <table class="w-full text-left border-collapse bg-white dark:bg-darkcard rounded-lg overflow-hidden shadow-sm" id="tabela-historico">
+                    <thead class="bg-gray-100 dark:bg-slate-800 text-xs uppercase text-gray-500 dark:text-gray-400">
+                        <tr>
+                            <th class="px-4 py-3 col-data">Data</th>
+                            <th class="px-4 py-3 col-evento">Evento</th>
+                            <th class="px-4 py-3 col-desc">Descrição</th>
+                            <th class="px-4 py-3 col-km">KM</th>
+                            <th class="px-4 py-3 col-user">Usuário</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-historico" class="text-sm divide-y divide-gray-200 dark:divide-slate-700"></tbody>
+                </table>
+                <div id="aviso-historico-vazio" class="text-center text-gray-500 py-10 hidden">Nenhum histórico registrado.</div>
+            </div>
+        </div>
+    </div>
+
     <script src="js/supabase-client.js"></script>
     <script>
         lucide.createIcons();
+        let todosVeiculos = [];
+        let todosHistoricos = [];
+        let veiculoEditandoId = null;
 
-        // --- PROTEÇÃO DE ROTA ---
+        // --- UI LÓGICA ---
         supabaseClient.auth.getSession().then(({ data: { session } }) => {
             if (!session) { window.location.href = "login.html"; } 
             else { document.getElementById('user-email').innerText = session.user.email; }
         });
 
         document.getElementById('btn-logout').addEventListener('click', async () => {
-            await supabaseClient.auth.signOut();
-            window.location.href = "login.html";
+            await supabaseClient.auth.signOut(); window.location.href = "login.html";
         });
 
-        // --- UI LÓGICA ---
         const sidebar = document.getElementById('sidebar');
         const menuTexts = document.querySelectorAll('.menu-text');
         document.getElementById('toggle-sidebar').addEventListener('click', () => {
             if (sidebar.classList.contains('w-64')) {
-                sidebar.classList.replace('w-64', 'w-20');
-                menuTexts.forEach(el => el.classList.add('hidden'));
+                sidebar.classList.replace('w-64', 'w-20'); menuTexts.forEach(el => el.classList.add('hidden'));
             } else {
-                sidebar.classList.replace('w-20', 'w-64');
-                menuTexts.forEach(el => el.classList.remove('hidden'));
+                sidebar.classList.replace('w-20', 'w-64'); menuTexts.forEach(el => el.classList.remove('hidden'));
             }
         });
 
         const html = document.documentElement;
         if (localStorage.theme === 'light') html.classList.remove('dark');
         document.getElementById('toggle-theme').addEventListener('click', () => {
-            html.classList.toggle('dark');
-            localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
+            html.classList.toggle('dark'); localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
         });
 
-        // --- LÓGICA DE ABAS DO MODAL ---
-        const tab1 = document.getElementById('tab-content-1');
-        const tab2 = document.getElementById('tab-content-2');
-        const btnTab1 = document.getElementById('tab-btn-1');
-        const btnTab2 = document.getElementById('tab-btn-2');
-
-        function irParaAba2() {
-            // Validação básica HTML5 para os campos obrigatórios da aba 1
-            const placa = document.getElementById('placa');
-            const modelo = document.getElementById('modelo');
-            const marca = document.getElementById('marca');
-            const ano = document.getElementById('ano');
-
-            if (!placa.reportValidity() || !modelo.reportValidity() || !marca.reportValidity() || !ano.reportValidity()) return;
-
-            tab1.classList.add('hidden');
-            tab2.classList.remove('hidden');
-            
-            // Muda estilo das abas
-            btnTab1.classList.remove('text-brand', 'border-brand');
-            btnTab1.classList.add('text-gray-400', 'border-transparent');
-            btnTab2.classList.remove('text-gray-400', 'border-transparent', 'cursor-not-allowed');
-            btnTab2.classList.add('text-brand', 'border-brand');
-        }
-
-        function voltarParaAba1() {
-            tab2.classList.add('hidden');
-            tab1.classList.remove('hidden');
-            
-            btnTab2.classList.remove('text-brand', 'border-brand');
-            btnTab2.classList.add('text-gray-400', 'border-transparent', 'cursor-not-allowed');
-            btnTab1.classList.remove('text-gray-400', 'border-transparent');
-            btnTab1.classList.add('text-brand', 'border-brand');
-        }
-
-        // --- LÓGICA DO BANCO DE DADOS ---
+        // --- LÓGICA DE DADOS ---
         const tabela = document.getElementById('tabela-veiculos');
         const avisoVazio = document.getElementById('aviso-vazio');
-        let todosVeiculos = [];
 
         async function carregarVeiculos() {
             const { data, error } = await supabaseClient.from('veiculos').select('*').order('created_at', { ascending: false });
             if (error) return console.error(error);
-            
             todosVeiculos = data;
             renderizarTabela(data);
         }
 
         function renderizarTabela(lista) {
             tabela.innerHTML = '';
-            if (lista.length === 0) {
-                avisoVazio.classList.remove('hidden');
-                return;
-            }
+            if (lista.length === 0) { avisoVazio.classList.remove('hidden'); return; }
             avisoVazio.classList.add('hidden');
 
             lista.forEach(v => {
@@ -307,10 +309,16 @@
                         <div class="text-sm">${v.km_atual} km</div>
                         <div class="text-xs text-gray-500">${v.horas_atual} h</div>
                     </td>
-                    <td class="px-6 py-4 text-right">
-                        <a href="mapa-veiculo.html?id=${v.id}" class="text-gray-400 hover:text-brand transition-colors" title="Ver Mapa do Veículo">
-    <i data-lucide="map" class="w-5 h-5"></i>
-</a>
+                    <td class="px-6 py-4 text-center flex items-center justify-center gap-3">
+                        <a href="mapa-veiculo.html?id=${v.id}" class="text-gray-400 hover:text-brand transition-colors" title="Mapa do Veículo">
+                            <i data-lucide="map" class="w-5 h-5"></i>
+                        </a>
+                        <button onclick="editarVeiculo('${v.id}')" class="text-gray-400 hover:text-blue-500 transition-colors" title="Editar">
+                            <i data-lucide="edit" class="w-5 h-5"></i>
+                        </button>
+                        <button onclick="abrirHistorico('${v.id}')" class="text-gray-400 hover:text-orange-500 transition-colors" title="Histórico">
+                            <i data-lucide="history" class="w-5 h-5"></i>
+                        </button>
                     </td>
                 `;
                 tabela.appendChild(tr);
@@ -318,7 +326,6 @@
             lucide.createIcons();
         }
 
-        // Busca rápida
         document.getElementById('input-busca').addEventListener('input', (e) => {
             const termo = e.target.value.toLowerCase();
             const filtrados = todosVeiculos.filter(v => 
@@ -329,77 +336,233 @@
             renderizarTabela(filtrados);
         });
 
-        // Modal
+        // --- MODAL CADASTRO/EDIÇÃO ---
         const modal = document.getElementById('modal-veiculo');
         const form = document.getElementById('form-veiculo');
+        const tab1 = document.getElementById('tab-content-1');
+        const tab2 = document.getElementById('tab-content-2');
+        const btnTab1 = document.getElementById('tab-btn-1');
+        const btnTab2 = document.getElementById('tab-btn-2');
+        const btnProximo = document.getElementById('btn-proximo');
+        const btnSalvar = document.getElementById('btn-salvar');
+        const camposBloqueados = ['eixos', 'qtd_pneus', 'estepes', 'km', 'horas'];
         
         function abrirModal() { 
-            document.getElementById('erro-modal').classList.add('hidden');
+            veiculoEditandoId = null;
             form.reset();
-            voltarParaAba1(); // Sempre volta pra aba 1
+            document.getElementById('erro-modal').classList.add('hidden');
+            document.getElementById('aviso-bloqueio').classList.add('hidden');
+            camposBloqueados.forEach(id => document.getElementById(id).disabled = false);
+            btnProximo.classList.remove('hidden');
+            btnSalvar.innerText = 'Finalizar Cadastro';
+            voltarParaAba1();
             modal.classList.remove('hidden'); 
         }
+        
         function fecharModal() { modal.classList.add('hidden'); }
+
+        function editarVeiculo(id) {
+            veiculoEditandoId = id;
+            const v = todosVeiculos.find(x => x.id === id);
+            if (!v) return;
+
+            document.getElementById('placa').value = v.placa;
+            document.getElementById('prefixo').value = v.prefixo || '';
+            document.getElementById('chassi').value = v.chassi || '';
+            document.getElementById('modelo').value = v.modelo;
+            document.getElementById('marca').value = v.marca;
+            document.getElementById('ano').value = v.ano;
+            document.getElementById('tipo').value = v.tipo;
+            
+            document.getElementById('eixos').value = v.quantidade_eixos;
+            document.getElementById('qtd_pneus').value = v.quantidade_pneus;
+            document.getElementById('estepes').value = v.quantidade_estepes;
+            document.getElementById('km').value = v.km_atual;
+            document.getElementById('horas').value = v.horas_atual;
+
+            // Bloqueia campos críticos
+            camposBloqueados.forEach(id => document.getElementById(id).disabled = true);
+            document.getElementById('aviso-bloqueio').classList.remove('hidden');
+            
+            // Pula direto para a Aba 1, mas permite ir para a 2
+            btnProximo.classList.remove('hidden');
+            voltarParaAba1();
+            btnSalvar.innerText = 'Salvar Alterações';
+            modal.classList.remove('hidden');
+        }
+
+        function irParaAba2() {
+            const placa = document.getElementById('placa');
+            const modelo = document.getElementById('modelo');
+            const marca = document.getElementById('marca');
+            const ano = document.getElementById('ano');
+            if (!placa.reportValidity() || !modelo.reportValidity() || !marca.reportValidity() || !ano.reportValidity()) return;
+
+            tab1.classList.add('hidden');
+            tab2.classList.remove('hidden');
+            btnTab1.classList.remove('text-brand', 'border-brand');
+            btnTab1.classList.add('text-gray-400', 'border-transparent');
+            btnTab2.classList.remove('text-gray-400', 'border-transparent', 'cursor-not-allowed');
+            btnTab2.classList.add('text-brand', 'border-brand');
+        }
+
+        function voltarParaAba1() {
+            tab2.classList.add('hidden');
+            tab1.classList.remove('hidden');
+            btnTab2.classList.remove('text-brand', 'border-brand');
+            btnTab2.classList.add('text-gray-400', 'border-transparent', 'cursor-not-allowed');
+            btnTab1.classList.remove('text-gray-400', 'border-transparent');
+            btnTab1.classList.add('text-brand', 'border-brand');
+        }
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('btn-salvar');
             const erroDiv = document.getElementById('erro-modal');
-            
-            btn.innerHTML = 'Salvando...';
-            btn.disabled = true;
+            btnSalvar.innerHTML = 'Salvando...'; btnSalvar.disabled = true;
             erroDiv.classList.add('hidden');
 
-            const novoVeiculo = {
+            const dados = {
                 placa: document.getElementById('placa').value.toUpperCase(),
                 prefixo: document.getElementById('prefixo').value,
                 chassi: document.getElementById('chassi').value || null,
                 modelo: document.getElementById('modelo').value,
                 marca: document.getElementById('marca').value,
                 ano: parseInt(document.getElementById('ano').value),
-                tipo: document.getElementById('tipo').value,
-                quantidade_eixos: parseInt(document.getElementById('eixos').value),
-                quantidade_pneus: parseInt(document.getElementById('qtd_pneus').value),
-                quantidade_estepes: parseInt(document.getElementById('estepes').value),
-                km_atual: parseFloat(document.getElementById('km').value),
-                horas_atual: parseFloat(document.getElementById('horas').value)
+                tipo: document.getElementById('tipo').value
             };
 
-            const { data, error } = await supabaseClient.from('veiculos').insert([novoVeiculo]).select();
+            if (!veiculoEditandoId) {
+                dados.quantidade_eixos = parseInt(document.getElementById('eixos').value);
+                dados.quantidade_pneus = parseInt(document.getElementById('qtd_pneus').value);
+                dados.quantidade_estepes = parseInt(document.getElementById('estepes').value);
+                dados.km_atual = parseFloat(document.getElementById('km').value);
+                dados.horas_atual = parseFloat(document.getElementById('horas').value);
+            }
 
-                        if (error) {
-                let mensagemErro = error.message;
-                
-                // Traduzindo os erros do banco para português
-                if (mensagemErro.includes("veiculos_placa_key")) {
-                    mensagemErro = "Erro: Esta Placa já está cadastrada em outro veículo.";
-                } else if (mensagemErro.includes("veiculos_chassi_key")) {
-                    mensagemErro = "Erro: Este Chassi já está cadastrado em outro veículo.";
-                } else if (mensagemErro.includes("row-level security policy")) {
-                    mensagemErro = "Acesso negado: Você não tem permissão de Administrador.";
-                } else if (mensagemErro.includes("null value in column")) {
-                    mensagemErro = "Erro: Algum campo obrigatório ficou em branco.";
-                }
-
-                erroDiv.innerText = mensagemErro;
-                erroDiv.classList.remove('hidden');
-                btn.innerHTML = 'Finalizar Cadastro';
-                btn.disabled = false;
+            let result;
+            if (veiculoEditandoId) {
+                result = await supabaseClient.from('veiculos').update(dados).eq('id', veiculoEditandoId);
             } else {
-                // REGISTRAR NO HISTÓRICO AUTOMATICAMENTE
-                await supabaseClient.from('historico_veiculo').insert([{
-                    veiculo_id: data[0].id,
-                    tipo_evento: 'outros',
-                    descricao: 'Cadastro inicial do veículo no sistema.',
-                    km_registro: novoVeiculo.km_atual
-                }]);
+                result = await supabaseClient.from('veiculos').insert([dados]).select();
+                if (!result.error) {
+                    const session = await supabaseClient.auth.getSession();
+                    await supabaseClient.from('historico_veiculo').insert([{
+                        veiculo_id: result.data[0].id, tipo_evento: 'outros',
+                        descricao: 'Cadastro inicial do veículo.', km_registro: dados.km_atual,
+                        usuario_id: session.data.session.user.id
+                    }]);
+                }
+            }
 
+            if (result.error) {
+                let msg = result.error.message;
+                if (msg.includes("veiculos_placa_key")) msg = "Erro: Esta Placa já está cadastrada.";
+                else if (msg.includes("veiculos_chassi_key")) msg = "Erro: Este Chassi já está cadastrado.";
+                else if (msg.includes("row-level security")) msg = "Acesso negado.";
+                
+                erroDiv.innerText = msg;
+                erroDiv.classList.remove('hidden');
+                btnSalvar.innerHTML = 'Salvar'; btnSalvar.disabled = false;
+            } else {
                 fecharModal();
                 carregarVeiculos();
-                btn.innerHTML = 'Finalizar Cadastro';
-                btn.disabled = false;
             }
         });
+
+        // --- MODAL HISTÓRICO ---
+        const modalHist = document.getElementById('modal-historico');
+        
+        async function abrirHistorico(veiculoId) {
+            const v = todosVeiculos.find(x => x.id === veiculoId);
+            document.getElementById('modal-historico').querySelector('h3').innerHTML = `<i data-lucide="history" class="w-5 h-5"></i> Histórico: ${v.placa}`;
+            lucide.createIcons();
+            
+            modalHist.classList.remove('hidden');
+            const tbody = document.getElementById('tbody-historico');
+            const aviso = document.getElementById('aviso-historico-vazio');
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4">Buscando...</td></tr>';
+            aviso.classList.add('hidden');
+
+            const { data, error } = await supabaseClient
+                .from('historico_veiculo')
+                .select(`*, auth_users:usuario_id (email)`)
+                .eq('veiculo_id', veiculoId)
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                const { data: dataSimple } = await supabaseClient.from('historico_veiculo').select('*').eq('veiculo_id', veiculoId).order('created_at', { ascending: false });
+                todosHistoricos = dataSimple || [];
+            } else {
+                todosHistoricos = data || [];
+            }
+
+            if (todosHistoricos.length === 0) {
+                tbody.innerHTML = '';
+                aviso.classList.remove('hidden');
+                return;
+            }
+
+            tbody.innerHTML = '';
+            todosHistoricos.forEach(h => {
+                const dataFormatada = new Date(h.created_at).toLocaleString('pt-BR');
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
+                        <td class="px-4 py-3 col-data text-xs text-gray-500">${dataFormatada}</td>
+                        <td class="px-4 py-3 col-evento font-medium capitalize">${h.tipo_evento.replace('_', ' ')}</td>
+                        <td class="px-4 py-3 col-desc">${h.descricao}</td>
+                        <td class="px-4 py-3 col-km">${h.km_registro || '-'}</td>
+                        <td class="px-4 py-3 col-user text-xs">${h.auth_users ? h.auth_users.email : 'Sistema'}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function fecharModalHistorico() { modalHist.classList.add('hidden'); }
+
+        function toggleColuna(classe, visivel) {
+            const elementos = document.querySelectorAll(`.${classe}`);
+            elementos.forEach(el => {
+                if (visivel) el.classList.remove('hidden');
+                else el.classList.add('hidden');
+            });
+        }
+
+        function exportarExcel() {
+            const tabela = document.getElementById('tabela-historico');
+            const wb = XLSX.utils.table_to_book(tabela, { sheet: "Historico" });
+            XLSX.writeFile(wb, `Historico_Veiculo.xlsx`);
+        }
+
+        function exportarPDF() {
+            const elemento = document.getElementById('area-tabela-historico');
+            
+            const opt = {
+                margin:       10,
+                filename:     'Historico_Veiculo.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
+            };
+            
+            const isDark = document.documentElement.classList.contains('dark');
+            if(isDark) {
+                elemento.style.backgroundColor = 'white';
+                elemento.style.color = 'black';
+                const tabela = elemento.querySelector('table');
+                tabela.classList.remove('dark:bg-darkcard');
+                tabela.classList.add('bg-white', 'text-black');
+            }
+
+            html2pdf().set(opt).from(elemento).save().then(() => {
+                if(isDark) {
+                    elemento.style.backgroundColor = '';
+                    elemento.style.color = '';
+                    const tabela = elemento.querySelector('table');
+                    tabela.classList.add('dark:bg-darkcard');
+                    tabela.classList.remove('bg-white', 'text-black');
+                }
+            });
+        }
 
         carregarVeiculos();
     </script>
