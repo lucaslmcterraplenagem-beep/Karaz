@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard | LK Pneus</title>
+    <title>Dashboard | Karaz Sistema</title>
     
     <!-- Fonte Formal: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,14 +17,8 @@
             darkMode: 'class',
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        brand: '#ea580c', // Laranja LK
-                        darkbg: '#0f172a', // Fundo escuro mais formal (Slate 900)
-                        darkcard: '#1e293b' // Card escuro (Slate 800)
-                    }
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: { brand: '#ea580c', darkbg: '#0f172a', darkcard: '#1e293b' }
                 }
             }
         }
@@ -41,7 +35,7 @@
         <div>
             <!-- Logo -->
             <div class="h-16 flex items-center justify-center border-b border-gray-200 dark:border-slate-700">
-                <h1 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">LK <span class="text-brand">Pneus</span></h1>
+                <h1 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">Karaz <span class="text-brand">Sistema</span></h1>
             </div>
             
             <!-- Menu -->
@@ -55,7 +49,7 @@
                     <span class="menu-text text-sm">Veículos</span>
                 </a>
                 <a href="pneus.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
-                    <i data-lucide="circle-dot" class="w-5 h-5"></i>
+                    <i data-lucide="disc" class="w-5 h-5"></i>
                     <span class="menu-text text-sm">Pneus</span>
                 </a>
                 <a href="ordens-servico.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
@@ -108,7 +102,7 @@
                 <div class="bg-white dark:bg-darkcard p-5 rounded-lg border border-gray-200 dark:border-slate-700 flex items-start justify-between transition-colors">
                     <div>
                         <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Veículos Ativos</p>
-                        <p class="text-2xl font-bold mt-2 text-gray-900 dark:text-white">12</p>
+                        <p id="kpi-veiculos" class="text-2xl font-bold mt-2 text-gray-900 dark:text-white">0</p>
                     </div>
                     <i data-lucide="truck" class="w-5 h-5 text-gray-400 dark:text-gray-500"></i>
                 </div>
@@ -117,16 +111,16 @@
                 <div class="bg-white dark:bg-darkcard p-5 rounded-lg border border-gray-200 dark:border-slate-700 flex items-start justify-between transition-colors">
                     <div>
                         <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total de Pneus</p>
-                        <p class="text-2xl font-bold mt-2 text-gray-900 dark:text-white">145</p>
+                        <p id="kpi-pneus" class="text-2xl font-bold mt-2 text-gray-900 dark:text-white">0</p>
                     </div>
-                    <i data-lucide="circle-dot" class="w-5 h-5 text-gray-400 dark:text-gray-500"></i>
+                    <i data-lucide="disc" class="w-5 h-5 text-gray-400 dark:text-gray-500"></i>
                 </div>
 
                 <!-- Card 3: OS Abertas -->
                 <div class="bg-white dark:bg-darkcard p-5 rounded-lg border border-gray-200 dark:border-slate-700 flex items-start justify-between transition-colors">
                     <div>
                         <p class="text-sm font-medium text-gray-500 dark:text-gray-400">OS Abertas</p>
-                        <p class="text-2xl font-bold mt-2 text-gray-900 dark:text-white">3</p>
+                        <p id="kpi-os" class="text-2xl font-bold mt-2 text-gray-900 dark:text-white">0</p>
                     </div>
                     <i data-lucide="wrench" class="w-5 h-5 text-gray-400 dark:text-gray-500"></i>
                 </div>
@@ -135,7 +129,7 @@
                 <div class="bg-white dark:bg-darkcard p-5 rounded-lg border border-gray-200 dark:border-slate-700 flex items-start justify-between transition-colors">
                     <div>
                         <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Vida da Frota</p>
-                        <p class="text-2xl font-bold mt-2 text-gray-900 dark:text-white">78%</p>
+                        <p id="kpi-vida" class="text-2xl font-bold mt-2 text-gray-900 dark:text-white">0%</p>
                     </div>
                     <i data-lucide="activity" class="w-5 h-5 text-gray-400 dark:text-gray-500"></i>
                 </div>
@@ -171,7 +165,6 @@
         document.getElementById('toggle-sidebar').addEventListener('click', () => {
             if (sidebar.classList.contains('w-64')) {
                 sidebar.classList.replace('w-64', 'w-20');
-                // Esconde o texto e centraliza o ícone
                 menuTexts.forEach(el => el.classList.add('hidden'));
             } else {
                 sidebar.classList.replace('w-20', 'w-64');
@@ -195,6 +188,70 @@
                 localStorage.theme = 'dark';
             }
         });
+
+        // --- LÓGICA DE DADOS REAIS ---
+        async function carregarDashboard() {
+            // 1. Contar Veículos Ativos
+            const { count: countVeiculos } = await supabaseClient
+                .from('veiculos')
+                .select('*', { count: 'exact', head: true })
+                .eq('ativo', true);
+            
+            document.getElementById('kpi-veiculos').innerText = countVeiculos || 0;
+
+            // 2. Contar Total de Pneus
+            const { count: countPneus } = await supabaseClient
+                .from('pneus')
+                .select('*', { count: 'exact', head: true });
+            
+            document.getElementById('kpi-pneus').innerText = countPneus || 0;
+
+            // 3. Contar OS Abertas (ou em andamento)
+            const { count: countOS } = await supabaseClient
+                .from('ordens_servico')
+                .select('*', { count: 'exact', head: true })
+                .in('status', ['aberta', 'em_andamento']);
+            
+            document.getElementById('kpi-os').innerText = countOS || 0;
+
+            // 4. Calcular Vida da Frota (Média de sulco dos pneus em uso)
+            const { data: pneusEmUso } = await supabaseClient
+                .from('pneus')
+                .select('sulco_atual, sulco_inicial')
+                .eq('status', 'em_uso');
+
+            if (pneusEmUso && pneusEmUso.length > 0) {
+                let somaPorcentagem = 0;
+                let pneusValidos = 0;
+
+                pneusEmUso.forEach(p => {
+                    if (p.sulco_atual !== null && p.sulco_inicial > 0) {
+                        // Calcula a % de vida: (Atual / Inicial) * 100
+                        let vida = (p.sulco_atual / p.sulco_inicial) * 100;
+                        // Arredonda para não ter números quebrados
+                        somaPorcentagem += Math.min(100, Math.max(0, vida));
+                        pneusValidos++;
+                    }
+                });
+
+                if (pneusValidos > 0) {
+                    let mediaVida = Math.round(somaPorcentagem / pneusValidos);
+                    document.getElementById('kpi-vida').innerText = mediaVida + '%';
+                    
+                    // Muda a cor se a frota estiver crítica
+                    if (mediaVida <= 30) document.getElementById('kpi-vida').classList.add('text-red-500');
+                    else if (mediaVida <= 50) document.getElementById('kpi-vida').classList.add('text-yellow-500');
+                    else document.getElementById('kpi-vida').classList.add('text-green-500');
+                } else {
+                    document.getElementById('kpi-vida').innerText = '0%';
+                }
+            } else {
+                document.getElementById('kpi-vida').innerText = '0%';
+            }
+        }
+
+        // Inicia a busca de dados
+        carregarDashboard();
     </script>
 </body>
 </html>
