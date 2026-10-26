@@ -209,12 +209,27 @@
 
         // --- AÇÕES ---
         
-                function pneuOcupado(numeroFogo) {
-            const irParaOS = confirm(`O pneu ${numeroFogo} já está instalado.\n\nPara remover ou trocar este pneu, você precisa abrir uma Ordem de Serviço (OS).\n\nDeseja abrir uma OS agora?`);
-            if (irParaOS) {
-                // Redireciona para a tela de OS passando o ID do veículo
-                window.location.href = `ordens-servico.html?veiculo_id=${veiculoId}`;
-            }
+                        function pneuOcupado(numeroFogo) {
+            // Cria um modal bonito no body
+            const modalHtml = `
+                <div id="modal-aviso-mapa" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+                    <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-sm border border-gray-200 dark:border-slate-700 p-6 text-center">
+                        <div class="w-16 h-16 bg-brand/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i data-lucide="wrench" class="w-8 h-8 text-brand"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Pneu Instalado</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                            O pneu <strong class="text-gray-900 dark:text-white">${numeroFogo}</strong> já está neste veículo. Para removê-lo ou trocá-lo, é necessário abrir uma Ordem de Serviço (OS).
+                        </p>
+                        <div class="flex gap-3">
+                            <button onclick="document.getElementById('modal-aviso-mapa').remove()" class="flex-1 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-md transition-colors">Cancelar</button>
+                            <button onclick="window.location.href='ordens-servico.html?veiculo_id=${veiculoId}'" class="flex-1 px-4 py-2 text-sm font-medium text-white bg-brand hover:bg-orange-700 rounded-md transition-colors">Abrir OS</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            lucide.createIcons();
         }
 
         async function abrirModalInstalar(posicao) {
