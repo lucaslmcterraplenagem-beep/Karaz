@@ -217,7 +217,8 @@
 
         const urlParams = new URLSearchParams(window.location.search);
 
-        async function carregarDados() {
+                async function carregarDados() {
+            // 1. Carrega Veículos
             const { data: veiculos } = await supabaseClient.from('veiculos').select('*').order('placa');
             listaVeiculos = veiculos || [];
             
@@ -233,6 +234,56 @@
                 prepararMapaOS(e.target.value);
             });
 
+            // 2. Carrega Tipos de Serviço do Banco
+            const { data: servicos } = await supabaseClient.from('tipos_servico').select('*').eq('ativo', true).order('nome');
+            const selectTipo = document.getElementById('tipo');
+            selectTipo.innerHTML = '<option value="">Selecione...</option>';
+            if(servicos) {
+                servicos.forEach(s => {
+                    // Passamos a categoria no dataset para a lógica saber como agir
+                    selectTipo.innerHTML += `<option value="${s.nome}" data-categoria="${s.categoria}">${s.nome}</option>`;
+                });
+            }
+
+            // 3. Lógica de Mudança do Select de Tipo (Lê a categoria)
+            selectTipo.addEventListener('change', async (e) => {
+                const opt = e.target.options[e.target.selectedIndex];
+                const categoria = opt.dataset.categoria;
+                const vId = document.getElementById('veiculo_id').value;
+                
+                areaDinamica.innerHTML = '';
+                colunaMapa.classList.add('hidden');
+
+                if (!vId) { alert("Selecione o veículo primeiro."); e.target.value = ''; return; }
+
+                if (categoria === 'pneu') {
+                    colunaMapa.classList.remove('hidden');
+                    areaDinamica.classList.remove('hidden');
+                    const { data: est } = await supabaseClient.from('pneus').select('*').eq('status', 'estoque');
+                    estoquePneus = est || [];
+                    desenharMapaOS();
+                    renderizarFormularioPneu();
+
+                } else if (categoria === 'calibragem') {
+                    areaDinamica.classList.remove('hidden');
+                    let html = `<p class="text-sm font-bold mb-2">Calibragem Rápida:</p><div class="space-y-2">`;
+                    pneusDoVeiculoOS.forEach(p => {
+                        html += `<div class="flex items-center justify-between bg-white dark:bg-slate-900 p-2 rounded border border-gray-200 dark:border-slate-700">
+                            <span class="text-sm font-bold">${p.numero_fogo} (${p.posicao})</span>
+                            <input type="number" placeholder="PSI" class="w-20 px-2 py-1 text-sm border rounded dark:bg-slate-800 dark:border-slate-600">
+                        </div>`;
+                    });
+                    areaDinamica.innerHTML = html + '</div>';
+
+                } else {
+                    // Categorias 'sulco' e 'geral'
+                    areaDinamica.classList.remove('hidden');
+                    document.getElementById('div-custo').classList.remove('hidden');
+                    areaDinamica.innerHTML = `<label class="block text-xs font-medium mb-1">Descrição / Detalhes</label><textarea id="desc_manutencao" rows="3" class="w-full text-sm px-3 py-2 border rounded-md dark:bg-slate-800 dark:border-slate-600"></textarea>`;
+                }
+            });
+
+            // Verifica se veio parâmetros da URL
             const veiculoIdParam = urlParams.get('veiculo_id');
             const pneuSaindoIdParam = urlParams.get('pneu_saindo_id');
             const tipoParam = urlParams.get('tipo');
@@ -242,17 +293,26 @@
                 selectVeiculo.value = veiculoIdParam;
                 selectVeiculo.dispatchEvent(new Event('change'));
                 
+                // Se veio do mapa pedindo calibragem
                 if (tipoParam === 'calibragem') {
-                    document.getElementById('tipo').value = 'calibragem';
-                    document.getElementById('tipo').dispatchEvent(new Event('change'));
-                } else if (pneuSaindoIdParam) {
-                    document.getElementById('tipo').value = 'pneu';
-                    document.getElementById('tipo').dispatchEvent(new Event('change'));
-                    setTimeout(() => {
-                        pneuSaindo = pneuSaindoIdParam;
-                        desenharMapaOS();
-                        renderizarFormularioPneu();
-                    }, 300);
+                    const optCalib = Array.from(selectTipo.options).find(o => o.dataset.categoria === 'calibragem');
+                    if(optCalib) {
+                        selectTipo.value = optCalib.value;
+                        selectTipo.dispatchEvent(new Event('change'));
+                    }
+                } 
+                // Se veio do mapa clicando em um pneu
+                else if (pneuSaindoIdParam) {
+                    const optPneu = Array.from(selectTipo.options).find(o => o.dataset.categoria === 'pneu');
+                    if(optPneu) {
+                        selectTipo.value = optPneu.value;
+                        selectTipo.dispatchEvent(new Event('change'));
+                        setTimeout(() => {
+                            pneuSaindo = pneuSaindoIdParam;
+                            desenharMapaOS();
+                            renderizarFormularioPneu();
+                        }, 300);
+                    }
                 }
             }
 
