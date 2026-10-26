@@ -72,6 +72,27 @@
         </header>
 
         <main class="flex-1 overflow-y-auto p-6 bg-gray-50 dark:bg-darkbg">
+            
+            <!-- DASHBOARDS DE VEÍCULOS -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div class="bg-white dark:bg-darkcard p-4 rounded-lg border border-gray-200 dark:border-slate-700">
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Total de Veículos</p>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-white" id="kpi-total-veiculos">0</p>
+                </div>
+                <div class="bg-white dark:bg-darkcard p-4 rounded-lg border border-gray-200 dark:border-slate-700">
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Sem Revisão há >30 dias</p>
+                    <p class="text-2xl font-bold text-orange-500" id="kpi-sem-revisao">0</p>
+                </div>
+                <div class="bg-white dark:bg-darkcard p-4 rounded-lg border border-gray-200 dark:border-slate-700">
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Pneus em Atenção</p>
+                    <p class="text-2xl font-bold text-yellow-500" id="kpi-pneus-atencao">0</p>
+                </div>
+                <div class="bg-white dark:bg-darkcard p-4 rounded-lg border border-gray-200 dark:border-slate-700">
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Pneus p/ Trocar</p>
+                    <p class="text-2xl font-bold text-red-500" id="kpi-pneus-trocar">0</p>
+                </div>
+            </div>
+
             <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
                 <div class="relative w-full sm:w-96">
                     <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-gray-400"></i>
@@ -165,28 +186,29 @@
                     <div class="grid grid-cols-3 gap-4">
                         <div>
                             <label class="block text-sm font-medium mb-1">Qtd. de Eixos <span class="text-red-500">*</span></label>
-                            <input type="number" id="eixos" required min="2" value="2" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
+                            <!-- Adicionado title e estilos de desativado -->
+                            <input type="number" id="eixos" required min="2" value="2" title="Não pode ser alterado após o cadastro" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand disabled:bg-gray-200 disabled:text-gray-500 dark:disabled:bg-slate-700 dark:disabled:text-gray-400 disabled:cursor-not-allowed">
                         </div>
                         <div>
                             <label class="block text-sm font-medium mb-1">Qtd. de Pneus <span class="text-red-500">*</span></label>
-                            <input type="number" id="qtd_pneus" required min="4" value="6" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
+                            <input type="number" id="qtd_pneus" required min="4" value="6" title="Não pode ser alterado após o cadastro" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand disabled:bg-gray-200 disabled:text-gray-500 dark:disabled:bg-slate-700 dark:disabled:text-gray-400 disabled:cursor-not-allowed">
                         </div>
                         <div>
                             <label class="block text-sm font-medium mb-1">Estepes <span class="text-red-500">*</span></label>
-                            <input type="number" id="estepes" required min="0" value="0" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
+                            <input type="number" id="estepes" required min="0" value="0" title="Não pode ser alterado após o cadastro" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand disabled:bg-gray-200 disabled:text-gray-500 dark:disabled:bg-slate-700 dark:disabled:text-gray-400 disabled:cursor-not-allowed">
                         </div>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium mb-1">KM Atual <span class="text-red-500">*</span></label>
-                            <input type="number" id="km" required class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
+                            <input type="number" id="km" required title="Não pode ser alterado após o cadastro" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand disabled:bg-gray-200 disabled:text-gray-500 dark:disabled:bg-slate-700 dark:disabled:text-gray-400 disabled:cursor-not-allowed">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium mb-1">Horas Atual (Máquinas)</label>
-                            <input type="number" id="horas" value="0" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
+                            <label class="block text-sm font-medium mb-1">Horas Atual</label>
+                            <input type="number" id="horas" value="0" title="Não pode ser alterado após o cadastro" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand disabled:bg-gray-200 disabled:text-gray-500 dark:disabled:bg-slate-700 dark:disabled:text-gray-400 disabled:cursor-not-allowed">
                         </div>
                     </div>
-                    <p id="aviso-bloqueio" class="text-xs text-brand hidden mt-2"><i data-lucide="info" class="w-3 h-3 inline"></i> Eixos, Pneus, Estepes e KM não podem ser alterados após o cadastro inicial.</p>
+                    <p id="aviso-bloqueio" class="text-xs text-brand hidden mt-2"><i data-lucide="info" class="w-3 h-3 inline"></i> Eixos, Pneus, Estepes, KM e Horas não podem ser alterados após o cadastro.</p>
                     <div id="erro-modal" class="hidden text-red-500 text-sm bg-red-500/10 p-3 rounded-md"></div>
                     <div class="pt-4 flex justify-between border-t border-gray-200 dark:border-slate-700 mt-2">
                         <button type="button" onclick="voltarParaAba1()" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-md transition-colors">← Voltar</button>
@@ -199,7 +221,7 @@
 
     <!-- MODAL DE HISTÓRICO -->
     <div id="modal-historico" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-5xl border border-gray-200 dark:border-slate-700 overflow-hidden flex flex-col max-h-[90vh]">
+        <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-6xl border border-gray-200 dark:border-slate-700 overflow-hidden flex flex-col max-h-[90vh]">
             <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-800/30">
                 <h3 class="text-lg font-bold text-brand flex items-center gap-2"><i data-lucide="history" class="w-5 h-5"></i> Histórico do Veículo</h3>
                 <div class="flex gap-2">
@@ -214,15 +236,24 @@
             </div>
             
             <div class="p-4 border-b border-gray-200 dark:border-slate-700 bg-white dark:bg-darkcard flex flex-wrap gap-4 text-sm">
-                <span class="font-medium text-gray-500">Colunas Visíveis:</span>
+                <span class="font-medium text-gray-500">Colunas:</span>
                 <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" checked onchange="toggleColuna('col-data', this.checked)" class="rounded text-brand focus:ring-brand"> Data</label>
                 <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" checked onchange="toggleColuna('col-evento', this.checked)" class="rounded text-brand focus:ring-brand"> Evento</label>
                 <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" checked onchange="toggleColuna('col-desc', this.checked)" class="rounded text-brand focus:ring-brand"> Descrição</label>
                 <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" checked onchange="toggleColuna('col-km', this.checked)" class="rounded text-brand focus:ring-brand"> KM</label>
+                <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" checked onchange="toggleColuna('col-horas', this.checked)" class="rounded text-brand focus:ring-brand"> Horas</label>
                 <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" checked onchange="toggleColuna('col-user', this.checked)" class="rounded text-brand focus:ring-brand"> Usuário</label>
             </div>
 
+            <!-- ÁREA DE EXPORTAÇÃO -->
             <div class="flex-1 overflow-auto p-6 bg-gray-50 dark:bg-darkbg" id="area-tabela-historico">
+                
+                <!-- LOGO EXCLUSIVA PARA O PDF (Oculta na tela) -->
+                <div id="logo-pdf" class="hidden mb-4 flex justify-between items-center border-b pb-2">
+                    <h1 class="text-2xl font-bold text-gray-800">Karaz <span class="text-orange-500">Sistema</span></h1>
+                    <p class="text-sm text-gray-500">Relatório de Histórico de Veículo</p>
+                </div>
+
                 <table class="w-full text-left border-collapse bg-white dark:bg-darkcard rounded-lg overflow-hidden shadow-sm" id="tabela-historico">
                     <thead class="bg-gray-100 dark:bg-slate-800 text-xs uppercase text-gray-500 dark:text-gray-400">
                         <tr>
@@ -230,6 +261,7 @@
                             <th class="px-4 py-3 col-evento">Evento</th>
                             <th class="px-4 py-3 col-desc">Descrição</th>
                             <th class="px-4 py-3 col-km">KM</th>
+                            <th class="px-4 py-3 col-horas">Horas</th>
                             <th class="px-4 py-3 col-user">Usuário</th>
                         </tr>
                     </thead>
@@ -244,8 +276,10 @@
     <script>
         lucide.createIcons();
         let todosVeiculos = [];
+        let todosPneus = [];
         let todosHistoricos = [];
         let veiculoEditandoId = null;
+        let veiculoHistoricoAtual = null;
 
         // --- UI LÓGICA ---
         supabaseClient.auth.getSession().then(({ data: { session } }) => {
@@ -273,15 +307,50 @@
             html.classList.toggle('dark'); localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
         });
 
-        // --- LÓGICA DE DADOS ---
+        // --- LÓGICA DE DADOS E KPIs ---
         const tabela = document.getElementById('tabela-veiculos');
         const avisoVazio = document.getElementById('aviso-vazio');
 
-        async function carregarVeiculos() {
-            const { data, error } = await supabaseClient.from('veiculos').select('*').order('created_at', { ascending: false });
-            if (error) return console.error(error);
-            todosVeiculos = data;
-            renderizarTabela(data);
+        async function carregarDados() {
+            // Busca Veículos
+            const { data: veiculos } = await supabaseClient.from('veiculos').select('*').order('created_at', { ascending: false });
+            todosVeiculos = veiculos || [];
+            
+            // Busca Pneus em Uso
+            const { data: pneus } = await supabaseClient.from('pneus').select('veiculo_id, sulco_atual, sulco_inicial').eq('status', 'em_uso');
+            todosPneus = pneus || [];
+
+            calcularKPIs();
+            renderizarTabela(todosVeiculos);
+        }
+
+        function calcularKPIs() {
+            document.getElementById('kpi-total-veiculos').innerText = todosVeiculos.length;
+
+            // Pneus em Atenção (Amarelo, <=5mm) e Trocar (Vermelho, <=3mm)
+            let qtdAtencao = 0;
+            let qtdTrocar = 0;
+            let veiculosComPneuRuim = new Set();
+
+            todosPneus.forEach(p => {
+                let sulco = p.sulco_atual !== null ? p.sulco_atual : p.sulco_inicial;
+                if (sulco <= 3) { qtdTrocar++; veiculosComPneuRuim.add(p.veiculo_id); }
+                else if (sulco <= 5) { qtdAtencao++; veiculosComPneuRuim.add(p.veiculo_id); }
+            });
+
+            document.getElementById('kpi-pneus-atencao').innerText = qtdAtencao;
+            document.getElementById('kpi-pneus-trocar').innerText = qtdTrocar;
+
+            // Sem Revisão há X dias (Aqui usando 30 dias como padrão, ou se nunca teve revisão)
+            // Para otimizar, simularemos baseado na data de criação. Num sistema real, seria o último evento 'preventiva'.
+            let hoje = new Date();
+            let semRevisao = 0;
+            todosVeiculos.forEach(v => {
+                let dataCadastro = new Date(v.created_at);
+                let diffDias = Math.floor((hoje - dataCadastro) / (1000 * 60 * 60 * 24));
+                if (diffDias > 30) semRevisao++;
+            });
+            document.getElementById('kpi-sem-revisao').innerText = semRevisao;
         }
 
         function renderizarTabela(lista) {
@@ -380,11 +449,9 @@
             document.getElementById('km').value = v.km_atual;
             document.getElementById('horas').value = v.horas_atual;
 
-            // Bloqueia campos críticos
             camposBloqueados.forEach(id => document.getElementById(id).disabled = true);
             document.getElementById('aviso-bloqueio').classList.remove('hidden');
             
-            // Pula direto para a Aba 1, mas permite ir para a 2
             btnProximo.classList.remove('hidden');
             voltarParaAba1();
             btnSalvar.innerText = 'Salvar Alterações';
@@ -465,7 +532,7 @@
                 btnSalvar.innerHTML = 'Salvar'; btnSalvar.disabled = false;
             } else {
                 fecharModal();
-                carregarVeiculos();
+                carregarDados();
             }
         });
 
@@ -473,14 +540,16 @@
         const modalHist = document.getElementById('modal-historico');
         
         async function abrirHistorico(veiculoId) {
-            const v = todosVeiculos.find(x => x.id === veiculoId);
-            document.getElementById('modal-historico').querySelector('h3').innerHTML = `<i data-lucide="history" class="w-5 h-5"></i> Histórico: ${v.placa}`;
+            veiculoHistoricoAtual = todosVeiculos.find(x => x.id === veiculoId);
+            if(!veiculoHistoricoAtual) return;
+
+            document.getElementById('modal-historico').querySelector('h3').innerHTML = `<i data-lucide="history" class="w-5 h-5"></i> Histórico: ${veiculoHistoricoAtual.placa}`;
             lucide.createIcons();
             
             modalHist.classList.remove('hidden');
             const tbody = document.getElementById('tbody-historico');
             const aviso = document.getElementById('aviso-historico-vazio');
-            tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4">Buscando...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4">Buscando...</td></tr>';
             aviso.classList.add('hidden');
 
             const { data, error } = await supabaseClient
@@ -510,7 +579,8 @@
                         <td class="px-4 py-3 col-data text-xs text-gray-500">${dataFormatada}</td>
                         <td class="px-4 py-3 col-evento font-medium capitalize">${h.tipo_evento.replace('_', ' ')}</td>
                         <td class="px-4 py-3 col-desc">${h.descricao}</td>
-                        <td class="px-4 py-3 col-km">${h.km_registro || '-'}</td>
+                        <td class="px-4 py-3 col-km text-xs">${h.km_registro ? h.km_registro + ' km' : '-'}</td>
+                        <td class="px-4 py-3 col-horas text-xs">${veiculoHistoricoAtual.horas_atual} h</td>
                         <td class="px-4 py-3 col-user text-xs">${h.auth_users ? h.auth_users.email : 'Sistema'}</td>
                     </tr>
                 `;
@@ -530,15 +600,19 @@
         function exportarExcel() {
             const tabela = document.getElementById('tabela-historico');
             const wb = XLSX.utils.table_to_book(tabela, { sheet: "Historico" });
-            XLSX.writeFile(wb, `Historico_Veiculo.xlsx`);
+            XLSX.writeFile(wb, `Historico_${veiculoHistoricoAtual.placa}.xlsx`);
         }
 
         function exportarPDF() {
             const elemento = document.getElementById('area-tabela-historico');
+            const logo = document.getElementById('logo-pdf');
             
+            // Mostra a logo temporariamente
+            logo.classList.remove('hidden');
+
             const opt = {
                 margin:       10,
-                filename:     'Historico_Veiculo.pdf',
+                filename:     `Historico_${veiculoHistoricoAtual.placa}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2 },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
@@ -554,6 +628,8 @@
             }
 
             html2pdf().set(opt).from(elemento).save().then(() => {
+                // Reverte tudo após gerar
+                logo.classList.add('hidden');
                 if(isDark) {
                     elemento.style.backgroundColor = '';
                     elemento.style.color = '';
@@ -564,7 +640,7 @@
             });
         }
 
-        carregarVeiculos();
+        carregarDados();
     </script>
 </body>
 </html>
