@@ -22,11 +22,11 @@
         }
     </script>
     
-    <!-- BIBLIOTECAS (Apenas uma vez cada) -->
+    <!-- BIBLIOTECAS -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
-    <!-- ARQUIVO DE CONEXÃO (Apenas uma vez) -->
+    <!-- CONEXÃO COM O SUPABASE (Apenas uma vez) -->
     <script src="js/supabase-client.js"></script>
 </head>
 <body class="bg-gray-100 text-gray-800 dark:bg-darkbg dark:text-gray-100 font-sans h-screen flex overflow-hidden transition-colors duration-300 antialiased">
@@ -49,7 +49,6 @@
                 <a href="ordens-servico.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
                     <i data-lucide="wrench" class="w-5 h-5"></i><span class="menu-text text-sm">Ordens de Serviço</span>
                 </a>
-                <!-- Menu Ativo -->
                 <a href="cadastros.html" class="flex items-center gap-3 px-3 py-2.5 bg-brand/10 text-brand rounded-md font-medium transition-colors">
                     <i data-lucide="database" class="w-5 h-5"></i><span class="menu-text text-sm">Cadastros Gerais</span>
                 </a>
@@ -76,7 +75,6 @@
         </header>
 
         <main class="flex-1 overflow-y-auto p-6 bg-gray-50 dark:bg-darkbg">
-            
             <div class="flex gap-6 mb-6 border-b border-gray-200 dark:border-slate-700">
                 <button onclick="mudarAba('servicos')" id="tab-servicos" class="pb-3 text-brand border-b-2 border-brand font-medium text-sm transition-colors">Tipos de Serviço</button>
                 <button onclick="mudarAba('motoristas')" id="tab-motoristas" class="pb-3 text-gray-500 border-b-2 border-transparent font-medium text-sm transition-colors">Colaboradores</button>
@@ -144,11 +142,10 @@
                     </table>
                 </div>
             </div>
-
         </main>
     </div>
 
-    <!-- MODAL SERVIÇO -->
+    <!-- MODAIS -->
     <div id="modal-servico" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-md border border-gray-200 dark:border-slate-700">
             <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center">
@@ -182,7 +179,6 @@
         </div>
     </div>
 
-    <!-- MODAL COLABORADOR -->
     <div id="modal-motorista" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-md border border-gray-200 dark:border-slate-700">
             <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center">
@@ -194,7 +190,6 @@
                     <label class="block text-sm font-medium mb-1">Nome Completo <span class="text-red-500">*</span></label>
                     <input type="text" id="nome_motorista" required class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border rounded-md focus:border-brand">
                 </div>
-                
                 <div>
                     <label class="block text-sm font-medium mb-1">Função / Acesso <span class="text-red-500">*</span></label>
                     <select id="role_motorista" required onchange="ajustarCamposAcesso()" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border rounded-md focus:border-brand">
@@ -204,12 +199,10 @@
                         <option value="admin">Administrador (Acesso Total)</option>
                     </select>
                 </div>
-
                 <div>
                     <label class="block text-sm font-medium mb-1" id="label_identificador">CPF (Somente números) <span class="text-red-500">*</span></label>
                     <input type="text" id="login_motorista" required class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border rounded-md focus:border-brand">
                 </div>
-
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium mb-1" id="label_senha">PIN (4 dígitos) <span class="text-red-500">*</span></label>
@@ -220,7 +213,6 @@
                         <input type="text" id="tel_motorista" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border rounded-md focus:border-brand">
                     </div>
                 </div>
-                
                 <div class="pt-4 flex justify-end gap-3 border-t border-gray-200 dark:border-slate-700">
                     <button type="button" onclick="fecharModal('modal-motorista')" class="px-4 py-2 text-sm text-gray-600">Cancelar</button>
                     <button type="submit" id="btn-salvar-motorista" class="px-4 py-2 text-sm font-bold text-white bg-brand rounded-md">Criar Colaborador</button>
@@ -229,7 +221,6 @@
         </div>
     </div>
 
-    <!-- MODAL FORNECEDOR -->
     <div id="modal-fornecedor" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-md border border-gray-200 dark:border-slate-700">
             <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center">
@@ -247,7 +238,7 @@
                         <input type="text" id="cnpj_fornecedor" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border rounded-md focus:border-brand">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium mb-1">Contato (Telefone/Email)</label>
+                        <label class="block text-sm font-medium mb-1">Contato</label>
                         <input type="text" id="contato_fornecedor" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border rounded-md focus:border-brand">
                     </div>
                 </div>
@@ -259,7 +250,13 @@
         </div>
     </div>
 
-   
+    <div id="toast" class="fixed top-6 right-6 z-50 transform transition-transform duration-300 translate-x-[150%]">
+        <div class="bg-red-500 text-white px-6 py-4 rounded-lg shadow-2xl flex items-center gap-3 border border-red-400">
+            <i data-lucide="alert-circle" class="w-6 h-6"></i>
+            <p id="toast-message" class="font-medium text-sm"></p>
+        </div>
+    </div>
+
     <script>
         lucide.createIcons();
         
@@ -305,6 +302,15 @@
         }
         function abrirModalFornecedor() { document.getElementById('form-fornecedor').reset(); abrirModal('modal-fornecedor'); }
 
+        function mostrarErro(mensagem) {
+            const toast = document.getElementById('toast');
+            const msg = document.getElementById('toast-message');
+            msg.innerText = mensagem;
+            toast.classList.remove('translate-x-[150%]');
+            lucide.createIcons();
+            setTimeout(() => { toast.classList.add('translate-x-[150%]'); }, 4000);
+        }
+
         // --- SERVIÇOS ---
         async function editarServico(id) {
             const { data } = await supabaseClient.from('tipos_servico').select('*').eq('id', id).single();
@@ -340,18 +346,14 @@
 
                 tabela.innerHTML += `
                     <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50 ${rowClass}">
-                        <td class="px-6 py-4">
-                            <div class="font-bold">${s.nome}</div>
-                            <div class="text-xs text-gray-500">${s.grupo}</div>
-                        </td>
+                        <td class="px-6 py-4"><div class="font-bold">${s.nome}</div><div class="text-xs text-gray-500">${s.grupo}</div></td>
                         <td class="px-6 py-4"><span class="px-2 py-1 rounded text-xs font-medium ${compCor}">${compNome}</span></td>
                         <td class="px-6 py-4 text-center">${statusBadge}</td>
                         <td class="px-6 py-4 text-center flex items-center justify-center gap-3">
-                            <button onclick="editarServico('${s.id}')" class="text-gray-400 hover:text-blue-500 transition-colors" title="Editar"><i data-lucide="edit" class="w-5 h-5"></i></button>
-                            <button onclick="toggleServico('${s.id}', ${s.ativo})" class="text-gray-400 ${s.ativo ? 'hover:text-red-500' : 'hover:text-green-500'} transition-colors" title="${s.ativo ? 'Inativar' : 'Ativar'}"><i data-lucide="power" class="w-5 h-5"></i></button>
+                            <button onclick="editarServico('${s.id}')" class="text-gray-400 hover:text-blue-500 transition-colors"><i data-lucide="edit" class="w-5 h-5"></i></button>
+                            <button onclick="toggleServico('${s.id}', ${s.ativo})" class="text-gray-400 ${s.ativo ? 'hover:text-red-500' : 'hover:text-green-500'} transition-colors"><i data-lucide="power" class="w-5 h-5"></i></button>
                         </td>
-                    </tr>
-                `;
+                    </tr>`;
             });
             lucide.createIcons();
         }
@@ -360,7 +362,6 @@
             e.preventDefault();
             const btn = document.getElementById('btn-salvar-servico');
             btn.innerHTML = 'Salvando...'; btn.disabled = true;
-
             const id = document.getElementById('id_servico').value;
             const dados = {
                 nome: document.getElementById('nome_servico').value,
@@ -378,13 +379,12 @@
             }
             
             if(error) {
-                alert(error.message.includes('unique') ? "Este serviço já está cadastrado." : error.message);
-                btn.innerHTML = 'Salvar'; btn.disabled = false;
+                mostrarErro(error.message.includes('unique') ? "Este serviço já está cadastrado." : error.message);
             } else {
                 fecharModal('modal-servico');
                 carregarServicos();
-                btn.innerHTML = 'Salvar'; btn.disabled = false;
             }
+            btn.innerHTML = 'Salvar'; btn.disabled = false;
         });
 
         // --- COLABORADORES ---
@@ -410,25 +410,22 @@
             }
         }
 
-                     async function carregarMotoristas() {
-            // 1. Busca todos os colaboradores
+        async function carregarMotoristas() {
             const { data: motoristas, error: err1 } = await supabaseClient.from('motoristas').select('*').order('nome');
-            if (err1 || !motoristas) return;
-
-            // 2. Busca todas as permissões (roles) do sistema
+            if (err1) { mostrarErro("Erro ao buscar motoristas."); return; }
+            
             const { data: roles, error: err2 } = await supabaseClient.from('user_roles').select('*');
-            if (err2) return;
+            if (err2) { mostrarErro("Erro ao buscar permissões."); return; }
 
             const tabela = document.getElementById('tabela-motoristas');
             tabela.innerHTML = '';
 
-            if (motoristas.length === 0) {
+            if (!motoristas || motoristas.length === 0) {
                 tabela.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-gray-500">Nenhum colaborador cadastrado.</td></tr>';
                 return;
             }
 
             motoristas.forEach(m => {
-                // Junta o motorista com a permissão dele cruzando o user_id
                 const roleInfo = roles.find(r => r.user_id === m.user_id);
                 let roleNome = roleInfo ? roleInfo.role : 'Sem Acesso';
                 
@@ -444,8 +441,7 @@
                         <td class="px-6 py-4"><span class="px-2 py-1 rounded text-xs font-bold ${badgeRole} uppercase">${roleNome}</span></td>
                         <td class="px-6 py-4">${m.cnh || '-'}</td>
                         <td class="px-6 py-4">${m.telefone || '-'}</td>
-                    </tr>
-                `;
+                    </tr>`;
             });
         }
 
@@ -465,7 +461,7 @@
             const { error } = await supabaseClient.rpc('criar_colaborador', dados);
             
             if(error) {
-                alert("Erro ao criar colaborador: " + error.message);
+                mostrarErro("Erro: " + error.message);
                 btn.innerHTML = 'Criar Colaborador'; btn.disabled = false;
             } else {
                 fecharModal('modal-motorista');
@@ -487,8 +483,7 @@
                         <td class="px-6 py-4 font-bold">${f.nome}</td>
                         <td class="px-6 py-4">${f.cnpj || '-'}</td>
                         <td class="px-6 py-4">${f.contato || '-'}</td>
-                    </tr>
-                `;
+                    </tr>`;
             });
         }
 
@@ -499,59 +494,15 @@
                 cnpj: document.getElementById('cnpj_fornecedor').value,
                 contato: document.getElementById('contato_fornecedor').value
             };
-                        const { error } = await supabaseClient.from('fornecedores').insert([dados]);
-            
-            if(error) {
-                // Trocamos o alert chato pelo Toast bonito
-                mostrarErro("Erro: " + error.message);
-            } else {
-                fecharModal('modal-fornecedor');
-                carregarFornecedores();
-            }
+            const { error } = await supabaseClient.from('fornecedores').insert([dados]);
+            if(error) mostrarErro("Erro: " + error.message);
+            else { fecharModal('modal-fornecedor'); carregarFornecedores(); }
         });
 
-        // --- FUNÇÃO DO TOAST (Coloque ela aqui junto com as outras) ---
-        function mostrarErro(mensagem) {
-            const toast = document.getElementById('toast');
-            const msg = document.getElementById('toast-message');
-            msg.innerText = mensagem;
-            
-            toast.classList.remove('translate-x-[150%]');
-            lucide.createIcons();
-            
-            setTimeout(() => {
-                toast.classList.add('translate-x-[150%]');
-            }, 4000);
-        }
-
-            // --- FUNÇÃO DO TOAST ---
-        function mostrarErro(mensagem) {
-            const toast = document.getElementById('toast');
-            const msg = document.getElementById('toast-message');
-            msg.innerText = mensagem;
-            
-            toast.classList.remove('translate-x-[150%]');
-            lucide.createIcons();
-            
-            setTimeout(() => {
-                toast.classList.add('translate-x-[150%]');
-            }, 4000);
-        }
-
-        // Inicia carregando todas as abas
+        // INICIALIZAÇÃO
         carregarServicos();
         carregarMotoristas();
         carregarFornecedores();
-
-    </script> <!-- Fecha o script principal AQUI -->
-
-    <!-- O TOAST FICA AQUI FORA, SOLTO NO HTML -->
-    <div id="toast" class="fixed top-6 right-6 z-50 transform transition-transform duration-300 translate-x-[150%]">
-        <div class="bg-red-500 text-white px-6 py-4 rounded-lg shadow-2xl flex items-center gap-3 border border-red-400">
-            <i data-lucide="alert-circle" class="w-6 h-6"></i>
-            <p id="toast-message" class="font-medium text-sm"></p>
-        </div>
-    </div>
-
+    </script>
 </body>
 </html>
