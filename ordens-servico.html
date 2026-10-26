@@ -35,7 +35,6 @@
                 <a href="pneus.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
                     <i data-lucide="disc" class="w-5 h-5"></i><span class="menu-text text-sm">Pneus</span>
                 </a>
-                <!-- Menu Ativo -->
                 <a href="ordens-servico.html" class="flex items-center gap-3 px-3 py-2.5 bg-brand/10 text-brand rounded-md font-medium transition-colors">
                     <i data-lucide="wrench" class="w-5 h-5"></i><span class="menu-text text-sm">Ordens de Serviço</span>
                 </a>
@@ -67,15 +66,15 @@
             <!-- KPIs -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div class="bg-white dark:bg-darkcard p-4 rounded-lg border border-gray-200 dark:border-slate-700">
-                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">OS Abertas / Andamento</p>
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">OS Ativas</p>
                     <p class="text-2xl font-bold text-blue-500" id="kpi-abertas">0</p>
                 </div>
                 <div class="bg-white dark:bg-darkcard p-4 rounded-lg border border-gray-200 dark:border-slate-700">
-                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Custo Total (Filtro Atual)</p>
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Custo Total (Filtro)</p>
                     <p class="text-2xl font-bold text-gray-900 dark:text-white" id="kpi-custo">R$ 0,00</p>
                 </div>
                 <div class="bg-white dark:bg-darkcard p-4 rounded-lg border border-gray-200 dark:border-slate-700">
-                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Total de OS no Filtro</p>
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Total de OS</p>
                     <p class="text-2xl font-bold text-gray-900 dark:text-white" id="kpi-total">0</p>
                 </div>
             </div>
@@ -83,19 +82,16 @@
             <!-- FILTROS E AÇÕES -->
             <div class="bg-white dark:bg-darkcard p-4 rounded-lg border border-gray-200 dark:border-slate-700 mb-4 flex flex-col md:flex-row justify-between items-center gap-4">
                 <div class="flex flex-wrap w-full gap-3 items-center">
-                    <!-- Busca por OS -->
                     <div class="relative w-full sm:w-64">
                         <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-gray-400"></i>
                         <input type="text" id="busca-os" placeholder="Buscar por Nº OS..." class="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:border-brand transition-colors">
                     </div>
-                    <!-- Filtro de Data -->
                     <div class="flex items-center gap-2">
                         <input type="date" id="data-inicio" class="px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:border-brand text-gray-600 dark:text-gray-300">
                         <span class="text-gray-400 text-sm">até</span>
                         <input type="date" id="data-fim" class="px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:border-brand text-gray-600 dark:text-gray-300">
                     </div>
                 </div>
-                
                 <button onclick="abrirModal()" class="w-full md:w-auto whitespace-nowrap bg-brand hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
                     <i data-lucide="plus" class="w-4 h-4"></i> Nova OS
                 </button>
@@ -115,60 +111,77 @@
                     </thead>
                     <tbody id="tabela-os" class="text-sm divide-y divide-gray-200 dark:divide-slate-700"></tbody>
                 </table>
-                <div id="aviso-vazio" class="p-8 text-center text-gray-500 dark:text-gray-400 text-sm hidden">Nenhuma OS encontrada com estes filtros.</div>
+                <div id="aviso-vazio" class="p-8 text-center text-gray-500 dark:text-gray-400 text-sm hidden">Nenhuma OS encontrada.</div>
             </div>
         </main>
     </div>
 
-    <!-- MODAL NOVA OS (DINÂMICO) -->
-    <div id="modal-os" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-2xl border border-gray-200 dark:border-slate-700 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center">
-                <h3 class="text-lg font-semibold text-brand">Abrir Nova OS</h3>
-                <button onclick="fecharModal()" class="text-gray-400 hover:text-red-500"><i data-lucide="x" class="w-5 h-5"></i></button>
+    <!-- MODAL NOVA OS (DINÂMICO COM MAPA) -->
+    <div id="modal-os" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 backdrop-blur-md">
+        <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-4xl border border-gray-200 dark:border-slate-700 overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-800/30">
+                <h3 class="text-lg font-bold text-brand flex items-center gap-2"><i data-lucide="clipboard-list" class="w-5 h-5"></i> Abrir Ordem de Serviço</h3>
+                <button onclick="fecharModal()" class="text-gray-400 hover:text-red-500"><i data-lucide="x" class="w-6 h-6"></i></button>
             </div>
             
-            <form id="form-os" class="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <form id="form-os" class="flex-1 overflow-y-auto flex flex-col md:flex-row">
+                
+                <!-- COLUNA ESQUERDA: FORMULÁRIO -->
+                <div class="p-6 w-full md:w-1/2 space-y-4 border-r border-gray-200 dark:border-slate-700">
                     <div>
                         <label class="block text-sm font-medium mb-1">Veículo <span class="text-red-500">*</span></label>
                         <select id="veiculo_id" required class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
                             <option value="">Selecione o veículo...</option>
                         </select>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium mb-1">Tipo de Serviço <span class="text-red-500">*</span></label>
-                        <select id="tipo" required class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
-                            <option value="">Selecione...</option>
-                            <option value="pneu">Troca/Reparo de Pneu</option>
-                            <option value="calibragem">Calibragem</option>
-                            <option value="preventiva">Preventiva</option>
-                            <option value="corretiva">Corretiva</option>
-                        </select>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Tipo de Serviço <span class="text-red-500">*</span></label>
+                            <select id="tipo" required class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
+                                <option value="">Selecione...</option>
+                                <option value="pneu">Troca/Reparo de Pneu</option>
+                                <option value="calibragem">Calibragem</option>
+                                <option value="preventiva">Preventiva</option>
+                                <option value="corretiva">Corretiva</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">KM Atual <span class="text-red-500">*</span></label>
+                            <input type="number" id="km_abertura" required class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
+                        </div>
+                    </div>
+
+                    <!-- ÁREA DINÂMICA -->
+                    <div id="area-dinamica" class="bg-gray-50 dark:bg-slate-800/50 p-4 rounded-lg border border-gray-200 dark:border-slate-700 hidden mt-4">
+                        <!-- Injetado via JS -->
+                    </div>
+
+                    <!-- CUSTO (Apenas Admin) -->
+                    <div id="div-custo" class="hidden mt-4">
+                        <label class="block text-sm font-medium mb-1 text-brand">Custo Estimado (R$)</label>
+                        <input type="number" step="0.01" id="custo" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium mb-1">KM Atual <span class="text-red-500">*</span></label>
-                        <input type="number" id="km_abertura" required class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
+                <!-- COLUNA DIREITA: MAPA INTERATIVO -->
+                <div id="coluna-mapa" class="w-full md:w-1/2 bg-gray-100 dark:bg-slate-900 p-6 flex flex-col items-center justify-center hidden relative">
+                    <h4 class="text-sm font-medium text-gray-500 mb-4 text-center w-full absolute top-4">Clique no mapa para selecionar os pneus</h4>
+                    
+                    <div class="relative bg-slate-300 dark:bg-slate-700 rounded-3xl p-6 shadow-inner border-4 border-slate-400 dark:border-slate-600 mt-6" id="chassi-os">
+                        <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-3/4 h-12 bg-slate-400 dark:bg-slate-600 rounded-t-xl border-4 border-b-0 border-slate-500 flex items-center justify-center">
+                            <span class="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase">Frente</span>
+                        </div>
+                        <div id="eixos-container-os" class="space-y-8 relative z-10 w-56">
+                            <!-- Injetado via JS -->
+                        </div>
                     </div>
-                    <div id="div-custo" class="hidden">
-                        <label class="block text-sm font-medium mb-1">Custo Estimado (R$) <i data-lucide="lock" class="w-3 h-3 inline text-gray-400"></i></label>
-                        <input type="number" step="0.01" id="custo" class="w-full px-3 py-2 bg-gray-100 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand disabled:opacity-50 disabled:cursor-not-allowed" placeholder="Apenas Admin edita">
-                    </div>
-                </div>
-
-                <!-- ÁREA DINÂMICA (Muda conforme o tipo) -->
-                <div id="area-dinamica" class="bg-gray-50 dark:bg-slate-800/50 p-4 rounded-lg border border-gray-200 dark:border-slate-700 hidden">
-                    <!-- Preenchido via JS -->
-                </div>
-
-                <div class="pt-4 flex justify-end gap-3 border-t border-gray-200 dark:border-slate-700">
-                    <button type="button" onclick="fecharModal()" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-md transition-colors">Cancelar</button>
-                    <button type="submit" id="btn-salvar" class="px-4 py-2 text-sm font-medium text-white bg-brand hover:bg-orange-700 rounded-md transition-colors">Criar OS</button>
                 </div>
             </form>
+
+            <div class="px-6 py-4 border-t border-gray-200 dark:border-slate-700 flex justify-end gap-3 bg-gray-50 dark:bg-slate-800/30">
+                <button type="button" onclick="fecharModal()" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-md transition-colors">Cancelar</button>
+                <button type="button" onclick="salvarOS()" id="btn-salvar" class="px-6 py-2 text-sm font-bold text-white bg-brand hover:bg-orange-700 rounded-md transition-colors">Criar OS</button>
+            </div>
         </div>
     </div>
 
@@ -177,38 +190,13 @@
         lucide.createIcons();
 
         // --- UI LÓGICA ---
-        let userRole = 'admin'; // Fallback, vamos tentar pegar do JWT
         supabaseClient.auth.getSession().then(({ data: { session } }) => {
             if (!session) { window.location.href = "login.html"; } 
-            else { 
-                document.getElementById('user-email').innerText = session.user.email; 
-                // Decodifica o JWT para pegar a role
-                try {
-                    const payload = JSON.parse(atob(session.access_token.split('.')[1]));
-                    if(payload.user_role) userRole = payload.user_role;
-                } catch(e) {}
-                
-                // Trava de custo
-                if (userRole !== 'admin') {
-                    document.getElementById('custo').disabled = true;
-                } else {
-                    document.getElementById('div-custo').querySelector('i').classList.add('hidden'); // Esconde o cadeado se for admin
-                }
-            }
+            else { document.getElementById('user-email').innerText = session.user.email; }
         });
 
         document.getElementById('btn-logout').addEventListener('click', async () => {
             await supabaseClient.auth.signOut(); window.location.href = "login.html";
-        });
-
-        const sidebar = document.getElementById('sidebar');
-        const menuTexts = document.querySelectorAll('.menu-text');
-        document.getElementById('toggle-sidebar').addEventListener('click', () => {
-            if (sidebar.classList.contains('w-64')) {
-                sidebar.classList.replace('w-64', 'w-20'); menuTexts.forEach(el => el.classList.add('hidden'));
-            } else {
-                sidebar.classList.replace('w-20', 'w-64'); menuTexts.forEach(el => el.classList.remove('hidden'));
-            }
         });
 
         const html = document.documentElement;
@@ -224,9 +212,6 @@
         const avisoVazio = document.getElementById('aviso-vazio');
         const formatarDinheiro = (v) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v || 0);
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const veiculoIdParam = urlParams.get('veiculo_id');
-
         async function carregarDados() {
             const { data: veiculos } = await supabaseClient.from('veiculos').select('id, placa, modelo, km_atual').order('placa');
             listaVeiculos = veiculos || [];
@@ -237,30 +222,17 @@
                 selectVeiculo.innerHTML += `<option value="${v.id}" data-km="${v.km_atual}">${v.placa} - ${v.modelo}</option>`;
             });
 
-            // Auto preenche KM se o carro for selecionado
             selectVeiculo.addEventListener('change', (e) => {
                 const opt = e.target.options[e.target.selectedIndex];
                 if(opt.dataset.km) document.getElementById('km_abertura').value = opt.dataset.km;
-                if(e.target.value) buscarPneusDoVeiculo(e.target.value);
+                prepararMapaOS(e.target.value);
             });
-
-            if (veiculoIdParam) {
-                abrirModal();
-                selectVeiculo.value = veiculoIdParam;
-                selectVeiculo.dispatchEvent(new Event('change'));
-                document.getElementById('tipo').value = 'pneu';
-                document.getElementById('tipo').dispatchEvent(new Event('change'));
-            }
 
             await buscarOS();
         }
 
         async function buscarOS() {
-            const { data, error } = await supabaseClient
-                .from('ordens_servico')
-                .select(`*, veiculos (placa, modelo)`)
-                .order('created_at', { ascending: false });
-
+            const { data, error } = await supabaseClient.from('ordens_servico').select(`*, veiculos (placa, modelo)`).order('created_at', { ascending: false });
             if (error) return console.error(error);
             todasOS = data;
             aplicarFiltros();
@@ -272,16 +244,11 @@
             const dtFim = document.getElementById('data-fim').value;
 
             const filtradas = todasOS.filter(o => {
-                // Filtro de Texto (OS ou Placa)
-                const matchTexto = (o.os_numero && o.os_numero.toLowerCase().includes(termo)) || 
-                                   (o.veiculos?.placa && o.veiculos.placa.toLowerCase().includes(termo));
-                
-                // Filtro de Data
+                const matchTexto = (o.os_numero && o.os_numero.toLowerCase().includes(termo)) || (o.veiculos?.placa && o.veiculos.placa.toLowerCase().includes(termo));
                 let matchData = true;
-                const dataOS = new Date(o.created_at).toISOString().split('T')[0]; // Pega só YYYY-MM-DD
+                const dataOS = new Date(o.created_at).toISOString().split('T')[0];
                 if (dtInicio && dataOS < dtInicio) matchData = false;
                 if (dtFim && dataOS > dtFim) matchData = false;
-
                 return matchTexto && matchData;
             });
 
@@ -316,39 +283,19 @@
                 if (o.status === 'cancelada') { badgeClass = 'bg-red-500/10 text-red-500'; statusTexto = 'Cancelada'; }
 
                 const data = new Date(o.created_at).toLocaleDateString('pt-BR');
-
-                // Botões de Ação
                 let botoes = '';
-                if (o.status === 'aberta') {
-                    botoes = `<button onclick="mudarStatus('${o.id}', 'em_andamento')" class="text-yellow-500 hover:text-yellow-600 font-medium text-xs border border-yellow-500/30 px-2 py-1 rounded">Iniciar</button>`;
-                } else if (o.status === 'em_andamento') {
-                    botoes = `<button onclick="concluirOS('${o.id}', '${o.tipo}')" class="text-green-500 hover:text-green-600 font-medium text-xs border border-green-500/30 px-2 py-1 rounded">Concluir</button>`;
-                }
+                if (o.status === 'aberta') botoes = `<button onclick="mudarStatus('${o.id}', 'em_andamento')" class="text-yellow-500 border border-yellow-500/30 px-2 py-1 rounded text-xs">Iniciar</button>`;
+                else if (o.status === 'em_andamento') botoes = `<button onclick="concluirOS('${o.id}', '${o.tipo}')" class="text-green-500 border border-green-500/30 px-2 py-1 rounded text-xs">Concluir</button>`;
 
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors";
-                tr.innerHTML = `
-                    <td class="px-6 py-4">
-                        <div class="font-bold text-gray-900 dark:text-white uppercase">${o.os_numero || 'S/N'}</div>
-                        <div class="text-xs text-gray-500">${data}</div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="font-bold uppercase">${o.veiculos?.placa}</div>
-                        <div class="text-xs text-gray-500">${o.veiculos?.modelo}</div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="font-medium capitalize">${o.tipo}</div>
-                        <div class="text-xs text-gray-500 truncate max-w-xs" title="${o.descricao}">${o.descricao}</div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <span class="px-2 py-1 text-xs font-medium rounded-full ${badgeClass} block w-max mb-1">${statusTexto}</span>
-                        <div class="text-xs font-medium text-gray-600 dark:text-gray-400">${formatarDinheiro(o.custo)}</div>
-                    </td>
-                    <td class="px-6 py-4 text-right">
-                        ${botoes}
-                    </td>
+                tabela.innerHTML += `
+                    <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
+                        <td class="px-6 py-4"><div class="font-bold uppercase">${o.os_numero || 'S/N'}</div><div class="text-xs text-gray-500">${data}</div></td>
+                        <td class="px-6 py-4"><div class="font-bold uppercase">${o.veiculos?.placa}</div><div class="text-xs text-gray-500">${o.veiculos?.modelo}</div></td>
+                        <td class="px-6 py-4"><div class="font-medium capitalize">${o.tipo}</div><div class="text-xs text-gray-500 truncate max-w-xs">${o.descricao}</div></td>
+                        <td class="px-6 py-4"><span class="px-2 py-1 text-xs font-medium rounded-full ${badgeClass} block w-max mb-1">${statusTexto}</span><div class="text-xs font-medium">${formatarDinheiro(o.custo)}</div></td>
+                        <td class="px-6 py-4 text-right">${botoes}</td>
+                    </tr>
                 `;
-                tabela.appendChild(tr);
             });
         }
 
@@ -358,145 +305,245 @@
         }
 
         async function concluirOS(id, tipo) {
-            // Aqui entra a "Mágica" de dar baixa no pneu e atualizar KM
-            alert("Aqui vamos implementar a lógica de finalizar a OS: dar baixa no pneu/calibragem e atualizar o KM do veículo.");
-            // await supabaseClient.from('ordens_servico').update({ status: 'concluida' }).eq('id', id);
-            // buscarOS();
+            alert("Em breve: A lógica de conclusão que dará baixa no pneu e atualizará o KM do veículo.");
         }
 
-        // --- MODAL DINÂMICO ---
+        // --- MODAL DINÂMICO COM MAPA ---
         const modal = document.getElementById('modal-os');
-        const form = document.getElementById('form-os');
         const areaDinamica = document.getElementById('area-dinamica');
-        let pneusDoVeiculoSelecionado = [];
+        const colunaMapa = document.getElementById('coluna-mapa');
+        const eixosContainerOS = document.getElementById('eixos-container-os');
 
-        async function buscarPneusDoVeiculo(veiculoId) {
-            const { data } = await supabaseClient.from('pneus').select('*').eq('veiculo_id', veiculoId).eq('status', 'em_uso');
-            pneusDoVeiculoSelecionado = data || [];
-        }
+        let veiculoSelecionadoOS = null;
+        let pneusDoVeiculoOS = [];
+        let estoquePneus = [];
+        
+        // Variáveis de Estado do Mapa
+        let pneuSaindo = null;
+        let slotEntrando = null;
 
         function abrirModal() { 
-            form.reset(); 
+            document.getElementById('form-os').reset(); 
             areaDinamica.innerHTML = '';
             areaDinamica.classList.add('hidden');
+            colunaMapa.classList.add('hidden');
             document.getElementById('div-custo').classList.add('hidden');
             modal.classList.remove('hidden'); 
         }
         function fecharModal() { modal.classList.add('hidden'); }
 
-        // Lógica de mudar os campos conforme o tipo
+        // Prepara os dados quando escolhe o carro
+        async function prepararMapaOS(veiculoId) {
+            if (!veiculoId) return;
+            const v = listaVeiculos.find(x => x.id === veiculoId);
+            veiculoSelecionadoOS = v;
+            
+            const { data: pneus } = await supabaseClient.from('pneus').select('*').eq('veiculo_id', veiculoId).eq('status', 'em_uso');
+            pneusDoVeiculoOS = pneus || [];
+        }
+
         document.getElementById('tipo').addEventListener('change', async (e) => {
             const tipo = e.target.value;
             const vId = document.getElementById('veiculo_id').value;
             areaDinamica.innerHTML = '';
-            
-            if (!vId) {
-                alert("Por favor, selecione um veículo primeiro.");
-                e.target.value = '';
-                return;
-            }
+            colunaMapa.classList.add('hidden');
 
-            if (tipo === 'calibragem') {
+            if (!vId) { alert("Selecione o veículo primeiro."); e.target.value = ''; return; }
+
+            if (tipo === 'pneu') {
+                colunaMapa.classList.remove('hidden');
                 areaDinamica.classList.remove('hidden');
-                await buscarPneusDoVeiculo(vId);
                 
-                let html = `<p class="text-sm font-medium mb-3">Pneus Instalados:</p>`;
-                if (pneusDoVeiculoSelecionado.length === 0) html += `<p class="text-xs text-red-500">Nenhum pneu cadastrado neste veículo.</p>`;
+                // Busca Estoque para o select
+                const { data: est } = await supabaseClient.from('pneus').select('*').eq('status', 'estoque');
+                estoquePneus = est || [];
                 
-                pneusDoVeiculoSelecionado.forEach(p => {
-                    html += `
-                        <div class="flex items-center justify-between bg-white dark:bg-slate-900 p-2 rounded border border-gray-200 dark:border-slate-700 mb-2">
-                            <div class="text-sm font-bold">${p.numero_fogo} <span class="text-xs text-gray-500 font-normal">(${p.posicao})</span></div>
-                            <div class="flex items-center gap-2">
-                                <span class="text-xs text-gray-500">Nova Pressão:</span>
-                                <input type="number" placeholder="PSI" class="w-20 px-2 py-1 text-sm border rounded dark:bg-slate-800 dark:border-slate-600" data-pneu-id="${p.id}">
-                            </div>
-                        </div>
-                    `;
+                desenharMapaOS();
+                renderizarFormularioPneu();
+
+            } else if (tipo === 'calibragem') {
+                areaDinamica.classList.remove('hidden');
+                let html = `<p class="text-sm font-bold mb-2">Calibragem Rápida:</p><div class="space-y-2">`;
+                pneusDoVeiculoOS.forEach(p => {
+                    html += `<div class="flex items-center justify-between bg-white dark:bg-slate-900 p-2 rounded border border-gray-200 dark:border-slate-700">
+                        <span class="text-sm font-bold">${p.numero_fogo} (${p.posicao})</span>
+                        <input type="number" placeholder="PSI" class="w-20 px-2 py-1 text-sm border rounded dark:bg-slate-800 dark:border-slate-600">
+                    </div>`;
                 });
-                areaDinamica.innerHTML = html;
-
-            } else if (tipo === 'pneu') {
-                areaDinamica.classList.remove('hidden');
-                await buscarPneusDoVeiculo(vId);
-                // Busca pneus em estoque para o select
-                const { data: estoque } = await supabaseClient.from('pneus').select('id, numero_fogo, marca').eq('status', 'estoque');
-
-                let html = `
-                    <div class="grid grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label class="block text-xs font-medium mb-1 text-gray-500">Pneu a ser Retirado (Do Veículo)</label>
-                            <select id="pneu_retirado" class="w-full text-sm px-3 py-2 border rounded-md dark:bg-slate-800 dark:border-slate-600">
-                                <option value="">Nenhum / Apenas Instalar</option>
-                                ${pneusDoVeiculoSelecionado.map(p => `<option value="${p.id}">${p.numero_fogo} - Posição ${p.posicao}</option>`).join('')}
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium mb-1 text-gray-500">Destino do Pneu Retirado</label>
-                            <select id="destino_retirado" class="w-full text-sm px-3 py-2 border rounded-md dark:bg-slate-800 dark:border-slate-600">
-                                <option value="estoque">Voltar para Estoque</option>
-                                <option value="reforma">Enviar para Reforma</option>
-                                <option value="descarte">Descartar</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium mb-1 text-gray-500">Novo Pneu a ser Instalado (Estoque)</label>
-                        <select id="pneu_novo" class="w-full text-sm px-3 py-2 border rounded-md dark:bg-slate-800 dark:border-slate-600">
-                            <option value="">Nenhum / Apenas Remover</option>
-                            ${estoque.map(p => `<option value="${p.id}">${p.numero_fogo} - ${p.marca}</option>`).join('')}
-                        </select>
-                    </div>
-                `;
-                areaDinamica.innerHTML = html;
+                areaDinamica.innerHTML = html + '</div>';
 
             } else if (tipo === 'preventiva' || tipo === 'corretiva') {
                 areaDinamica.classList.remove('hidden');
                 document.getElementById('div-custo').classList.remove('hidden');
-                areaDinamica.innerHTML = `
-                    <label class="block text-xs font-medium mb-1 text-gray-500">Descrição do Serviço</label>
-                    <textarea id="desc_manutencao" rows="3" class="w-full text-sm px-3 py-2 border rounded-md dark:bg-slate-800 dark:border-slate-600"></textarea>
-                `;
-            } else {
-                areaDinamica.classList.add('hidden');
-                document.getElementById('div-custo').classList.add('hidden');
+                areaDinamica.innerHTML = `<label class="block text-xs font-medium mb-1">Descrição</label><textarea id="desc_manutencao" rows="3" class="w-full text-sm px-3 py-2 border rounded-md dark:bg-slate-800 dark:border-slate-600"></textarea>`;
             }
         });
 
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
+        // Desenha o caminhão no Modal
+        function desenharMapaOS() {
+            eixosContainerOS.innerHTML = '';
+            if (!veiculoSelecionadoOS) return;
+
+            let eixos = veiculoSelecionadoOS.quantidade_eixos || 2;
+            let pneusTotal = veiculoSelecionadoOS.quantidade_pneus || 4;
+            
+            let pneusPorEixo = [];
+            if (veiculoSelecionadoOS.tipo === 'caminhao' || veiculoSelecionadoOS.tipo === 'carreta') {
+                if (eixos >= 1) pneusPorEixo.push(2);
+                let restantes = pneusTotal - 2;
+                let eixosRestantes = eixos - 1;
+                for(let i=0; i<eixosRestantes; i++) { let noEixo = Math.min(4, restantes); pneusPorEixo.push(noEixo); restantes -= noEixo; }
+            } else {
+                let porEixo = Math.round(pneusTotal / eixos);
+                for(let i=0; i<eixos; i++) pneusPorEixo.push(porEixo);
+            }
+
+            pneusPorEixo.forEach((qtd, idxEixo) => {
+                const eixoDiv = document.createElement('div');
+                eixoDiv.className = "relative flex justify-between items-center w-full";
+                eixoDiv.innerHTML = `<div class="absolute top-1/2 left-0 w-full h-3 bg-slate-400 dark:bg-slate-600 -translate-y-1/2 rounded-full z-0"></div>`;
+                
+                let htmlPneus = '';
+                for (let i = 0; i < qtd; i++) {
+                    const posicao = `E${idxEixo+1}-${i+1}`;
+                    const pneuAqui = pneusDoVeiculoOS.find(p => p.posicao === posicao);
+
+                    if (pneuAqui) {
+                        // Ocupado (Só pode retirar)
+                        let cor = 'bg-green-500 border-green-600 text-white';
+                        if (pneuSaindo === pneuAqui.id) cor = 'bg-red-500 border-red-600 ring-4 ring-red-300 animate-pulse'; // Selecionado para sair
+                        
+                        htmlPneus += `
+                            <div onclick="selecionarSaindo('${pneuAqui.id}')" class="relative z-10 w-10 h-14 rounded-md border-2 shadow cursor-pointer hover:scale-110 transition-transform ${cor} flex flex-col items-center justify-center">
+                                <span class="text-[9px] font-bold leading-tight text-center px-1">${pneuAqui.numero_fogo}</span>
+                            </div>
+                        `;
+                    } else {
+                        // Vazio (Só pode colocar)
+                        let corVazio = 'border-dashed border-gray-400 bg-gray-200/50 hover:bg-brand/20';
+                        if (slotEntrando === posicao) corVazio = 'border-solid border-brand bg-brand/30 ring-2 ring-brand'; // Selecionado para entrar
+                        
+                        htmlPneus += `
+                            <div onclick="selecionarEntrando('${posicao}')" class="relative z-10 w-10 h-14 rounded-md border-2 ${corVazio} shadow-inner cursor-pointer flex items-center justify-center">
+                                <i data-lucide="plus" class="w-4 h-4 text-gray-500"></i>
+                            </div>
+                        `;
+                    }
+                }
+                eixoDiv.innerHTML += `<div class="w-full flex justify-between gap-2 px-1">${htmlPneus}</div>`;
+                eixosContainerOS.appendChild(eixoDiv);
+            });
+            lucide.createIcons();
+        }
+
+        // Ação ao clicar em pneu ocupado
+        function selecionarSaindo(id) {
+            if (pneuSaindo === id) { pneuSaindo = null; } // Desmarca se clicar de novo
+            else { pneuSaindo = id; }
+            desenharMapaOS();
+            renderizarFormularioPneu(); // Sincroniza o form
+        }
+
+        // Ação ao clicar em vazio
+        function selecionarEntrando(posicao) {
+            if (slotEntrando === posicao) { slotEntrando = null; }
+            else { slotEntrando = posicao; }
+            desenharMapaOS();
+            renderizarFormularioPneu(); // Sincroniza o form
+        }
+
+        // Monta os selects baseados no que foi clicado no mapa
+        function renderizarFormularioPneu() {
+            const pSaindo = pneusDoVeiculoOS.find(p => p.id === pneuSaindo);
+            
+            let html = `
+                <p class="text-xs font-medium text-gray-500 mb-2 uppercase tracking-wide">Resumo da Ação</p>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-xs font-medium mb-1 text-red-500">1. Pneu a ser Retirado</label>
+                        <select id="select_saindo" class="w-full text-sm px-3 py-2 border rounded-md dark:bg-slate-800 dark:border-slate-600">
+                            <option value="">Nenhum</option>
+                            ${pneusDoVeiculoOS.map(p => `<option value="${p.id}" ${pneuSaindo === p.id ? 'selected' : ''}>${p.numero_fogo} (${p.posicao})</option>`).join('')}
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium mb-1 text-gray-500">Destino do Pneu</label>
+                        <select id="select_destino" class="w-full text-sm px-3 py-2 border rounded-md dark:bg-slate-800 dark:border-slate-600">
+                            <option value="estoque">Voltar p/ Estoque</option>
+                            <option value="reforma">Recapagem</option>
+                            <option value="descarte">Descarte</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium mb-1 text-green-500">2. Novo Pneu / Slot de Entrada</label>
+                    <div class="flex gap-2">
+                        <select id="select_entrando_slot" class="w-1/3 text-sm px-3 py-2 border rounded-md dark:bg-slate-800 dark:border-slate-600">
+                            <option value="">Posição...</option>
+                            <option value="E1-1" ${slotEntrando==='E1-1'?'selected':''}>E1-1</option>
+                            <option value="E1-2" ${slotEntrando==='E1-2'?'selected':''}>E1-2</option>
+                            <option value="E2-1" ${slotEntrando==='E2-1'?'selected':''}>E2-1</option>
+                            <option value="E2-2" ${slotEntrando==='E2-2'?'selected':''}>E2-2</option>
+                            <option value="E2-3" ${slotEntrando==='E2-3'?'selected':''}>E2-3</option>
+                            <option value="E2-4" ${slotEntrando==='E2-4'?'selected':''}>E2-4</option>
+                        </select>
+                        <select id="select_entrando_pneu" class="w-2/3 text-sm px-3 py-2 border rounded-md dark:bg-slate-800 dark:border-slate-600">
+                            <option value="">Escolha do Estoque...</option>
+                            ${estoquePneus.map(p => `<option value="${p.id}">${p.numero_fogo} - ${p.marca}</option>`).join('')}
+                        </select>
+                    </div>
+                </div>
+            `;
+            areaDinamica.innerHTML = html;
+
+            // Sincronização: Se mudar o select, atualiza o mapa
+            document.getElementById('select_saindo').addEventListener('change', (e) => {
+                pneuSaindo = e.target.value || null;
+                desenharMapaOS();
+            });
+            document.getElementById('select_entrando_slot').addEventListener('change', (e) => {
+                slotEntrando = e.target.value || null;
+                desenharMapaOS();
+            });
+        }
+
+        // --- SALVAR OS ---
+        async function salvarOS() {
             const btn = document.getElementById('btn-salvar');
-            btn.innerHTML = 'Salvando...'; btn.disabled = true;
-
-            const session = await supabaseClient.auth.getSession();
-            const userId = session.data.session.user.id;
+            const vId = document.getElementById('veiculo_id').value;
             const tipo = document.getElementById('tipo').value;
+            const km = document.getElementById('km_abertura').value;
 
-            let desc = '';
-            if(tipo === 'calibragem') desc = 'OS de Calibragem de pneus.';
-            else if(tipo === 'pneu') desc = 'OS de Troca/Reparo de pneu.';
-            else desc = document.getElementById('desc_manutencao')?.value || 'Manutenção.';
+            if(!vId || !tipo || !km) return alert("Preencha os campos obrigatórios.");
+
+            btn.innerHTML = 'Salvando...'; btn.disabled = true;
+            const session = await supabaseClient.auth.getSession();
+            
+            let desc = tipo === 'pneu' ? 'OS de Troca/Reparo' : document.getElementById('desc_manutencao')?.value || 'Manutenção';
 
             const novaOS = {
-                veiculo_id: document.getElementById('veiculo_id').value,
+                veiculo_id: vId,
                 tipo: tipo,
-                km_abertura: parseFloat(document.getElementById('km_abertura').value),
+                km_abertura: parseFloat(km),
                 descricao: desc,
                 status: 'aberta',
-                custo: userRole === 'admin' ? (parseFloat(document.getElementById('custo').value) || 0) : 0,
-                aberta_por: userId
+                custo: parseFloat(document.getElementById('custo').value) || 0,
+                aberta_por: session.data.session.user.id
             };
 
             const { error } = await supabaseClient.from('ordens_servico').insert([novaOS]);
 
             if (error) {
                 alert("Erro: " + error.message);
+                btn.innerHTML = 'Criar OS'; btn.disabled = false;
             } else {
                 fecharModal();
                 buscarOS();
+                btn.innerHTML = 'Criar OS'; btn.disabled = false;
+                // Limpa estados
+                pneuSaindo = null; slotEntrando = null;
             }
-            btn.innerHTML = 'Criar OS'; btn.disabled = false;
-        });
+        }
 
         carregarDados();
     </script>
