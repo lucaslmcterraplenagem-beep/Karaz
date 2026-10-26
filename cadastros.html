@@ -486,16 +486,44 @@
                 cnpj: document.getElementById('cnpj_fornecedor').value,
                 contato: document.getElementById('contato_fornecedor').value
             };
-            const { error } = await supabaseClient.from('fornecedores').insert([dados]);
+                        const { error } = await supabaseClient.from('fornecedores').insert([dados]);
             
             if(error) {
-                alert("Erro: " + error.message);
+                // Trocamos o alert chato pelo Toast bonito
+                mostrarErro("Erro: " + error.message);
             } else {
                 fecharModal('modal-fornecedor');
                 carregarFornecedores();
             }
         });
 
+        // --- FUNÇÃO DO TOAST (Coloque ela aqui junto com as outras) ---
+        function mostrarErro(mensagem) {
+            const toast = document.getElementById('toast');
+            const msg = document.getElementById('toast-message');
+            msg.innerText = mensagem;
+            
+            toast.classList.remove('translate-x-[150%]');
+            lucide.createIcons();
+            
+            setTimeout(() => {
+                toast.classList.add('translate-x-[150%]');
+            }, 4000);
+        }
+
+    </script> <!-- ESSA TAG É OBRIGATÓRIA AQUI PARA FECHAR O SCRIPT -->
+
+    <!-- O TOAST FICA AQUI FORA, SOLTO NO HTML -->
+    <div id="toast" class="fixed top-6 right-6 z-50 transform transition-transform duration-300 translate-x-[150%]">
+        <div class="bg-red-500 text-white px-6 py-4 rounded-lg shadow-2xl flex items-center gap-3 border border-red-400">
+            <i data-lucide="alert-circle" class="w-6 h-6"></i>
+            <p id="toast-message" class="font-medium text-sm"></p>
+        </div>
+    </div>
+
+    <!-- Início do Script de Inicialização -->
+    <script src="js/supabase-client.js"></script>
+    <script>
         // Inicia carregando todas as abas
         carregarServicos();
         carregarMotoristas();
