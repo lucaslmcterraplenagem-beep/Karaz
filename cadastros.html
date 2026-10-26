@@ -38,7 +38,6 @@
                 <a href="pneus.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
                     <i data-lucide="disc" class="w-5 h-5"></i><span class="menu-text text-sm">Pneus</span>
                 </a>
-                <!-- CORRIGIDO: Link de OS sem a cor de ativo -->
                 <a href="ordens-servico.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
                     <i data-lucide="wrench" class="w-5 h-5"></i><span class="menu-text text-sm">Ordens de Serviço</span>
                 </a>
@@ -97,10 +96,10 @@
                 </div>
             </div>
 
-            <!-- CONTEÚDO: MOTORISTAS (MANTIDO) -->
+            <!-- CONTEÚDO: COLABORADORES -->
             <div id="content-motoristas" class="hidden space-y-4">
                 <div class="flex justify-between items-center">
-                    <p class="text-sm text-gray-500">Cadastro de colaborador da frota.</p>
+                    <p class="text-sm text-gray-500">Gestão de colaboradores (Motoristas, Mecânicos e Administradores).</p>
                     <button onclick="abrirModalMotorista()" class="bg-brand hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> Novo Colaborador</button>
                 </div>
                 <div class="bg-white dark:bg-darkcard border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden">
@@ -108,7 +107,8 @@
                         <thead class="bg-gray-50 dark:bg-slate-800/50 text-xs uppercase text-gray-500">
                             <tr>
                                 <th class="px-6 py-3 border-b border-gray-200 dark:border-slate-700">Nome</th>
-                                <th class="px-6 py-3 border-b border-gray-200 dark:border-slate-700">CNH</th>
+                                <th class="px-6 py-3 border-b border-gray-200 dark:border-slate-700">Acesso</th>
+                                <th class="px-6 py-3 border-b border-gray-200 dark:border-slate-700">CPF / Login</th>
                                 <th class="px-6 py-3 border-b border-gray-200 dark:border-slate-700">Telefone</th>
                             </tr>
                         </thead>
@@ -117,7 +117,7 @@
                 </div>
             </div>
 
-            <!-- CONTEÚDO: FORNECEDORES (MANTIDO) -->
+            <!-- CONTEÚDO: FORNECEDORES -->
             <div id="content-fornecedores" class="hidden space-y-4">
                 <div class="flex justify-between items-center">
                     <p class="text-sm text-gray-500">Cadastro de fornecedores de pneus e peças.</p>
@@ -174,6 +174,83 @@
         </div>
     </div>
 
+    <!-- MODAL COLABORADOR -->
+    <div id="modal-motorista" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-md border border-gray-200 dark:border-slate-700">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center">
+                <h3 class="text-lg font-semibold text-brand">Novo Colaborador</h3>
+                <button onclick="fecharModal('modal-motorista')" class="text-gray-400 hover:text-red-500"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <form id="form-motorista" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Nome Completo <span class="text-red-500">*</span></label>
+                    <input type="text" id="nome_motorista" required class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border rounded-md focus:border-brand">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-1">Função / Acesso <span class="text-red-500">*</span></label>
+                    <select id="role_motorista" required onchange="ajustarCamposAcesso()" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border rounded-md focus:border-brand">
+                        <option value="motorista">Motorista (Acesso Simples)</option>
+                        <option value="mecanico">Mecânico (Acesso Padrão)</option>
+                        <option value="operador">Operador (Acesso Padrão)</option>
+                        <option value="admin">Administrador (Acesso Total)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium mb-1" id="label_identificador">CPF (Somente números) <span class="text-red-500">*</span></label>
+                    <input type="text" id="login_motorista" required class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border rounded-md focus:border-brand">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1" id="label_senha">PIN (4 dígitos) <span class="text-red-500">*</span></label>
+                        <input type="password" id="senha_motorista" required maxlength="4" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border rounded-md focus:border-brand">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Telefone</label>
+                        <input type="text" id="tel_motorista" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border rounded-md focus:border-brand">
+                    </div>
+                </div>
+                
+                <div class="pt-4 flex justify-end gap-3 border-t border-gray-200 dark:border-slate-700">
+                    <button type="button" onclick="fecharModal('modal-motorista')" class="px-4 py-2 text-sm text-gray-600">Cancelar</button>
+                    <button type="submit" id="btn-salvar-motorista" class="px-4 py-2 text-sm font-bold text-white bg-brand rounded-md">Criar Colaborador</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL FORNECEDOR -->
+    <div id="modal-fornecedor" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-md border border-gray-200 dark:border-slate-700">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center">
+                <h3 class="text-lg font-semibold text-brand">Novo Fornecedor</h3>
+                <button onclick="fecharModal('modal-fornecedor')" class="text-gray-400 hover:text-red-500"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <form id="form-fornecedor" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Nome / Razão Social <span class="text-red-500">*</span></label>
+                    <input type="text" id="nome_fornecedor" required class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border rounded-md focus:border-brand">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">CNPJ</label>
+                        <input type="text" id="cnpj_fornecedor" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border rounded-md focus:border-brand">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Contato (Telefone/Email)</label>
+                        <input type="text" id="contato_fornecedor" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border rounded-md focus:border-brand">
+                    </div>
+                </div>
+                <div class="pt-4 flex justify-end gap-3 border-t border-gray-200 dark:border-slate-700">
+                    <button type="button" onclick="fecharModal('modal-fornecedor')" class="px-4 py-2 text-sm text-gray-600">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 text-sm font-bold text-white bg-brand rounded-md">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script src="js/supabase-client.js"></script>
     <script>
         lucide.createIcons();
@@ -213,7 +290,14 @@
             document.getElementById('titulo-modal-servico').innerText = 'Novo Tipo de Serviço';
             abrirModal('modal-servico'); 
         }
+        function abrirModalMotorista() { 
+            document.getElementById('form-motorista').reset(); 
+            ajustarCamposAcesso();
+            abrirModal('modal-motorista'); 
+        }
+        function abrirModalFornecedor() { document.getElementById('form-fornecedor').reset(); abrirModal('modal-fornecedor'); }
 
+        // --- SERVIÇOS ---
         async function editarServico(id) {
             const { data } = await supabaseClient.from('tipos_servico').select('*').eq('id', id).single();
             if(!data) return;
@@ -295,22 +379,115 @@
             }
         });
 
-        // Carrega as outras abas (código anterior mantido)
+        // --- COLABORADORES ---
+        function ajustarCamposAcesso() {
+            const role = document.getElementById('role_motorista').value;
+            const labelId = document.getElementById('label_identificador');
+            const inputId = document.getElementById('login_motorista');
+            const labelSenha = document.getElementById('label_senha');
+            const inputSenha = document.getElementById('senha_motorista');
+
+            if (role === 'motorista') {
+                labelId.innerHTML = 'CPF (Somente números) <span class="text-red-500">*</span>';
+                inputId.placeholder = 'Ex: 12345678900';
+                labelSenha.innerHTML = 'PIN (4 dígitos) <span class="text-red-500">*</span>';
+                inputSenha.maxLength = 4;
+                inputSenha.placeholder = 'Ex: 1234';
+            } else {
+                labelId.innerHTML = 'E-mail Corporativo <span class="text-red-500">*</span>';
+                inputId.placeholder = 'mecanico@empresa.com';
+                labelSenha.innerHTML = 'Senha (Mín. 6 dígitos) <span class="text-red-500">*</span>';
+                inputSenha.maxLength = 20;
+                inputSenha.placeholder = '******';
+            }
+        }
+
         async function carregarMotoristas() {
-            const { data } = await supabaseClient.from('motoristas').select('*').order('nome');
+            const { data } = await supabaseClient.from('motoristas').select('*, user_roles(role)').order('nome');
             const tabela = document.getElementById('tabela-motoristas');
             tabela.innerHTML = '';
             if(!data) return;
-            data.forEach(m => { tabela.innerHTML += `<tr><td class="px-6 py-4 font-bold">${m.nome}</td><td class="px-6 py-4">${m.cnh || '-'}</td><td class="px-6 py-4">${m.telefone || '-'}</td></tr>`; });
+
+            data.forEach(m => {
+                let roleNome = m.user_roles ? m.user_roles.role : 'Sem Acesso';
+                let badgeRole = 'bg-gray-500/10 text-gray-500';
+                if(roleNome === 'admin') badgeRole = 'bg-red-500/10 text-red-500';
+                if(roleNome === 'mecanico') badgeRole = 'bg-blue-500/10 text-blue-500';
+                if(roleNome === 'motorista') badgeRole = 'bg-green-500/10 text-green-500';
+                if(roleNome === 'operador') badgeRole = 'bg-orange-500/10 text-orange-500';
+
+                tabela.innerHTML += `
+                    <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50">
+                        <td class="px-6 py-4 font-bold">${m.nome}</td>
+                        <td class="px-6 py-4"><span class="px-2 py-1 rounded text-xs font-bold ${badgeRole} uppercase">${roleNome}</span></td>
+                        <td class="px-6 py-4">${m.cnh || '-'}</td>
+                        <td class="px-6 py-4">${m.telefone || '-'}</td>
+                    </tr>
+                `;
+            });
         }
+
+        document.getElementById('form-motorista').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-salvar-motorista');
+            btn.innerHTML = 'Criando...'; btn.disabled = true;
+
+            const dados = {
+                p_nome: document.getElementById('nome_motorista').value,
+                p_identificador: document.getElementById('login_motorista').value,
+                p_senha: document.getElementById('senha_motorista').value,
+                p_role: document.getElementById('role_motorista').value,
+                p_telefone: document.getElementById('tel_motorista').value
+            };
+
+            const { error } = await supabaseClient.rpc('criar_colaborador', dados);
+            
+            if(error) {
+                alert("Erro ao criar colaborador: " + error.message);
+                btn.innerHTML = 'Criar Colaborador'; btn.disabled = false;
+            } else {
+                fecharModal('modal-motorista');
+                carregarMotoristas();
+                btn.innerHTML = 'Criar Colaborador'; btn.disabled = false;
+            }
+        });
+
+        // --- FORNECEDORES ---
         async function carregarFornecedores() {
             const { data } = await supabaseClient.from('fornecedores').select('*').order('nome');
             const tabela = document.getElementById('tabela-fornecedores');
             tabela.innerHTML = '';
             if(!data) return;
-            data.forEach(f => { tabela.innerHTML += `<tr><td class="px-6 py-4 font-bold">${f.nome}</td><td class="px-6 py-4">${f.cnpj || '-'}</td><td class="px-6 py-4">${f.contato || '-'}</td></tr>`; });
+
+            data.forEach(f => {
+                tabela.innerHTML += `
+                    <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50">
+                        <td class="px-6 py-4 font-bold">${f.nome}</td>
+                        <td class="px-6 py-4">${f.cnpj || '-'}</td>
+                        <td class="px-6 py-4">${f.contato || '-'}</td>
+                    </tr>
+                `;
+            });
         }
 
+        document.getElementById('form-fornecedor').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const dados = {
+                nome: document.getElementById('nome_fornecedor').value,
+                cnpj: document.getElementById('cnpj_fornecedor').value,
+                contato: document.getElementById('contato_fornecedor').value
+            };
+            const { error } = await supabaseClient.from('fornecedores').insert([dados]);
+            
+            if(error) {
+                alert("Erro: " + error.message);
+            } else {
+                fecharModal('modal-fornecedor');
+                carregarFornecedores();
+            }
+        });
+
+        // Inicia carregando todas as abas
         carregarServicos();
         carregarMotoristas();
         carregarFornecedores();
