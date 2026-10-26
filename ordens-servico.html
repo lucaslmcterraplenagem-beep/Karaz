@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ordens de Serviço | LK Pneus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] }, colors: { brand: '#ea580c', darkbg: '#0f172a', darkcard: '#1e293b' } } }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 dark:bg-darkbg dark:text-gray-100 font-sans h-screen flex overflow-hidden transition-colors duration-300 antialiased">
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="w-64 bg-white dark:bg-darkcard border-r border-gray-200 dark:border-slate-700 transition-all duration-300 flex flex-col z-20">
+        <div>
+            <div class="h-16 flex items-center justify-center border-b border-gray-200 dark:border-slate-700">
+                <h1 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">LK <span class="text-brand">Pneus</span></h1>
+            </div>
+            <nav class="p-3 space-y-1">
+                <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
+                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i><span class="menu-text text-sm">Dashboard</span>
+                </a>
+                <a href="veiculos.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
+                    <i data-lucide="truck" class="w-5 h-5"></i><span class="menu-text text-sm">Veículos</span>
+                </a>
+                <a href="pneus.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
+                    <i data-lucide="circle-dot" class="w-5 h-5"></i><span class="menu-text text-sm">Pneus</span>
+                </a>
+                <!-- Menu Ativo -->
+                <a href="ordens-servico.html" class="flex items-center gap-3 px-3 py-2.5 bg-brand/10 text-brand rounded-md font-medium transition-colors">
+                    <i data-lucide="wrench" class="w-5 h-5"></i><span class="menu-text text-sm">Ordens de Serviço</span>
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <div class="flex-1 flex flex-col h-screen overflow-hidden">
+        <header class="h-16 bg-white dark:bg-darkcard border-b border-gray-200 dark:border-slate-700 flex items-center justify-between px-6 transition-colors duration-300">
+            <div class="flex items-center gap-4">
+                <button id="toggle-sidebar" class="p-1.5 text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors rounded-md"><i data-lucide="menu" class="w-5 h-5"></i></button>
+                <h2 class="text-base font-semibold text-gray-800 dark:text-gray-200">Ordens de Serviço</h2>
+            </div>
+            <div class="flex items-center gap-5">
+                <button id="toggle-theme" class="p-1.5 text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors">
+                    <i data-lucide="moon" class="w-5 h-5 hidden dark:block"></i><i data-lucide="sun" class="w-5 h-5 block dark:hidden"></i>
+                </button>
+                <div class="h-5 w-px bg-gray-300 dark:bg-slate-700"></div>
+                <div class="flex items-center gap-3">
+                    <p id="user-email" class="text-sm font-medium text-gray-800 dark:text-gray-200 hidden sm:block">...</p>
+                    <button id="btn-logout" class="p-2 text-gray-400 hover:text-red-500 transition-colors"><i data-lucide="log-out" class="w-5 h-5"></i></button>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-6 bg-gray-50 dark:bg-darkbg">
+            
+            <!-- KPIs -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div class="bg-white dark:bg-darkcard p-4 rounded-lg border border-gray-200 dark:border-slate-700">
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">OS Abertas</p>
+                    <p class="text-2xl font-bold text-blue-500" id="kpi-abertas">0</p>
+                </div>
+                <div class="bg-white dark:bg-darkcard p-4 rounded-lg border border-gray-200 dark:border-slate-700">
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Em Andamento</p>
+                    <p class="text-2xl font-bold text-yellow-500" id="kpi-andamento">0</p>
+                </div>
+                <div class="bg-white dark:bg-darkcard p-4 rounded-lg border border-gray-200 dark:border-slate-700">
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Concluídas</p>
+                    <p class="text-2xl font-bold text-green-500" id="kpi-concluidas">0</p>
+                </div>
+                <div class="bg-white dark:bg-darkcard p-4 rounded-lg border border-gray-200 dark:border-slate-700">
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Custo Total OS</p>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-white" id="kpi-custo">R$ 0,00</p>
+                </div>
+            </div>
+
+            <!-- AÇÕES -->
+            <div class="flex justify-end mb-4">
+                <button onclick="abrirModal()" class="bg-brand hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+                    <i data-lucide="plus" class="w-4 h-4"></i> Abrir Nova OS
+                </button>
+            </div>
+
+            <!-- TABELA -->
+            <div class="bg-white dark:bg-darkcard border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-50 dark:bg-slate-800/50 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider">
+                            <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Veículo / Placa</th>
+                            <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Tipo / Descrição</th>
+                            <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Abertura (KM)</th>
+                            <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Status</th>
+                            <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Data</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-os" class="text-sm divide-y divide-gray-200 dark:divide-slate-700"></tbody>
+                </table>
+                <div id="aviso-vazio" class="p-8 text-center text-gray-500 dark:text-gray-400 text-sm hidden">Nenhuma OS registrada.</div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL NOVA OS -->
+    <div id="modal-os" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-lg border border-gray-200 dark:border-slate-700">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center">
+                <h3 class="text-lg font-semibold">Abrir Ordem de Serviço</h3>
+                <button onclick="fecharModal()" class="text-gray-400 hover:text-red-500"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            
+            <form id="form-os" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Veículo <span class="text-red-500">*</span></label>
+                    <select id="veiculo_id" required class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
+                        <option value="">Selecione o veículo...</option>
+                        <!-- Preenchido via JS -->
+                    </select>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Tipo de Serviço <span class="text-red-500">*</span></label>
+                        <select id="tipo" required class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
+                            <option value="preventiva">Preventiva</option>
+                            <option value="corretiva">Corretiva</option>
+                            <option value="pneu">Troca/Reparo de Pneu</option>
+                            <option value="calibragem">Calibragem</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">KM Atual <span class="text-red-500">*</span></label>
+                        <input type="number" id="km_abertura" required class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium mb-1">Descrição do Problema/Serviço <span class="text-red-500">*</span></label>
+                    <textarea id="descricao" required rows="3" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand"></textarea>
+                </div>
+
+                <div class="pt-4 flex justify-end gap-3 border-t border-gray-200 dark:border-slate-700">
+                    <button type="button" onclick="fecharModal()" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-md transition-colors">Cancelar</button>
+                    <button type="submit" id="btn-salvar" class="px-4 py-2 text-sm font-medium text-white bg-brand hover:bg-orange-700 rounded-md transition-colors">Abrir OS</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/supabase-client.js"></script>
+    <script>
+        lucide.createIcons();
+
+        // --- UI LÓGICA ---
+        supabaseClient.auth.getSession().then(({ data: { session } }) => {
+            if (!session) { window.location.href = "login.html"; } 
+            else { document.getElementById('user-email').innerText = session.user.email; }
+        });
+
+        document.getElementById('btn-logout').addEventListener('click', async () => {
+            await supabaseClient.auth.signOut(); window.location.href = "login.html";
+        });
+
+        const sidebar = document.getElementById('sidebar');
+        const menuTexts = document.querySelectorAll('.menu-text');
+        document.getElementById('toggle-sidebar').addEventListener('click', () => {
+            if (sidebar.classList.contains('w-64')) {
+                sidebar.classList.replace('w-64', 'w-20'); menuTexts.forEach(el => el.classList.add('hidden'));
+            } else {
+                sidebar.classList.replace('w-20', 'w-64'); menuTexts.forEach(el => el.classList.remove('hidden'));
+            }
+        });
+
+        const html = document.documentElement;
+        if (localStorage.theme === 'light') html.classList.remove('dark');
+        document.getElementById('toggle-theme').addEventListener('click', () => {
+            html.classList.toggle('dark'); localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
+        });
+
+        // --- LÓGICA DE DADOS ---
+        let todasOS = [];
+        let listaVeiculos = [];
+        const tabela = document.getElementById('tabela-os');
+        const avisoVazio = document.getElementById('aviso-vazio');
+        const formatarDinheiro = (v) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v || 0);
+
+        // Captura parâmetros da URL (para quando vier do mapa)
+        const urlParams = new URLSearchParams(window.location.search);
+        const veiculoIdParam = urlParams.get('veiculo_id');
+
+        async function carregarDados() {
+            // 1. Carrega veículos para o select do modal
+            const { data: veiculos } = await supabaseClient.from('veiculos').select('id, placa, modelo').order('placa');
+            listaVeiculos = veiculos || [];
+            
+            const selectVeiculo = document.getElementById('veiculo_id');
+            selectVeiculo.innerHTML = '<option value="">Selecione o veículo...</option>';
+            listaVeiculos.forEach(v => {
+                selectVeiculo.innerHTML += `<option value="${v.id}">${v.placa} - ${v.modelo}</option>`;
+            });
+
+            // Se veio do mapa, já abre o modal com o carro selecionado
+            if (veiculoIdParam) {
+                abrirModal();
+                selectVeiculo.value = veiculoIdParam;
+                document.getElementById('tipo').value = 'pneu'; // Foco em pneu
+            }
+
+            // 2. Carrega as OS
+            const { data: os, error } = await supabaseClient
+                .from('ordens_servico')
+                .select(`*, veiculos (placa, modelo)`)
+                .order('created_at', { ascending: false });
+
+            if (error) return console.error(error);
+            todasOS = os;
+            calcularKPIs();
+            renderizarTabela();
+        }
+
+        function calcularKPIs() {
+            let abertas = 0, andamento = 0, concluidas = 0, custo = 0;
+            todasOS.forEach(o => {
+                if (o.status === 'aberta') abertas++;
+                if (o.status === 'em_andamento') andamento++;
+                if (o.status === 'concluida') concluidas++;
+                custo += (o.custo || 0);
+            });
+            document.getElementById('kpi-abertas').innerText = abertas;
+            document.getElementById('kpi-andamento').innerText = andamento;
+            document.getElementById('kpi-concluidas').innerText = concluidas;
+            document.getElementById('kpi-custo').innerText = formatarDinheiro(custo);
+        }
+
+        function renderizarTabela() {
+            tabela.innerHTML = '';
+            if (todasOS.length === 0) { avisoVazio.classList.remove('hidden'); return; }
+            avisoVazio.classList.add('hidden');
+
+            todasOS.forEach(o => {
+                let badgeClass = 'bg-blue-500/10 text-blue-500'; // Aberta
+                let statusTexto = 'Aberta';
+                if (o.status === 'em_andamento') { badgeClass = 'bg-yellow-500/10 text-yellow-500'; statusTexto = 'Em Andamento'; }
+                if (o.status === 'concluida') { badgeClass = 'bg-green-500/10 text-green-500'; statusTexto = 'Concluída'; }
+                if (o.status === 'cancelada') { badgeClass = 'bg-red-500/10 text-red-500'; statusTexto = 'Cancelada'; }
+
+                // Formata a data
+                const data = new Date(o.created_at).toLocaleDateString('pt-BR');
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors";
+                tr.innerHTML = `
+                    <td class="px-6 py-4">
+                        <div class="font-bold text-gray-900 dark:text-white uppercase">${o.veiculos?.placa}</div>
+                        <div class="text-xs text-gray-500">${o.veiculos?.modelo}</div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="font-medium capitalize">${o.tipo}</div>
+                        <div class="text-xs text-gray-500 truncate max-w-xs" title="${o.descricao}">${o.descricao}</div>
+                    </td>
+                    <td class="px-6 py-4 text-gray-600 dark:text-gray-400">
+                        ${o.km_abertura || '-'} km
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="px-2 py-1 text-xs font-medium rounded-full ${badgeClass}">${statusTexto}</span>
+                    </td>
+                    <td class="px-6 py-4 text-gray-600 dark:text-gray-400 text-xs">
+                        ${data}
+                    </td>
+                `;
+                tabela.appendChild(tr);
+            });
+        }
+
+        // --- MODAL ---
+        const modal = document.getElementById('modal-os');
+        const form = document.getElementById('form-os');
+        
+        function abrirModal() { form.reset(); modal.classList.remove('hidden'); }
+        function fecharModal() { modal.classList.add('hidden'); }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-salvar');
+            btn.innerHTML = 'Salvando...'; btn.disabled = true;
+
+            const session = await supabaseClient.auth.getSession();
+            const userId = session.data.session.user.id;
+
+            const novaOS = {
+                veiculo_id: document.getElementById('veiculo_id').value,
+                tipo: document.getElementById('tipo').value,
+                km_abertura: parseFloat(document.getElementById('km_abertura').value),
+                descricao: document.getElementById('descricao').value,
+                status: 'aberta',
+                aberta_por: userId
+            };
+
+            const { error } = await supabaseClient.from('ordens_servico').insert([novaOS]);
+
+            if (error) {
+                alert("Erro ao abrir OS: " + error.message);
+                btn.innerHTML = 'Abrir OS'; btn.disabled = false;
+            } else {
+                fecharModal();
+                carregarDados();
+                btn.innerHTML = 'Abrir OS'; btn.disabled = false;
+            }
+        });
+
+        carregarDados();
+    </script>
+</body>
+</html>
