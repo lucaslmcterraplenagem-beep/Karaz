@@ -402,14 +402,23 @@
             }
         }
 
-        async function carregarMotoristas() {
-            const { data } = await supabaseClient.from('motoristas').select('*, user_roles(role)').order('nome');
+              async function carregarMotoristas() {
+            // 1. Busca todos os motoristas
+            const { data: motoristas, error: err1 } = await supabaseClient.from('motoristas').select('*').order('nome');
+            if (err1 || !motoristas) return;
+
+            // 2. Busca todas as permissões (roles) do sistema
+            const { data: roles, error: err2 } = await supabaseClient.from('user_roles').select('*');
+            if (err2) return;
+
             const tabela = document.getElementById('tabela-motoristas');
             tabela.innerHTML = '';
-            if(!data) return;
 
-            data.forEach(m => {
-                let roleNome = m.user_roles ? m.user_roles.role : 'Sem Acesso';
+            motoristas.forEach(m => {
+                // Junta o motorista com a permissão dele
+                const roleInfo = roles.find(r => r.user_id === m.user_id);
+                let roleNome = roleInfo ? roleInfo.role : 'Sem Acesso';
+                
                 let badgeRole = 'bg-gray-500/10 text-gray-500';
                 if(roleNome === 'admin') badgeRole = 'bg-red-500/10 text-red-500';
                 if(roleNome === 'mecanico') badgeRole = 'bg-blue-500/10 text-blue-500';
