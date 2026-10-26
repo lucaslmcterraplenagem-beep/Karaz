@@ -221,7 +221,7 @@
 
         const urlParams = new URLSearchParams(window.location.search);
 
-                async function carregarDados() {
+                    async function carregarDados() {
             // 1. Carrega Veículos
             const { data: veiculos } = await supabaseClient.from('veiculos').select('*').order('placa');
             listaVeiculos = veiculos || [];
@@ -238,21 +238,37 @@
                 prepararMapaOS(e.target.value);
             });
 
-            // 2. Carrega Tipos de Serviço do Banco
-            const { data: servicos } = await supabaseClient.from('tipos_servico').select('*').eq('ativo', true).order('nome');
+            // 2. Carrega Tipos de Serviço Agrupados
+            const { data: servicos } = await supabaseClient.from('tipos_servico').select('*').eq('ativo', true).order('grupo').order('nome');
             const selectTipo = document.getElementById('tipo');
             selectTipo.innerHTML = '<option value="">Selecione...</option>';
+            
             if(servicos) {
+                const grupos = {};
                 servicos.forEach(s => {
-                    // Passamos a categoria no dataset para a lógica saber como agir
-                    selectTipo.innerHTML += `<option value="${s.nome}" data-categoria="${s.categoria}">${s.nome}</option>`;
+                    if(!grupos[s.grupo]) grupos[s.grupo] = [];
+                    grupos[s.grupo].push(s);
                 });
+
+                for (const [nomeGrupo, items] of Object.entries(grupos)) {
+                    const optGroup = document.createElement('optgroup');
+                    optGroup.label = nomeGrupo;
+                    
+                    items.forEach(s => {
+                        const opt = document.createElement('option');
+                        opt.value = s.nome;
+                        opt.dataset.comportamento = s.comportamento;
+                        opt.textContent = s.nome;
+                        optGroup.appendChild(opt);
+                    });
+                    selectTipo.appendChild(optGroup);
+                }
             }
 
-            // 3. Lógica de Mudança do Select de Tipo (Lê a categoria)
+            // 3. Lógica de Mudança do Select de Tipo
             selectTipo.addEventListener('change', async (e) => {
                 const opt = e.target.options[e.target.selectedIndex];
-                const categoria = opt.dataset.categoria;
+                const comportamento = opt.dataset.comportamento; 
                 const vId = document.getElementById('veiculo_id').value;
                 
                 areaDinamica.innerHTML = '';
@@ -260,7 +276,7 @@
 
                 if (!vId) { alert("Selecione o veículo primeiro."); e.target.value = ''; return; }
 
-                if (categoria === 'pneu') {
+                if (comportamento === 'pneu_mapa') {
                     colunaMapa.classList.remove('hidden');
                     areaDinamica.classList.remove('hidden');
                     const { data: est } = await supabaseClient.from('pneus').select('*').eq('status', 'estoque');
@@ -268,9 +284,9 @@
                     desenharMapaOS();
                     renderizarFormularioPneu();
 
-                } else if (categoria === 'calibragem') {
+                } else if (comportamento === 'calibragem') {
                     areaDinamica.classList.remove('hidden');
-                    let html = `<p class="text-sm font-bold mb-2">Calibragem Rápida:</p><div class="space-y-2">`;
+                    let html = `<p class="text-sm font-bold mb-2">Calibragem:</p><div class="space-y-2">`;
                     pneusDoVeiculoOS.forEach(p => {
                         html += `<div class="flex items-center justify-between bg-white dark:bg-slate-900 p-2 rounded border border-gray-200 dark:border-slate-700">
                             <span class="text-sm font-bold">${p.numero_fogo} (${p.posicao})</span>
@@ -280,7 +296,6 @@
                     areaDinamica.innerHTML = html + '</div>';
 
                 } else {
-                    // Categorias 'sulco' e 'geral'
                     areaDinamica.classList.remove('hidden');
                     document.getElementById('div-custo').classList.remove('hidden');
                     areaDinamica.innerHTML = `<label class="block text-xs font-medium mb-1">Descrição / Detalhes</label><textarea id="desc_manutencao" rows="3" class="w-full text-sm px-3 py-2 border rounded-md dark:bg-slate-800 dark:border-slate-600"></textarea>`;
@@ -290,24 +305,22 @@
             // Verifica se veio parâmetros da URL
             const veiculoIdParam = urlParams.get('veiculo_id');
             const pneuSaindoIdParam = urlParams.get('pneu_saindo_id');
-            const tipoParam = urlParams.get('tipo');
+            const tipoParam = urlParams.get('tipo'); // Esse 'tipo' pode ser 'calibragem' que vem do mapa
 
             if (veiculoIdParam) {
                 abrirModal();
                 selectVeiculo.value = veiculoIdParam;
                 selectVeiculo.dispatchEvent(new Event('change'));
                 
-                // Se veio do mapa pedindo calibragem
                 if (tipoParam === 'calibragem') {
-                    const optCalib = Array.from(selectTipo.options).find(o => o.dataset.categoria === 'calibragem');
+                    const optCalib = Array.from(selectTipo.options).find(o => o.dataset.comportamento === 'calibragem');
                     if(optCalib) {
                         selectTipo.value = optCalib.value;
                         selectTipo.dispatchEvent(new Event('change'));
                     }
                 } 
-                // Se veio do mapa clicando em um pneu
                 else if (pneuSaindoIdParam) {
-                    const optPneu = Array.from(selectTipo.options).find(o => o.dataset.categoria === 'pneu');
+                    const optPneu = Array.from(selectTipo.options).find(o => o.dataset.comportamento === 'pneu_mapa');
                     if(optPneu) {
                         selectTipo.value = optPneu.value;
                         selectTipo.dispatchEvent(new Event('change'));
