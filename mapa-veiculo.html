@@ -144,17 +144,17 @@
             renderizarChassi();
         }
 
-        function renderizarChassi() {
+                function renderizarChassi() {
             const container = document.getElementById('eixos-container');
             container.innerHTML = '';
 
-            let eixos = veiculoAtual.quantidade_eixos;
-            let pneusTotal = veiculoAtual.quantidade_pneus;
+            let eixos = veiculoAtual.quantidade_eixos || 2;
+            let pneusTotal = veiculoAtual.quantidade_pneus || 4;
+            let estepes = veiculoAtual.quantidade_estepes || 0;
             
-            // Define quantos pneus por eixo (Lógica simplificada)
             let pneusPorEixo = [];
             if (veiculoAtual.tipo === 'caminhao' || veiculoAtual.tipo === 'carreta') {
-                if (eixos >= 1) pneusPorEixo.push(2); // 1º Eixo
+                if (eixos >= 1) pneusPorEixo.push(2);
                 let restantes = pneusTotal - 2;
                 let eixosRestantes = eixos - 1;
                 for(let i=0; i<eixosRestantes; i++) {
@@ -166,6 +166,75 @@
                 let porEixo = Math.round(pneusTotal / eixos);
                 for(let i=0; i<eixos; i++) pneusPorEixo.push(porEixo);
             }
+
+            // Desenha os Eixos Normais
+            pneusPorEixo.forEach((qtd, indexEixo) => {
+                const eixoDiv = document.createElement('div');
+                eixoDiv.className = "relative flex justify-between items-center w-full";
+                eixoDiv.innerHTML = `<div class="absolute top-1/2 left-0 w-full h-4 bg-slate-400 dark:bg-slate-600 -translate-y-1/2 rounded-full z-0"></div>`;
+
+                let htmlPneus = '';
+                for (let i = 0; i < qtd; i++) {
+                    const posicao = `E${indexEixo+1}-${i+1}`;
+                    const pneuAqui = pneusDoVeiculo.find(p => p.posicao === posicao);
+
+                    if (pneuAqui) {
+                        let sulco = pneuAqui.sulco_atual !== null ? pneuAqui.sulco_atual : pneuAqui.sulco_inicial;
+                        let cor = 'bg-green-500 border-green-600 text-white';
+                        if (sulco <= 5) cor = 'bg-yellow-500 border-yellow-600 text-white';
+                        if (sulco <= 3) cor = 'bg-red-500 border-red-600 text-white';
+
+                        htmlPneus += `
+                            <div onclick="pneuOcupado('${pneuAqui.numero_fogo}')" class="relative z-10 w-12 h-16 rounded-md border-2 shadow-md cursor-pointer hover:scale-110 transition-transform ${cor} flex flex-col items-center justify-center">
+                                <span class="text-[10px] font-bold leading-tight text-center break-all px-1">${pneuAqui.numero_fogo}</span>
+                            </div>
+                        `;
+                    } else {
+                        htmlPneus += `
+                            <div onclick="abrirModalInstalar('${posicao}')" class="relative z-10 w-12 h-16 rounded-md border-2 border-dashed border-gray-400 dark:border-gray-500 bg-gray-200/50 dark:bg-slate-800/50 shadow-inner cursor-pointer hover:bg-brand/10 hover:border-brand transition-colors flex items-center justify-center group">
+                                <i data-lucide="plus" class="w-5 h-5 text-gray-400 group-hover:text-brand"></i>
+                            </div>
+                        `;
+                    }
+                }
+                eixoDiv.innerHTML += `<div class="w-full flex justify-between gap-2 px-2">${htmlPneus}</div>`;
+                container.appendChild(eixoDiv);
+            });
+
+            // Desenha os Estepes (Se houver)
+            if (estepes > 0) {
+                const estepeDiv = document.createElement('div');
+                estepeDiv.className = "mt-8 pt-6 border-t-2 border-slate-400 dark:border-slate-600 border-dashed w-full";
+                
+                let htmlEstepes = '';
+                for (let i = 1; i <= estepes; i++) {
+                    const posicao = `ESTEPE-${i}`;
+                    const pneuAqui = pneusDoVeiculo.find(p => p.posicao === posicao);
+
+                    if (pneuAqui) {
+                        let sulco = pneuAqui.sulco_atual !== null ? pneuAqui.sulco_atual : pneuAqui.sulco_inicial;
+                        let cor = 'bg-green-500 border-green-600 text-white';
+                        if (sulco <= 5) cor = 'bg-yellow-500 border-yellow-600 text-white';
+                        if (sulco <= 3) cor = 'bg-red-500 border-red-600 text-white';
+
+                        htmlEstepes += `
+                            <div onclick="pneuOcupado('${pneuAqui.numero_fogo}')" class="relative z-10 w-12 h-16 rounded-md border-2 shadow-md cursor-pointer hover:scale-110 transition-transform ${cor} flex flex-col items-center justify-center">
+                                <span class="text-[10px] font-bold leading-tight text-center break-all px-1">${pneuAqui.numero_fogo}</span>
+                            </div>
+                        `;
+                    } else {
+                        htmlEstepes += `
+                            <div onclick="abrirModalInstalar('${posicao}')" class="relative z-10 w-12 h-16 rounded-md border-2 border-dashed border-gray-400 dark:border-gray-500 bg-gray-200/50 dark:bg-slate-800/50 shadow-inner cursor-pointer hover:bg-brand/10 hover:border-brand transition-colors flex items-center justify-center group">
+                                <i data-lucide="plus" class="w-5 h-5 text-gray-400 group-hover:text-brand"></i>
+                            </div>
+                        `;
+                    }
+                }
+                estepeDiv.innerHTML = `<p class="text-xs text-center text-slate-500 mb-2 uppercase font-bold">Estepe</p><div class="flex justify-center gap-2">${htmlEstepes}</div>`;
+                container.appendChild(estepeDiv);
+            }
+            lucide.createIcons();
+        }
 
             // Desenha os Eixos
             pneusPorEixo.forEach((qtd, indexEixo) => {
