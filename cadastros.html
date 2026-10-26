@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastros | Karaz</title>
+    <title>Cadastros Gerais | Karaz</title>
     <script>
         if (localStorage.theme === 'light') { document.documentElement.classList.remove('dark'); } 
         else { document.documentElement.classList.add('dark'); }
@@ -23,7 +23,6 @@
 </head>
 <body class="bg-gray-100 text-gray-800 dark:bg-darkbg dark:text-gray-100 font-sans h-screen flex overflow-hidden transition-colors duration-300 antialiased">
 
-    <!-- SIDEBAR -->
     <aside id="sidebar" class="w-64 bg-white dark:bg-darkcard border-r border-gray-200 dark:border-slate-700 transition-all duration-300 flex flex-col z-20">
         <div>
             <div class="h-16 flex items-center justify-center border-b border-gray-200 dark:border-slate-700">
@@ -39,10 +38,11 @@
                 <a href="pneus.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
                     <i data-lucide="disc" class="w-5 h-5"></i><span class="menu-text text-sm">Pneus</span>
                 </a>
+                <!-- CORRIGIDO: Link de OS sem a cor de ativo -->
                 <a href="ordens-servico.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
                     <i data-lucide="wrench" class="w-5 h-5"></i><span class="menu-text text-sm">Ordens de Serviço</span>
                 </a>
-                <!-- NOVO MENU CADASTROS -->
+                <!-- Menu Ativo -->
                 <a href="cadastros.html" class="flex items-center gap-3 px-3 py-2.5 bg-brand/10 text-brand rounded-md font-medium transition-colors">
                     <i data-lucide="database" class="w-5 h-5"></i><span class="menu-text text-sm">Cadastros Gerais</span>
                 </a>
@@ -50,7 +50,6 @@
         </div>
     </aside>
 
-    <!-- CONTEÚDO PRINCIPAL -->
     <div class="flex-1 flex flex-col h-screen overflow-hidden">
         <header class="h-16 bg-white dark:bg-darkcard border-b border-gray-200 dark:border-slate-700 flex items-center justify-between px-6 transition-colors duration-300">
             <div class="flex items-center gap-4">
@@ -71,7 +70,6 @@
 
         <main class="flex-1 overflow-y-auto p-6 bg-gray-50 dark:bg-darkbg">
             
-            <!-- Abas -->
             <div class="flex gap-6 mb-6 border-b border-gray-200 dark:border-slate-700">
                 <button onclick="mudarAba('servicos')" id="tab-servicos" class="pb-3 text-brand border-b-2 border-brand font-medium text-sm transition-colors">Tipos de Serviço</button>
                 <button onclick="mudarAba('motoristas')" id="tab-motoristas" class="pb-3 text-gray-500 border-b-2 border-transparent font-medium text-sm transition-colors">Motoristas</button>
@@ -88,9 +86,10 @@
                     <table class="w-full text-left border-collapse">
                         <thead class="bg-gray-50 dark:bg-slate-800/50 text-xs uppercase text-gray-500">
                             <tr>
-                                <th class="px-6 py-3 border-b border-gray-200 dark:border-slate-700">Nome do Serviço</th>
-                                <th class="px-6 py-3 border-b border-gray-200 dark:border-slate-700">Categoria</th>
+                                <th class="px-6 py-3 border-b border-gray-200 dark:border-slate-700">Nome / Grupo</th>
+                                <th class="px-6 py-3 border-b border-gray-200 dark:border-slate-700">Comportamento na OS</th>
                                 <th class="px-6 py-3 border-b border-gray-200 dark:border-slate-700 text-center">Status</th>
+                                <th class="px-6 py-3 border-b border-gray-200 dark:border-slate-700 text-center">Ações</th>
                             </tr>
                         </thead>
                         <tbody id="tabela-servicos" class="text-sm divide-y divide-gray-200 dark:divide-slate-700"></tbody>
@@ -98,55 +97,77 @@
                 </div>
             </div>
 
-            <!-- CONTEÚDO: MOTORISTAS (Placeholder simples) -->
+            <!-- CONTEÚDO: MOTORISTAS (MANTIDO) -->
             <div id="content-motoristas" class="hidden space-y-4">
                 <div class="flex justify-between items-center">
                     <p class="text-sm text-gray-500">Cadastro de motoristas da frota.</p>
-                    <button class="bg-brand hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> Novo Motorista</button>
+                    <button onclick="abrirModalMotorista()" class="bg-brand hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> Novo Motorista</button>
                 </div>
-                <div class="bg-white dark:bg-darkcard p-8 text-center text-gray-500 rounded-lg border border-gray-200 dark:border-slate-700">
-                    Em breve: Tabela de Motoristas (Nome, CNH, Telefone).
+                <div class="bg-white dark:bg-darkcard border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-gray-50 dark:bg-slate-800/50 text-xs uppercase text-gray-500">
+                            <tr>
+                                <th class="px-6 py-3 border-b border-gray-200 dark:border-slate-700">Nome</th>
+                                <th class="px-6 py-3 border-b border-gray-200 dark:border-slate-700">CNH</th>
+                                <th class="px-6 py-3 border-b border-gray-200 dark:border-slate-700">Telefone</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-motoristas" class="text-sm divide-y divide-gray-200 dark:divide-slate-700"></tbody>
+                    </table>
                 </div>
             </div>
 
-            <!-- CONTEÚDO: FORNECEDORES (Placeholder simples) -->
+            <!-- CONTEÚDO: FORNECEDORES (MANTIDO) -->
             <div id="content-fornecedores" class="hidden space-y-4">
                 <div class="flex justify-between items-center">
                     <p class="text-sm text-gray-500">Cadastro de fornecedores de pneus e peças.</p>
-                    <button class="bg-brand hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> Novo Fornecedor</button>
+                    <button onclick="abrirModalFornecedor()" class="bg-brand hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> Novo Fornecedor</button>
                 </div>
-                <div class="bg-white dark:bg-darkcard p-8 text-center text-gray-500 rounded-lg border border-gray-200 dark:border-slate-700">
-                    Em breve: Tabela de Fornecedores (Nome, CNPJ, Contato).
+                <div class="bg-white dark:bg-darkcard border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-gray-50 dark:bg-slate-800/50 text-xs uppercase text-gray-500">
+                            <tr>
+                                <th class="px-6 py-3 border-b border-gray-200 dark:border-slate-700">Nome</th>
+                                <th class="px-6 py-3 border-b border-gray-200 dark:border-slate-700">CNPJ</th>
+                                <th class="px-6 py-3 border-b border-gray-200 dark:border-slate-700">Contato</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-fornecedores" class="text-sm divide-y divide-gray-200 dark:divide-slate-700"></tbody>
+                    </table>
                 </div>
             </div>
 
         </main>
     </div>
 
-    <!-- MODAL NOVO SERVIÇO -->
+    <!-- MODAL SERVIÇO -->
     <div id="modal-servico" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-md border border-gray-200 dark:border-slate-700">
             <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center">
-                <h3 class="text-lg font-semibold text-brand">Novo Tipo de Serviço</h3>
-                <button onclick="fecharModalServico()" class="text-gray-400 hover:text-red-500"><i data-lucide="x" class="w-5 h-5"></i></button>
+                <h3 class="text-lg font-semibold text-brand" id="titulo-modal-servico">Novo Tipo de Serviço</h3>
+                <button onclick="fecharModal('modal-servico')" class="text-gray-400 hover:text-red-500"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <form id="form-servico" class="p-6 space-y-4">
+                <input type="hidden" id="id_servico">
                 <div>
                     <label class="block text-sm font-medium mb-1">Nome do Serviço <span class="text-red-500">*</span></label>
                     <input type="text" id="nome_servico" required class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border rounded-md focus:border-brand">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium mb-1">Categoria <span class="text-red-500">*</span></label>
-                    <select id="categoria_servico" required class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border rounded-md focus:border-brand">
-                        <option value="pneu">Pneu (Abre Mapa)</option>
-                        <option value="calibragem">Calibragem</option>
-                        <option value="sulco">Inspeção / Sulco</option>
-                        <option value="geral">Geral / Manutenção</option>
+                    <label class="block text-sm font-medium mb-1">Grupo (Para organizar no menu) <span class="text-red-500">*</span></label>
+                    <input type="text" id="grupo_servico" required placeholder="Ex: Pneus, Suspensão, Geral" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border rounded-md focus:border-brand">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Comportamento na OS <span class="text-red-500">*</span></label>
+                    <select id="comportamento_servico" required class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border rounded-md focus:border-brand">
+                        <option value="geral">Geral / Texto Livre</option>
+                        <option value="pneu_mapa">Abrir Mapa de Pneus</option>
+                        <option value="calibragem">Abrir Campos de Pressão</option>
+                        <option value="sulco">Abrir Campos de Sulco</option>
                     </select>
                 </div>
-                <div id="erro-servico" class="hidden text-red-500 text-sm bg-red-500/10 p-3 rounded-md"></div>
                 <div class="pt-4 flex justify-end gap-3 border-t border-gray-200 dark:border-slate-700">
-                    <button type="button" onclick="fecharModalServico()" class="px-4 py-2 text-sm text-gray-600">Cancelar</button>
+                    <button type="button" onclick="fecharModal('modal-servico')" class="px-4 py-2 text-sm text-gray-600">Cancelar</button>
                     <button type="submit" id="btn-salvar-servico" class="px-4 py-2 text-sm font-bold text-white bg-brand rounded-md">Salvar</button>
                 </div>
             </form>
@@ -178,64 +199,121 @@
                 document.getElementById(`tab-${a}`).classList.remove('text-brand', 'border-brand');
                 document.getElementById(`tab-${a}`).classList.add('text-gray-500', 'border-transparent');
             });
-            document(`content-${aba}`).classList.remove('hidden');
-            document(`tab-${aba}`).classList.remove('text-gray-500', 'border-transparent');
-            document(`tab-${aba}`).classList.add('text-brand', 'border-brand');
+            document.getElementById(`content-${aba}`).classList.remove('hidden');
+            document.getElementById(`tab-${aba}`).classList.remove('text-gray-500', 'border-transparent');
+            document.getElementById(`tab-${aba}`).classList.add('text-brand', 'border-brand');
         }
 
-        // --- SERVIÇOS ---
-        const tabelaServicos = document.getElementById('tabela-servicos');
+        function abrirModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function fecharModal(id) { document.getElementById(id).classList.add('hidden'); }
+        
+        function abrirModalServico() { 
+            document.getElementById('form-servico').reset(); 
+            document.getElementById('id_servico').value = ''; 
+            document.getElementById('titulo-modal-servico').innerText = 'Novo Tipo de Serviço';
+            abrirModal('modal-servico'); 
+        }
+
+        async function editarServico(id) {
+            const { data } = await supabaseClient.from('tipos_servico').select('*').eq('id', id).single();
+            if(!data) return;
+            document.getElementById('id_servico').value = data.id;
+            document.getElementById('nome_servico').value = data.nome;
+            document.getElementById('grupo_servico').value = data.grupo;
+            document.getElementById('comportamento_servico').value = data.comportamento;
+            document.getElementById('titulo-modal-servico').innerText = 'Editar Serviço';
+            abrirModal('modal-servico');
+        }
+
+        async function toggleServico(id, statusAtual) {
+            const { error } = await supabaseClient.from('tipos_servico').update({ ativo: !statusAtual }).eq('id', id);
+            if(!error) carregarServicos();
+        }
 
         async function carregarServicos() {
-            const { data } = await supabaseClient.from('tipos_servico').select('*').order('nome');
-            tabelaServicos.innerHTML = '';
+            const { data } = await supabaseClient.from('tipos_servico').select('*').order('grupo').order('nome');
+            const tabela = document.getElementById('tabela-servicos');
+            tabela.innerHTML = '';
             if(!data) return;
 
             data.forEach(s => {
-                let catNome = s.categoria;
-                let catCor = 'bg-gray-500/10 text-gray-500';
-                if(s.categoria === 'pneu') { catNome = 'Pneu (Mapa)'; catCor = 'bg-blue-500/10 text-blue-500'; }
-                if(s.categoria === 'calibragem') { catNome = 'Calibragem'; catCor = 'bg-green-500/10 text-green-500'; }
-                if(s.categoria === 'sulco') { catNome = 'Sulco / Inspeção'; catCor = 'bg-orange-500/10 text-orange-500'; }
+                let compNome = s.comportamento;
+                let compCor = 'bg-gray-500/10 text-gray-500';
+                if(s.comportamento === 'pneu_mapa') { compNome = 'Abre Mapa'; compCor = 'bg-blue-500/10 text-blue-500'; }
+                if(s.comportamento === 'calibragem') { compNome = 'Calibragem'; compCor = 'bg-green-500/10 text-green-500'; }
+                if(s.comportamento === 'sulco') { compNome = 'Sulco'; compCor = 'bg-orange-500/10 text-orange-500'; }
                 
-                tabelaServicos.innerHTML += `
-                    <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50">
-                        <td class="px-6 py-4 font-bold">${s.nome}</td>
-                        <td class="px-6 py-4"><span class="px-2 py-1 rounded text-xs font-medium ${catCor}">${catNome}</span></td>
-                        <td class="px-6 py-4 text-center"><span class="text-green-500 text-xs font-bold">Ativo</span></td>
+                const rowClass = s.ativo ? "" : "opacity-50";
+                const statusBadge = s.ativo ? '<span class="text-green-500 text-xs font-bold">Ativo</span>' : '<span class="text-red-500 text-xs font-bold">Inativo</span>';
+
+                tabela.innerHTML += `
+                    <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50 ${rowClass}">
+                        <td class="px-6 py-4">
+                            <div class="font-bold">${s.nome}</div>
+                            <div class="text-xs text-gray-500">${s.grupo}</div>
+                        </td>
+                        <td class="px-6 py-4"><span class="px-2 py-1 rounded text-xs font-medium ${compCor}">${compNome}</span></td>
+                        <td class="px-6 py-4 text-center">${statusBadge}</td>
+                        <td class="px-6 py-4 text-center flex items-center justify-center gap-3">
+                            <button onclick="editarServico('${s.id}')" class="text-gray-400 hover:text-blue-500 transition-colors" title="Editar"><i data-lucide="edit" class="w-5 h-5"></i></button>
+                            <button onclick="toggleServico('${s.id}', ${s.ativo})" class="text-gray-400 ${s.ativo ? 'hover:text-red-500' : 'hover:text-green-500'} transition-colors" title="${s.ativo ? 'Inativar' : 'Ativar'}"><i data-lucide="power" class="w-5 h-5"></i></button>
+                        </td>
                     </tr>
                 `;
             });
+            lucide.createIcons();
         }
-
-        const modalServico = document.getElementById('modal-servico');
-        function abrirModalServico() { document.getElementById('form-servico').reset(); modalServico.classList.remove('hidden'); }
-        function fecharModalServico() { modalServico.classList.add('hidden'); }
 
         document.getElementById('form-servico').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btn-salvar-servico');
-            const err = document.getElementById('erro-servico');
             btn.innerHTML = 'Salvando...'; btn.disabled = true;
-            err.classList.add('hidden');
 
-            const nome = document.getElementById('nome_servico').value;
-            const categoria = document.getElementById('categoria_servico').value;
-
-            const { error } = await supabaseClient.from('tipos_servico').insert([{ nome, categoria }]);
+            const id = document.getElementById('id_servico').value;
+            const dados = {
+                nome: document.getElementById('nome_servico').value,
+                grupo: document.getElementById('grupo_servico').value,
+                comportamento: document.getElementById('comportamento_servico').value
+            };
+            
+            let error;
+            if (id) {
+                const res = await supabaseClient.from('tipos_servico').update(dados).eq('id', id);
+                error = res.error;
+            } else {
+                const res = await supabaseClient.from('tipos_servico').insert([dados]);
+                error = res.error;
+            }
             
             if(error) {
-                err.innerText = error.message.includes('unique') ? "Este serviço já está cadastrado." : error.message;
-                err.classList.remove('hidden');
+                alert(error.message.includes('unique') ? "Este serviço já está cadastrado." : error.message);
                 btn.innerHTML = 'Salvar'; btn.disabled = false;
             } else {
-                fecharModalServico();
+                fecharModal('modal-servico');
                 carregarServicos();
                 btn.innerHTML = 'Salvar'; btn.disabled = false;
             }
         });
 
+        // Carrega as outras abas (código anterior mantido)
+        async function carregarMotoristas() {
+            const { data } = await supabaseClient.from('motoristas').select('*').order('nome');
+            const tabela = document.getElementById('tabela-motoristas');
+            tabela.innerHTML = '';
+            if(!data) return;
+            data.forEach(m => { tabela.innerHTML += `<tr><td class="px-6 py-4 font-bold">${m.nome}</td><td class="px-6 py-4">${m.cnh || '-'}</td><td class="px-6 py-4">${m.telefone || '-'}</td></tr>`; });
+        }
+        async function carregarFornecedores() {
+            const { data } = await supabaseClient.from('fornecedores').select('*').order('nome');
+            const tabela = document.getElementById('tabela-fornecedores');
+            tabela.innerHTML = '';
+            if(!data) return;
+            data.forEach(f => { tabela.innerHTML += `<tr><td class="px-6 py-4 font-bold">${f.nome}</td><td class="px-6 py-4">${f.cnpj || '-'}</td><td class="px-6 py-4">${f.contato || '-'}</td></tr>`; });
+        }
+
         carregarServicos();
+        carregarMotoristas();
+        carregarFornecedores();
     </script>
 </body>
 </html>
