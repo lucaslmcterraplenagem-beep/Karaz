@@ -213,7 +213,7 @@
         const avisoVazio = document.getElementById('aviso-vazio');
         const formatarDinheiro = (v) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v || 0);
 
-        async function carregarDados() {
+                async function carregarDados() {
             const { data: veiculos } = await supabaseClient.from('veiculos').select('*').order('placa');
             listaVeiculos = veiculos || [];
             
@@ -228,6 +228,36 @@
                 if(opt.dataset.km) document.getElementById('km_abertura').value = opt.dataset.km;
                 prepararMapaOS(e.target.value);
             });
+
+            // --- LÊ OS PARÂMETROS DA URL (Vindo do Mapa) ---
+            // Certifique-se de que 'const urlParams = new URLSearchParams(window.location.search);' está no topo do seu script.
+            const veiculoIdParam = urlParams.get('veiculo_id');
+            const pneuSaindoIdParam = urlParams.get('pneu_saindo_id');
+            const tipoParam = urlParams.get('tipo');
+
+            if (veiculoIdParam) {
+                abrirModal();
+                selectVeiculo.value = veiculoIdParam;
+                selectVeiculo.dispatchEvent(new Event('change'));
+                
+                // Se veio do mapa pedindo calibragem
+                if (tipoParam === 'calibragem') {
+                    document.getElementById('tipo').value = 'calibragem';
+                    document.getElementById('tipo').dispatchEvent(new Event('change'));
+                } 
+                // Se veio do mapa clicando em um pneu específico para troca
+                else if (pneuSaindoIdParam) {
+                    document.getElementById('tipo').value = 'pneu';
+                    document.getElementById('tipo').dispatchEvent(new Event('change'));
+                    
+                    // Aguarda o DOM dinâmico ser criado, depois preenche o pneu de saída
+                    setTimeout(() => {
+                        pneuSaindo = pneuSaindoIdParam;
+                        desenharMapaOS();
+                        renderizarFormularioPneu();
+                    }, 300);
+                }
+            }
 
             await buscarOS();
         }
