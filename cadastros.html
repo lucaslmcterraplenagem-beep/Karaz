@@ -402,8 +402,8 @@
             }
         }
 
-              async function carregarMotoristas() {
-            // 1. Busca todos os motoristas
+                     async function carregarMotoristas() {
+            // 1. Busca todos os colaboradores
             const { data: motoristas, error: err1 } = await supabaseClient.from('motoristas').select('*').order('nome');
             if (err1 || !motoristas) return;
 
@@ -414,8 +414,13 @@
             const tabela = document.getElementById('tabela-motoristas');
             tabela.innerHTML = '';
 
+            if (motoristas.length === 0) {
+                tabela.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-gray-500">Nenhum colaborador cadastrado.</td></tr>';
+                return;
+            }
+
             motoristas.forEach(m => {
-                // Junta o motorista com a permissão dele
+                // Junta o motorista com a permissão dele cruzando o user_id
                 const roleInfo = roles.find(r => r.user_id === m.user_id);
                 let roleNome = roleInfo ? roleInfo.role : 'Sem Acesso';
                 
