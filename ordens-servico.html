@@ -118,7 +118,7 @@
 
     <!-- MODAL NOVA OS (DINÂMICO COM MAPA) -->
     <div id="modal-os" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 backdrop-blur-md">
-        <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-4xl border border-gray-200 dark:border-slate-700 overflow-hidden flex flex-col max-h-[90vh]">
+        <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-5xl border border-gray-200 dark:border-slate-700 overflow-hidden flex flex-col max-h-[90vh]">
             <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-800/30">
                 <h3 class="text-lg font-bold text-brand flex items-center gap-2"><i data-lucide="clipboard-list" class="w-5 h-5"></i> Abrir Ordem de Serviço</h3>
                 <button onclick="fecharModal()" class="text-gray-400 hover:text-red-500"><i data-lucide="x" class="w-6 h-6"></i></button>
@@ -164,14 +164,15 @@
                 </div>
 
                 <!-- COLUNA DIREITA: MAPA INTERATIVO -->
-                <div id="coluna-mapa" class="w-full md:w-1/2 bg-gray-100 dark:bg-slate-900 p-6 flex flex-col items-center justify-center hidden relative">
-                    <h4 class="text-sm font-medium text-gray-500 mb-4 text-center w-full absolute top-4">Clique no mapa para selecionar os pneus</h4>
+                <div id="coluna-mapa" class="w-full md:w-1/2 bg-gray-100 dark:bg-slate-900 p-6 flex flex-col items-center justify-start pt-12 relative overflow-y-auto">
+                    <h4 class="text-sm font-bold text-gray-600 dark:text-gray-300 mb-4 text-center w-full absolute top-4">Clique no mapa para selecionar os pneus</h4>
                     
-                    <div class="relative bg-slate-300 dark:bg-slate-700 rounded-3xl p-6 shadow-inner border-4 border-slate-400 dark:border-slate-600 mt-6" id="chassi-os">
-                        <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-3/4 h-12 bg-slate-400 dark:bg-slate-600 rounded-t-xl border-4 border-b-0 border-slate-500 flex items-center justify-center">
-                            <span class="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase">Frente</span>
+                    <div class="relative bg-slate-300 dark:bg-slate-700 rounded-3xl p-8 shadow-inner border-4 border-slate-400 dark:border-slate-600 mt-4" id="chassi-os">
+                        <div class="absolute -top-12 left-1/2 -translate-x-1/2 w-3/4 h-14 bg-slate-400 dark:bg-slate-600 rounded-t-xl border-4 border-b-0 border-slate-500 flex items-center justify-center">
+                            <span class="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase">Frente</span>
                         </div>
-                        <div id="eixos-container-os" class="space-y-8 relative z-10 w-56">
+                        <!-- Aumentei a largura de w-56 para w-72 -->
+                        <div id="eixos-container-os" class="space-y-10 relative z-10 w-72 flex flex-col items-center">
                             <!-- Injetado via JS -->
                         </div>
                     </div>
@@ -213,7 +214,7 @@
         const formatarDinheiro = (v) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v || 0);
 
         async function carregarDados() {
-            const { data: veiculos } = await supabaseClient.from('veiculos').select('id, placa, modelo, km_atual').order('placa');
+            const { data: veiculos } = await supabaseClient.from('veiculos').select('*').order('placa');
             listaVeiculos = veiculos || [];
             
             const selectVeiculo = document.getElementById('veiculo_id');
@@ -318,7 +319,6 @@
         let pneusDoVeiculoOS = [];
         let estoquePneus = [];
         
-        // Variáveis de Estado do Mapa
         let pneuSaindo = null;
         let slotEntrando = null;
 
@@ -328,16 +328,14 @@
             areaDinamica.classList.add('hidden');
             colunaMapa.classList.add('hidden');
             document.getElementById('div-custo').classList.add('hidden');
+            pneuSaindo = null; slotEntrando = null;
             modal.classList.remove('hidden'); 
         }
         function fecharModal() { modal.classList.add('hidden'); }
 
-        // Prepara os dados quando escolhe o carro
         async function prepararMapaOS(veiculoId) {
             if (!veiculoId) return;
-            const v = listaVeiculos.find(x => x.id === veiculoId);
-            veiculoSelecionadoOS = v;
-            
+            veiculoSelecionadoOS = listaVeiculos.find(x => x.id === veiculoId);
             const { data: pneus } = await supabaseClient.from('pneus').select('*').eq('veiculo_id', veiculoId).eq('status', 'em_uso');
             pneusDoVeiculoOS = pneus || [];
         }
@@ -353,11 +351,8 @@
             if (tipo === 'pneu') {
                 colunaMapa.classList.remove('hidden');
                 areaDinamica.classList.remove('hidden');
-                
-                // Busca Estoque para o select
                 const { data: est } = await supabaseClient.from('pneus').select('*').eq('status', 'estoque');
                 estoquePneus = est || [];
-                
                 desenharMapaOS();
                 renderizarFormularioPneu();
 
@@ -379,50 +374,61 @@
             }
         });
 
-        // Desenha o caminhão no Modal
+        // FUNÇÃO MESTRE: Calcula todas as posições do veículo
+        function obterPosicoes(veiculo) {
+            let posicoes = [];
+            let eixos = veiculo.quantidade_eixos || 2;
+            let pneus = veiculo.quantidade_pneus || 4;
+            let estepes = veiculo.quantidade_estepes || 0;
+
+            let pneusPorEixo = [];
+            if (veiculo.tipo === 'caminhao' || veiculo.tipo === 'carreta') {
+                if (eixos >= 1) pneusPorEixo.push(2);
+                let restantes = pneus - 2;
+                let eixosRestantes = eixos - 1;
+                for(let i=0; i<eixosRestantes; i++) { let noEixo = Math.min(4, restantes); pneusPorEixo.push(noEixo); restantes -= noEixo; }
+            } else {
+                let porEixo = Math.round(pneus / eixos);
+                for(let i=0; i<eixos; i++) pneusPorEixo.push(porEixo);
+            }
+
+            pneusPorEixo.forEach((qtd, idx) => {
+                for(let i=1; i<=qtd; i++) posicoes.push({ id: `E${idx+1}-${i}`, eixo: idx+1, index: i });
+            });
+            
+            for(let i=1; i<=estepes; i++) posicoes.push({ id: `ESTEPE-${i}`, eixo: 'ESTEPE', index: i });
+            
+            return { pneusPorEixo, posicoes };
+        }
+
         function desenharMapaOS() {
             eixosContainerOS.innerHTML = '';
             if (!veiculoSelecionadoOS) return;
 
-            let eixos = veiculoSelecionadoOS.quantidade_eixos || 2;
-            let pneusTotal = veiculoSelecionadoOS.quantidade_pneus || 4;
-            
-            let pneusPorEixo = [];
-            if (veiculoSelecionadoOS.tipo === 'caminhao' || veiculoSelecionadoOS.tipo === 'carreta') {
-                if (eixos >= 1) pneusPorEixo.push(2);
-                let restantes = pneusTotal - 2;
-                let eixosRestantes = eixos - 1;
-                for(let i=0; i<eixosRestantes; i++) { let noEixo = Math.min(4, restantes); pneusPorEixo.push(noEixo); restantes -= noEixo; }
-            } else {
-                let porEixo = Math.round(pneusTotal / eixos);
-                for(let i=0; i<eixos; i++) pneusPorEixo.push(porEixo);
-            }
+            const { pneusPorEixo } = obterPosicoes(veiculoSelecionadoOS);
 
+            // Desenha Eixos Normais
             pneusPorEixo.forEach((qtd, idxEixo) => {
                 const eixoDiv = document.createElement('div');
                 eixoDiv.className = "relative flex justify-between items-center w-full";
                 eixoDiv.innerHTML = `<div class="absolute top-1/2 left-0 w-full h-3 bg-slate-400 dark:bg-slate-600 -translate-y-1/2 rounded-full z-0"></div>`;
                 
                 let htmlPneus = '';
-                for (let i = 0; i < qtd; i++) {
-                    const posicao = `E${idxEixo+1}-${i+1}`;
+                for (let i = 1; i <= qtd; i++) {
+                    const posicao = `E${idxEixo+1}-${i}`;
                     const pneuAqui = pneusDoVeiculoOS.find(p => p.posicao === posicao);
 
                     if (pneuAqui) {
-                        // Ocupado (Só pode retirar)
                         let cor = 'bg-green-500 border-green-600 text-white';
-                        if (pneuSaindo === pneuAqui.id) cor = 'bg-red-500 border-red-600 ring-4 ring-red-300 animate-pulse'; // Selecionado para sair
-                        
+                        if (pneuSaindo === pneuAqui.id) cor = 'bg-red-500 border-red-600 ring-4 ring-red-300 animate-pulse';
                         htmlPneus += `
                             <div onclick="selecionarSaindo('${pneuAqui.id}')" class="relative z-10 w-10 h-14 rounded-md border-2 shadow cursor-pointer hover:scale-110 transition-transform ${cor} flex flex-col items-center justify-center">
                                 <span class="text-[9px] font-bold leading-tight text-center px-1">${pneuAqui.numero_fogo}</span>
                             </div>
                         `;
                     } else {
-                        // Vazio (Só pode colocar)
                         let corVazio = 'border-dashed border-gray-400 bg-gray-200/50 hover:bg-brand/20';
-                        if (slotEntrando === posicao) corVazio = 'border-solid border-brand bg-brand/30 ring-2 ring-brand'; // Selecionado para entrar
-                        
+                        if (slotEntrando === posicao) corVazio = 'border-solid border-brand bg-brand/30 ring-2 ring-brand';
                         htmlPneus += `
                             <div onclick="selecionarEntrando('${posicao}')" class="relative z-10 w-10 h-14 rounded-md border-2 ${corVazio} shadow-inner cursor-pointer flex items-center justify-center">
                                 <i data-lucide="plus" class="w-4 h-4 text-gray-500"></i>
@@ -433,28 +439,58 @@
                 eixoDiv.innerHTML += `<div class="w-full flex justify-between gap-2 px-1">${htmlPneus}</div>`;
                 eixosContainerOS.appendChild(eixoDiv);
             });
+
+            // Desenha Estepes no Modal
+            if (veiculoSelecionadoOS.quantidade_estepes > 0) {
+                const estepeDiv = document.createElement('div');
+                estepeDiv.className = "mt-6 pt-4 border-t-2 border-slate-400 dark:border-slate-600 border-dashed w-full";
+                
+                let htmlEstepes = '';
+                for (let i = 1; i <= veiculoSelecionadoOS.quantidade_estepes; i++) {
+                    const posicao = `ESTEPE-${i}`;
+                    const pneuAqui = pneusDoVeiculoOS.find(p => p.posicao === posicao);
+
+                    if (pneuAqui) {
+                        let cor = 'bg-green-500 border-green-600 text-white';
+                        if (pneuSaindo === pneuAqui.id) cor = 'bg-red-500 border-red-600 ring-4 ring-red-300 animate-pulse';
+                        htmlEstepes += `
+                            <div onclick="selecionarSaindo('${pneuAqui.id}')" class="relative z-10 w-10 h-14 rounded-md border-2 shadow cursor-pointer hover:scale-110 transition-transform ${cor} flex flex-col items-center justify-center">
+                                <span class="text-[9px] font-bold leading-tight text-center px-1">${pneuAqui.numero_fogo}</span>
+                            </div>
+                        `;
+                    } else {
+                        let corVazio = 'border-dashed border-gray-400 bg-gray-200/50 hover:bg-brand/20';
+                        if (slotEntrando === posicao) corVazio = 'border-solid border-brand bg-brand/30 ring-2 ring-brand';
+                        htmlEstepes += `
+                            <div onclick="selecionarEntrando('${posicao}')" class="relative z-10 w-10 h-14 rounded-md border-2 ${corVazio} shadow-inner cursor-pointer flex items-center justify-center">
+                                <i data-lucide="plus" class="w-4 h-4 text-gray-500"></i>
+                            </div>
+                        `;
+                    }
+                }
+                estepeDiv.innerHTML = `<p class="text-[10px] text-center text-slate-500 mb-2 font-bold uppercase">Estepe</p><div class="flex justify-center gap-2">${htmlEstepes}</div>`;
+                eixosContainerOS.appendChild(estepeDiv);
+            }
             lucide.createIcons();
         }
 
-        // Ação ao clicar em pneu ocupado
         function selecionarSaindo(id) {
-            if (pneuSaindo === id) { pneuSaindo = null; } // Desmarca se clicar de novo
-            else { pneuSaindo = id; }
+            pneuSaindo = (pneuSaindo === id) ? null : id;
             desenharMapaOS();
-            renderizarFormularioPneu(); // Sincroniza o form
+            renderizarFormularioPneu();
         }
 
-        // Ação ao clicar em vazio
         function selecionarEntrando(posicao) {
-            if (slotEntrando === posicao) { slotEntrando = null; }
-            else { slotEntrando = posicao; }
+            slotEntrando = (slotEntrando === posicao) ? null : posicao;
             desenharMapaOS();
-            renderizarFormularioPneu(); // Sincroniza o form
+            renderizarFormularioPneu();
         }
 
-        // Monta os selects baseados no que foi clicado no mapa
+        // Monta os selects com base em TODAS as posições reais do veículo
         function renderizarFormularioPneu() {
-            const pSaindo = pneusDoVeiculoOS.find(p => p.id === pneuSaindo);
+            if (!veiculoSelecionadoOS) return;
+
+            const { posicoes } = obterPosicoes(veiculoSelecionadoOS);
             
             let html = `
                 <p class="text-xs font-medium text-gray-500 mb-2 uppercase tracking-wide">Resumo da Ação</p>
@@ -478,14 +514,10 @@
                 <div>
                     <label class="block text-xs font-medium mb-1 text-green-500">2. Novo Pneu / Slot de Entrada</label>
                     <div class="flex gap-2">
+                        <!-- SELECT GERADO DINAMICAMENTE -->
                         <select id="select_entrando_slot" class="w-1/3 text-sm px-3 py-2 border rounded-md dark:bg-slate-800 dark:border-slate-600">
                             <option value="">Posição...</option>
-                            <option value="E1-1" ${slotEntrando==='E1-1'?'selected':''}>E1-1</option>
-                            <option value="E1-2" ${slotEntrando==='E1-2'?'selected':''}>E1-2</option>
-                            <option value="E2-1" ${slotEntrando==='E2-1'?'selected':''}>E2-1</option>
-                            <option value="E2-2" ${slotEntrando==='E2-2'?'selected':''}>E2-2</option>
-                            <option value="E2-3" ${slotEntrando==='E2-3'?'selected':''}>E2-3</option>
-                            <option value="E2-4" ${slotEntrando==='E2-4'?'selected':''}>E2-4</option>
+                            ${posicoes.map(p => `<option value="${p.id}" ${slotEntrando === p.id ? 'selected' : ''}>${p.id}</option>`).join('')}
                         </select>
                         <select id="select_entrando_pneu" class="w-2/3 text-sm px-3 py-2 border rounded-md dark:bg-slate-800 dark:border-slate-600">
                             <option value="">Escolha do Estoque...</option>
@@ -496,7 +528,6 @@
             `;
             areaDinamica.innerHTML = html;
 
-            // Sincronização: Se mudar o select, atualiza o mapa
             document.getElementById('select_saindo').addEventListener('change', (e) => {
                 pneuSaindo = e.target.value || null;
                 desenharMapaOS();
@@ -507,7 +538,6 @@
             });
         }
 
-        // --- SALVAR OS ---
         async function salvarOS() {
             const btn = document.getElementById('btn-salvar');
             const vId = document.getElementById('veiculo_id').value;
@@ -540,7 +570,6 @@
                 fecharModal();
                 buscarOS();
                 btn.innerHTML = 'Criar OS'; btn.disabled = false;
-                // Limpa estados
                 pneuSaindo = null; slotEntrando = null;
             }
         }
