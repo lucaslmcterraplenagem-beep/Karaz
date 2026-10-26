@@ -209,8 +209,12 @@
 
         // --- AÇÕES ---
         
-        function pneuOcupado(numeroFogo) {
-            alert(`O pneu ${numeroFogo} já está instalado aqui.\n\nPara remover ou trocar este pneu, você precisa criar uma Ordem de Serviço (OS).`);
+                function pneuOcupado(numeroFogo) {
+            const irParaOS = confirm(`O pneu ${numeroFogo} já está instalado.\n\nPara remover ou trocar este pneu, você precisa abrir uma Ordem de Serviço (OS).\n\nDeseja abrir uma OS agora?`);
+            if (irParaOS) {
+                // Redireciona para a tela de OS passando o ID do veículo
+                window.location.href = `ordens-servico.html?veiculo_id=${veiculoId}`;
+            }
         }
 
         async function abrirModalInstalar(posicao) {
