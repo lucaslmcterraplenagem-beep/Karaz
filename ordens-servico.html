@@ -345,8 +345,32 @@
             buscarOS();
         }
 
-        async function concluirOS(id, tipo) {
-            alert("Em breve: A lógica de conclusão que dará baixa no pneu e atualizará o KM do veículo.");
+                async function concluirOS(id, tipo) {
+            if(!confirm("Tem certeza que deseja concluir esta OS? Os pneus serão movimentados e o KM do veículo será atualizado.")) return;
+            
+            // Acha a OS na lista para pegar os IDs dos pneus
+            const os = todasOS.find(o => o.id === id);
+            if(!os) return;
+
+            // Se for OS de pneu, precisamos passar os IDs, senão passamos null
+            let pneuSaindo = os.pneu_saindo_id || null;
+            let pneuEntrando = os.pneu_entrando_id || null;
+            let destino = os.destino_pneu_saindo || null;
+
+            // Chama a função no Supabase (RPC)
+            const { error } = await supabaseClient.rpc('concluir_os', {
+                p_os_id: id,
+                p_pneu_saindo_id: pneuSaindo,
+                p_pneu_entrando_id: pneuEntrando,
+                p_destino: destino
+            });
+
+            if (error) {
+                alert("Erro ao concluir OS: " + error.message);
+            } else {
+                alert("OS Concluída com sucesso! O mapa e o KM do veículo foram atualizados.");
+                buscarOS(); // Atualiza a lista
+            }
         }
 
         // --- MODAL DINÂMICO COM MAPA ---
