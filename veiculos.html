@@ -115,7 +115,7 @@
                             <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Saúde / Pneus</th>
                             <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Placa / Prefixo</th>
                             <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Modelo</th>
-                            <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Eixos / Pneus</th>
+                            <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Eixos / Config</th>
                             <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">KM / Horas</th>
                             <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700 text-center">Ações</th>
                         </tr>
@@ -127,9 +127,9 @@
         </main>
     </div>
 
-    <!-- MODAL DE CADASTRO/EDIÇÃO DE VEÍCULO -->
+    <!-- MODAL DE CADASTRO/EDIÇÃO -->
     <div id="modal-veiculo" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-2xl border border-gray-200 dark:border-slate-700 overflow-hidden">
+        <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-4xl border border-gray-200 dark:border-slate-700 overflow-hidden">
             <div class="px-6 pt-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center">
                 <div class="flex gap-6">
                     <button type="button" id="tab-btn-1" class="pb-3 text-brand border-b-2 border-brand font-medium text-sm transition-colors">1. Dados Básicos</button>
@@ -186,35 +186,45 @@
                     </div>
                 </div>
 
-                <!-- ABA 2 -->
+                <!-- ABA 2: NOVA CONFIGURAÇÃO DE PNEUS -->
                 <div id="tab-content-2" class="p-6 space-y-4 hidden">
-                    <div class="grid grid-cols-3 gap-4">
+                    <div class="grid grid-cols-3 gap-4 mb-4">
                         <div>
                             <label class="block text-sm font-medium mb-1">Qtd. de Eixos <span class="text-red-500">*</span></label>
-                            <input type="number" id="eixos" required min="2" value="2" title="Não pode ser alterado após o cadastro" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand disabled:bg-gray-200 disabled:text-gray-500 dark:disabled:bg-slate-700 dark:disabled:text-gray-400 disabled:cursor-not-allowed">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Qtd. de Pneus <span class="text-red-500">*</span></label>
-                            <input type="number" id="qtd_pneus" required min="4" value="6" title="Não pode ser alterado após o cadastro" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand disabled:bg-gray-200 disabled:text-gray-500 dark:disabled:bg-slate-700 dark:disabled:text-gray-400 disabled:cursor-not-allowed">
+                            <input type="number" id="eixos" required min="2" max="9" value="2" onchange="gerarCamposEixos()" title="Não pode ser alterado após o cadastro" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand disabled:bg-gray-200 disabled:text-gray-500 dark:disabled:bg-slate-700 dark:disabled:text-gray-400 disabled:cursor-not-allowed">
                         </div>
                         <div>
                             <label class="block text-sm font-medium mb-1">Estepes <span class="text-red-500">*</span></label>
-                            <input type="number" id="estepes" required min="0" value="0" title="Não pode ser alterado após o cadastro" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand disabled:bg-gray-200 disabled:text-gray-500 dark:disabled:bg-slate-700 dark:disabled:text-gray-400 disabled:cursor-not-allowed">
+                            <input type="number" id="estepes" required min="0" value="1" onchange="gerarCamposEixos()" title="Não pode ser alterado após o cadastro" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand disabled:bg-gray-200 disabled:text-gray-500 dark:disabled:bg-slate-700 dark:disabled:text-gray-400 disabled:cursor-not-allowed">
                         </div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium mb-1">KM Atual <span class="text-red-500">*</span></label>
                             <input type="number" id="km" required title="Não pode ser alterado após o cadastro" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand disabled:bg-gray-200 disabled:text-gray-500 dark:disabled:bg-slate-700 dark:disabled:text-gray-400 disabled:cursor-not-allowed">
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Horas Atual</label>
-                            <input type="number" id="horas" value="0" title="Não pode ser alterado após o cadastro" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand disabled:bg-gray-200 disabled:text-gray-500 dark:disabled:bg-slate-700 dark:disabled:text-gray-400 disabled:cursor-not-allowed">
+                    </div>
+                    
+                    <!-- ÁREA DINÂMICA DOS EIXOS -->
+                    <div class="flex gap-6">
+                        <div class="flex-1">
+                            <label class="block text-sm font-medium mb-2">Pneus por Eixo (Frente para Trás)</label>
+                            <div id="container-eixos" class="space-y-2 max-h-48 overflow-y-auto pr-2">
+                                <!-- Inputs gerados via JS -->
+                            </div>
+                        </div>
+                        
+                        <!-- MINI MAPA DE VISUALIZAÇÃO -->
+                        <div class="w-48 bg-slate-100 dark:bg-slate-800 rounded-lg p-4 flex flex-col items-center justify-center border border-gray-200 dark:border-slate-700">
+                            <p class="text-[10px] uppercase font-bold text-gray-500 mb-2">Prévia</p>
+                            <div id="mini-mapa" class="flex flex-col items-center gap-2">
+                                <!-- Desenho gerado via JS -->
+                            </div>
                         </div>
                     </div>
-                    <p id="aviso-bloqueio" class="text-xs text-brand hidden mt-2"><i data-lucide="info" class="w-3 h-3 inline"></i> Eixos, Pneus, Estepes, KM e Horas não podem ser alterados após o cadastro.</p>
-                    <div id="erro-modal" class="hidden text-red-500 text-sm bg-red-500/10 p-3 rounded-md"></div>
-                    <div class="pt-4 flex justify-between border-t border-gray-200 dark:border-slate-700 mt-2">
+
+                    <p id="aviso-bloqueio" class="text-xs text-brand hidden mt-2"><i data-lucide="info" class="w-3 h-3 inline"></i> Eixos, Pneus, Estepes e KM não podem ser alterados após o cadastro.</p>
+                    <div id="erro-modal" class="hidden text-red-500 text-sm bg-red-500/10 p-3 rounded-md mt-2"></div>
+                    
+                    <div class="pt-4 flex justify-between border-t border-gray-200 dark:border-slate-700 mt-4">
                         <button type="button" onclick="voltarParaAba1()" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-md transition-colors">← Voltar</button>
                         <button type="submit" id="btn-salvar" class="px-4 py-2 text-sm font-medium text-white bg-brand hover:bg-orange-700 rounded-md transition-colors">Finalizar Cadastro</button>
                     </div>
@@ -249,10 +259,7 @@
                 <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" checked onchange="toggleColuna('col-user', this.checked)" class="rounded text-brand focus:ring-brand"> Usuário</label>
             </div>
 
-            <!-- ÁREA DE EXPORTAÇÃO -->
             <div class="flex-1 overflow-auto p-6 bg-gray-50 dark:bg-darkbg" id="area-tabela-historico">
-                
-                <!-- LOGO EXCLUSIVA PARA O PDF (Oculta na tela) -->
                 <div id="logo-pdf" class="hidden mb-4 flex justify-between items-center border-b pb-2">
                     <h1 class="text-2xl font-bold text-gray-800">Karaz <span class="text-orange-500">Sistema</span></h1>
                     <p class="text-sm text-gray-500">Relatório de Histórico de Veículo</p>
@@ -315,15 +322,12 @@
         const tabela = document.getElementById('tabela-veiculos');
         const avisoVazio = document.getElementById('aviso-vazio');
         
-        // Listener para o input de dias de aferição
         document.getElementById('input-dias-afericao').addEventListener('input', calcularKPIs);
 
         async function carregarDados() {
-            // Busca Veículos
             const { data: veiculos } = await supabaseClient.from('veiculos').select('*').order('created_at', { ascending: false });
             todosVeiculos = veiculos || [];
             
-            // Busca Pneus em Uso
             const { data: pneus } = await supabaseClient.from('pneus').select('veiculo_id, sulco_atual, sulco_inicial').eq('status', 'em_uso');
             todosPneus = pneus || [];
 
@@ -334,7 +338,6 @@
         function calcularKPIs() {
             document.getElementById('kpi-total-veiculos').innerText = todosVeiculos.length;
 
-            // Pneus em Atenção (Amarelo, <=5mm) e Trocar (Vermelho, <=3mm)
             let qtdAtencao = 0;
             let qtdTrocar = 0;
 
@@ -347,7 +350,6 @@
             document.getElementById('kpi-pneus-atencao').innerText = qtdAtencao;
             document.getElementById('kpi-pneus-trocar').innerText = qtdTrocar;
 
-            // Sem Aferição há X dias (Usando data de cadastro como fallback, ideal seria o último histórico)
             let diasLimite = parseInt(document.getElementById('input-dias-afericao').value) || 30;
             let hoje = new Date();
             let semAfericao = 0;
@@ -366,33 +368,31 @@
             avisoVazio.classList.add('hidden');
 
             lista.forEach(v => {
-                // Lógica de Saúde do Veículo
                 const pneusDoVeiculo = todosPneus.filter(p => p.veiculo_id === v.id);
-                let corBolinha = 'bg-gray-400'; // Sem pneus
+                let corBolinha = 'bg-gray-400';
                 let qtdTrocar = 0;
-                let temAtencao = false;
 
                 if (pneusDoVeiculo.length > 0) {
-                    corBolinha = 'bg-green-500'; // Padrão: tudo bom
+                    corBolinha = 'bg-green-500';
                     pneusDoVeiculo.forEach(p => {
                         let sulco = p.sulco_atual !== null ? p.sulco_atual : p.sulco_inicial;
                         if (sulco <= 3) {
                             qtdTrocar++;
                             corBolinha = 'bg-red-500';
-                            temAtencao = true; // Vermelho sobrepõe amarelo
                         } else if (sulco <= 5 && corBolinha !== 'bg-red-500') {
                             corBolinha = 'bg-yellow-500';
-                            temAtencao = true;
                         }
                     });
                 }
+
+                let configVisual = v.configuracao_eixos ? v.configuracao_eixos.replace(/,/g, '-') : `${v.quantidade_pneus} Pneus`;
 
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors";
                 tr.innerHTML = `
                     <td class="px-6 py-4">
                         <div class="flex items-center gap-2">
-                            <div class="w-3 h-3 rounded-full ${corBolinha} shadow-sm" title="${corBolinha === 'bg-red-500' ? 'Crítico' : corBolinha === 'bg-yellow-500' ? 'Atenção' : corBolinha === 'bg-green-500' ? 'Bom' : 'Sem pneus'}"></div>
+                            <div class="w-3 h-3 rounded-full ${corBolinha} shadow-sm"></div>
                             ${qtdTrocar > 0 ? `<span class="text-[10px] font-bold bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded">${qtdTrocar} trocar</span>` : ''}
                         </div>
                     </td>
@@ -406,7 +406,7 @@
                     </td>
                     <td class="px-6 py-4">
                         <div class="text-sm">${v.quantidade_eixos} Eixos</div>
-                        <div class="text-xs text-gray-500">${v.quantidade_pneus} Pneus</div>
+                        <div class="text-xs text-gray-500">Config: ${configVisual}</div>
                     </td>
                     <td class="px-6 py-4">
                         <div class="text-sm">${v.km_atual} km</div>
@@ -448,7 +448,7 @@
         const btnTab2 = document.getElementById('tab-btn-2');
         const btnProximo = document.getElementById('btn-proximo');
         const btnSalvar = document.getElementById('btn-salvar');
-        const camposBloqueados = ['eixos', 'qtd_pneus', 'estepes', 'km', 'horas'];
+        const camposBloqueados = ['eixos', 'estepes', 'km']; 
         
         function abrirModal() { 
             veiculoEditandoId = null;
@@ -456,6 +456,11 @@
             document.getElementById('erro-modal').classList.add('hidden');
             document.getElementById('aviso-bloqueio').classList.add('hidden');
             camposBloqueados.forEach(id => document.getElementById(id).disabled = false);
+            
+            document.getElementById('eixos').value = 2;
+            document.getElementById('estepes').value = 1;
+            gerarCamposEixos();
+            
             btnProximo.classList.remove('hidden');
             btnSalvar.innerText = 'Finalizar Cadastro';
             voltarParaAba1();
@@ -463,6 +468,62 @@
         }
         
         function fecharModal() { modal.classList.add('hidden'); }
+
+        function gerarCamposEixos() {
+            const qtdEixos = parseInt(document.getElementById('eixos').value) || 2;
+            const container = document.getElementById('container-eixos');
+            const miniMapa = document.getElementById('mini-mapa');
+            
+            const valoresAntigos = [];
+            container.querySelectorAll('input').forEach(inp => valoresAntigos.push(parseInt(inp.value) || 2));
+
+            container.innerHTML = '';
+            miniMapa.innerHTML = '';
+
+            for (let i = 1; i <= qtdEixos; i++) {
+                let defaultVal = valoresAntigos[i-1] || (i === 1 ? 2 : 4); 
+                
+                container.innerHTML += `
+                    <div class="flex items-center justify-between bg-white dark:bg-slate-800 p-2 rounded border border-gray-200 dark:border-slate-700">
+                        <span class="text-xs font-bold text-gray-500 uppercase">${i}º Eixo</span>
+                        <div class="flex items-center gap-2">
+                            <input type="number" min="2" max="8" step="2" value="${defaultVal}" onchange="gerarCamposEixos()" class="input-eixo w-16 px-2 py-1 text-center text-sm border rounded dark:bg-slate-900 dark:border-slate-600 focus:outline-none focus:border-brand">
+                            <span class="text-xs text-gray-400">pneus</span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            const inputs = container.querySelectorAll('.input-eixo');
+            let eixosArr = [];
+            inputs.forEach(inp => eixosArr.push(inp.value));
+            
+            let htmlMapa = '<div class="relative w-full flex flex-col items-center gap-4">';
+            htmlMapa += '<div class="absolute top-0 bottom-0 left-1/2 w-2 bg-slate-300 dark:bg-slate-600 -translate-x-1/2 z-0"></div>';
+
+            eixosArr.forEach((qtdStr, idx) => {
+                let qtd = parseInt(qtdStr) || 2;
+                
+                htmlMapa += `<div class="relative z-10 flex justify-between w-full px-2">`;
+                
+                htmlMapa += `<div class="flex gap-1">`;
+                for(let i=0; i < (qtd/2); i++) htmlMapa += `<div class="w-3 h-6 bg-slate-400 dark:bg-slate-500 rounded-full"></div>`;
+                htmlMapa += `</div>`;
+
+                htmlMapa += `<div class="flex gap-1">`;
+                for(let i=0; i < (qtd/2); i++) htmlMapa += `<div class="w-3 h-6 bg-slate-400 dark:bg-slate-500 rounded-full"></div>`;
+                htmlMapa += `</div>`;
+
+                htmlMapa += `</div>`;
+            });
+            
+            if(parseInt(document.getElementById('estepes').value) > 0) {
+                htmlMapa += `<div class="mt-2 text-[8px] uppercase font-bold text-gray-400 border-t border-dashed border-gray-400 pt-1 w-full text-center">Estepe</div>`;
+            }
+
+            htmlMapa += '</div>';
+            miniMapa.innerHTML = htmlMapa;
+        }
 
         function editarVeiculo(id) {
             veiculoEditandoId = id;
@@ -478,10 +539,29 @@
             document.getElementById('tipo').value = v.tipo;
             
             document.getElementById('eixos').value = v.quantidade_eixos;
-            document.getElementById('qtd_pneus').value = v.quantidade_pneus;
             document.getElementById('estepes').value = v.quantidade_estepes;
             document.getElementById('km').value = v.km_atual;
             document.getElementById('horas').value = v.horas_atual;
+
+            if(v.configuracao_eixos) {
+                const configArr = v.configuracao_eixos.split(',');
+                const container = document.getElementById('container-eixos');
+                container.innerHTML = '';
+                configArr.forEach((qtd, idx) => {
+                    container.innerHTML += `
+                        <div class="flex items-center justify-between bg-white dark:bg-slate-800 p-2 rounded border border-gray-200 dark:border-slate-700">
+                            <span class="text-xs font-bold text-gray-500 uppercase">${idx+1}º Eixo</span>
+                            <div class="flex items-center gap-2">
+                                <input type="number" min="2" max="8" step="2" value="${qtd}" onchange="gerarCamposEixos()" class="input-eixo w-16 px-2 py-1 text-center text-sm border rounded dark:bg-slate-900 dark:border-slate-600 focus:outline-none focus:border-brand">
+                                <span class="text-xs text-gray-400">pneus</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                gerarCamposEixos();
+            } else {
+                gerarCamposEixos();
+            }
 
             camposBloqueados.forEach(id => document.getElementById(id).disabled = true);
             document.getElementById('aviso-bloqueio').classList.remove('hidden');
@@ -522,6 +602,14 @@
             btnSalvar.innerHTML = 'Salvando...'; btnSalvar.disabled = true;
             erroDiv.classList.add('hidden');
 
+            const inputsEixos = document.querySelectorAll('.input-eixo');
+            let configArr = [];
+            let totalPneus = 0;
+            inputsEixos.forEach(inp => {
+                configArr.push(inp.value);
+                totalPneus += parseInt(inp.value);
+            });
+
             const dados = {
                 placa: document.getElementById('placa').value.toUpperCase(),
                 prefixo: document.getElementById('prefixo').value,
@@ -534,10 +622,14 @@
 
             if (!veiculoEditandoId) {
                 dados.quantidade_eixos = parseInt(document.getElementById('eixos').value);
-                dados.quantidade_pneus = parseInt(document.getElementById('qtd_pneus').value);
+                dados.quantidade_pneus = totalPneus;
                 dados.quantidade_estepes = parseInt(document.getElementById('estepes').value);
                 dados.km_atual = parseFloat(document.getElementById('km').value);
                 dados.horas_atual = parseFloat(document.getElementById('horas').value);
+                dados.configuracao_eixos = configArr.join(',');
+            } else {
+                dados.quantidade_pneus = totalPneus;
+                dados.configuracao_eixos = configArr.join(',');
             }
 
             let result;
@@ -640,7 +732,6 @@
         function exportarPDF() {
             const elemento = document.getElementById('area-tabela-historico');
             const logo = document.getElementById('logo-pdf');
-            
             logo.classList.remove('hidden');
 
             const opt = {
