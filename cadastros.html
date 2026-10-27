@@ -268,7 +268,18 @@
         document.getElementById('btn-logout').addEventListener('click', async () => {
             await supabaseClient.auth.signOut(); window.location.href = "login.html";
         });
-
+        // Lógica para recolher a barra lateral
+        const sidebar = document.getElementById('sidebar');
+        const menuTexts = document.querySelectorAll('.menu-text');
+        document.getElementById('toggle-sidebar').addEventListener('click', () => {
+            if (sidebar.classList.contains('w-64')) {
+                sidebar.classList.replace('w-64', 'w-20'); 
+                menuTexts.forEach(el => el.classList.add('hidden'));
+            } else {
+                sidebar.classList.replace('w-20', 'w-64'); 
+                menuTexts.forEach(el => el.classList.remove('hidden'));
+            }
+        });
         const html = document.documentElement;
         if (localStorage.theme === 'light') html.classList.remove('dark');
         document.getElementById('toggle-theme').addEventListener('click', () => {
