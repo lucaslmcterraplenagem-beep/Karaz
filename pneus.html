@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pneus | Karaz</title>
     
-        <script>
+    <script>
         // Evita o flash de tema na troca de páginas
         if (localStorage.theme === 'light') {
             document.documentElement.classList.remove('dark');
@@ -30,6 +30,8 @@
     </script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Biblioteca para gerar o PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body class="bg-gray-100 text-gray-800 dark:bg-darkbg dark:text-gray-100 font-sans h-screen flex overflow-hidden transition-colors duration-300 antialiased">
 
@@ -53,7 +55,6 @@
                 <a href="ordens-servico.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
                     <i data-lucide="wrench" class="w-5 h-5"></i><span class="menu-text text-sm">Ordens de Serviço</span>
                 </a>
-                                <!-- Menu Ativo -->
                 <a href="cadastros.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
                     <i data-lucide="database" class="w-5 h-5"></i><span class="menu-text text-sm">Cadastros Gerais</span>
                 </a>
@@ -132,7 +133,7 @@
                             <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Medida / DOT</th>
                             <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Sulco (Atual/Inicial)</th>
                             <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Status</th>
-                            <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Ações</th>
+                            <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700 text-center">Ações</th>
                         </tr>
                     </thead>
                     <tbody id="tabela-pneus" class="text-sm divide-y divide-gray-200 dark:divide-slate-700"></tbody>
@@ -200,7 +201,7 @@
                 </div>
 
                 <div class="mb-4">
-                    <label class="block text-sm font-medium mb-1">Observações</label>
+                    <label class="block text-sm font-medium mb-1">Observações Iniciais</label>
                     <textarea id="observacao" rows="2" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand"></textarea>
                 </div>
 
@@ -211,6 +212,74 @@
                     <button type="submit" id="btn-salvar" class="px-4 py-2 text-sm font-medium text-white bg-brand hover:bg-orange-700 rounded-md transition-colors">Salvar Pneu</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- MODAL DE HISTÓRICO DO PNEU (NOVO) -->
+    <div id="modal-historico-pneu" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-6xl border border-gray-200 dark:border-slate-700 overflow-hidden flex flex-col max-h-[90vh]">
+            
+            <!-- Cabeçalho -->
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-800/30">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 bg-brand/10 rounded-full flex items-center justify-center">
+                        <i data-lucide="disc" class="w-5 h-5 text-brand"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white" id="hist-titulo">Histórico do Pneu</h3>
+                        <p class="text-sm text-gray-500" id="hist-subtitulo">...</p>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="exportarPDFPneu()" class="bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white px-3 py-1.5 rounded text-xs font-medium transition-colors flex items-center gap-1">
+                        <i data-lucide="file-text" class="w-4 h-4"></i> PDF
+                    </button>
+                    <button onclick="window.print()" class="bg-brand/10 text-brand hover:bg-brand hover:text-white px-3 py-1.5 rounded text-xs font-medium transition-colors flex items-center gap-1">
+                        <i data-lucide="printer" class="w-4 h-4"></i> Imprimir
+                    </button>
+                    <button onclick="fecharModal('modal-historico-pneu')" class="text-gray-400 hover:text-red-500 ml-4"><i data-lucide="x" class="w-6 h-6"></i></button>
+                </div>
+            </div>
+
+            <!-- Filtros de Colunas -->
+            <div class="px-6 py-3 border-b border-gray-200 dark:border-slate-700 bg-white dark:bg-darkcard flex flex-wrap gap-4 text-xs items-center">
+                <span class="font-bold text-gray-500 uppercase tracking-wider">Colunas Visíveis:</span>
+                <label class="flex items-center gap-1 cursor-pointer hover:text-brand transition-colors"><input type="checkbox" checked onchange="toggleColunaHist('col-data', this.checked)" class="rounded text-brand focus:ring-brand"> Data</label>
+                <label class="flex items-center gap-1 cursor-pointer hover:text-brand transition-colors"><input type="checkbox" checked onchange="toggleColunaHist('col-evento', this.checked)" class="rounded text-brand focus:ring-brand"> Evento</label>
+                <label class="flex items-center gap-1 cursor-pointer hover:text-brand transition-colors"><input type="checkbox" checked onchange="toggleColunaHist('col-desc', this.checked)" class="rounded text-brand focus:ring-brand"> Descrição / Movimentação</label>
+                <label class="flex items-center gap-1 cursor-pointer hover:text-brand transition-colors"><input type="checkbox" checked onchange="toggleColunaHist('col-executor', this.checked)" class="rounded text-brand focus:ring-brand"> Executor</label>
+            </div>
+
+            <!-- ÁREA DE IMPRESSÃO -->
+            <div class="flex-1 overflow-auto p-6 bg-gray-50 dark:bg-darkbg" id="area-impressao-pneu">
+                
+                <!-- Cabeçalho exclusivo para o PDF -->
+                <div id="logo-pdf-pneu" class="hidden mb-6 flex justify-between items-end border-b-2 border-brand pb-4">
+                    <div class="flex items-center gap-3">
+                        <!-- Substitua o src pelo caminho da sua logo se tiver -->
+                        <img src="logo.png" alt="Logo Karaz" class="h-10 w-auto object-contain" onerror="this.style.display='none'">
+                        <h1 class="text-2xl font-bold text-gray-800">Karaz <span class="text-brand">Sistema</span></h1>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-xs text-gray-500 uppercase font-bold tracking-widest">Relatório de Vida Útil</p>
+                        <p class="text-sm font-medium text-gray-800" id="pdf-pneu-info">...</p>
+                    </div>
+                </div>
+
+                <!-- Tabela -->
+                <table class="w-full text-left border-collapse bg-white dark:bg-darkcard rounded-lg overflow-hidden shadow-sm" id="tabela-historico-pneu">
+                    <thead class="bg-gray-100 dark:bg-slate-800 text-xs uppercase text-gray-500 dark:text-gray-400">
+                        <tr>
+                            <th class="px-4 py-3 col-data font-medium border-b border-gray-200 dark:border-slate-700">Data / Hora</th>
+                            <th class="px-4 py-3 col-evento font-medium border-b border-gray-200 dark:border-slate-700">Evento</th>
+                            <th class="px-4 py-3 col-desc font-medium border-b border-gray-200 dark:border-slate-700">Descrição / Movimentação</th>
+                            <th class="px-4 py-3 col-executor font-medium border-b border-gray-200 dark:border-slate-700">Executor</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-historico-pneu" class="text-sm divide-y divide-gray-200 dark:divide-slate-700"></tbody>
+                </table>
+                <div id="aviso-historico-pneu-vazio" class="text-center text-gray-500 py-10 hidden">Nenhum evento registrado.</div>
+            </div>
         </div>
     </div>
 
@@ -315,8 +384,7 @@
                 if (sulcoAtual <= 3) sulcoColor = 'text-red-500';
 
                 const tr = document.createElement('tr');
-                tr.className = "hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer";
-                tr.onclick = () => alert("Abrir histórico do pneu " + p.numero_fogo); // Futura tela de histórico
+                tr.className = "hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors";
                 
                 tr.innerHTML = `
                     <td class="px-6 py-4 font-bold text-gray-900 dark:text-white uppercase">${p.numero_fogo}</td>
@@ -335,9 +403,12 @@
                     <td class="px-6 py-4">
                         <span class="px-2 py-1 text-xs font-medium rounded-full ${badgeClass}">${statusTexto}</span>
                     </td>
-                    <td class="px-6 py-4 text-right">
-                        <button class="text-gray-400 hover:text-brand transition-colors" title="Ver Histórico">
+                    <td class="px-6 py-4 text-center flex items-center justify-center gap-3">
+                        <button onclick="abrirHistoricoPneu('${p.id}')" class="text-gray-400 hover:text-brand transition-colors" title="Ver Histórico Completo">
                             <i data-lucide="history" class="w-5 h-5"></i>
+                        </button>
+                        <button onclick="adicionarObservacao('${p.id}')" class="text-gray-400 hover:text-purple-500 transition-colors" title="Adicionar Observação">
+                            <i data-lucide="message-square" class="w-5 h-5"></i>
                         </button>
                     </td>
                 `;
@@ -376,7 +447,10 @@
             form.reset();
             modal.classList.remove('hidden'); 
         }
-        function fecharModal() { modal.classList.add('hidden'); }
+        function fecharModal(id) { 
+            if(typeof id === 'string') document.getElementById(id).classList.add('hidden');
+            else modal.classList.add('hidden'); 
+        }
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -428,6 +502,139 @@
             }
         });
 
+        // ==========================================
+        // --- LÓGICA DO HISTÓRICO DO PNEU (NOVO) ---
+        // ==========================================
+        let pneuHistoricoAtual = null;
+
+        function toggleColunaHist(classe, visivel) {
+            const elementos = document.querySelectorAll(`#tabela-historico-pneu .${classe}`);
+            elementos.forEach(el => {
+                if (visivel) el.classList.remove('hidden');
+                else el.classList.add('hidden');
+            });
+        }
+
+        async function abrirHistoricoPneu(id) {
+            pneuHistoricoAtual = todosPneus.find(p => p.id === id);
+            if(!pneuHistoricoAtual) return;
+
+            // Preenche o cabeçalho
+            document.getElementById('hist-titulo').innerText = `Histórico: ${pneuHistoricoAtual.numero_fogo}`;
+            document.getElementById('hist-subtitulo').innerText = `${pneuHistoricoAtual.marca} ${pneuHistoricoAtual.medida} | DOT: ${pneuHistoricoAtual.dot || '-'}`;
+            document.getElementById('pdf-pneu-info').innerText = `Pneu: ${pneuHistoricoAtual.numero_fogo} | Sulco Inicial: ${pneuHistoricoAtual.sulco_inicial}mm`;
+
+            // Abre o modal
+            document.getElementById('modal-historico-pneu').classList.remove('hidden');
+            
+            const tbody = document.getElementById('tbody-historico-pneu');
+            const aviso = document.getElementById('aviso-historico-pneu-vazio');
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-gray-500">Buscando eventos...</td></tr>';
+            aviso.classList.add('hidden');
+
+            // Busca o histórico no banco
+            const { data, error } = await supabaseClient
+                .from('historico_pneu')
+                .select(`*, auth_users:usuario_id (email)`)
+                .eq('pneu_id', id)
+                .order('created_at', { ascending: false });
+
+            if (error || !data) {
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-red-500">Erro ao carregar histórico.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = '';
+            if (data.length === 0) {
+                tbody.innerHTML = '';
+                aviso.classList.remove('hidden');
+                return;
+            }
+
+            data.forEach(h => {
+                const dataFormatada = new Date(h.created_at).toLocaleString('pt-BR');
+                
+                // Formatação visual do tipo de evento
+                let badgeEvento = 'bg-gray-500/10 text-gray-500';
+                let textoEvento = h.tipo_evento.replace('_', ' ');
+                
+                if(h.tipo_evento === 'cadastro') { badgeEvento = 'bg-blue-500/10 text-blue-500'; }
+                if(h.tipo_evento === 'instalacao') { badgeEvento = 'bg-green-500/10 text-green-500'; }
+                if(h.tipo_evento === 'calibragem') { badgeEvento = 'bg-orange-500/10 text-orange-500'; }
+                if(h.tipo_evento === 'remocao') { badgeEvento = 'bg-red-500/10 text-red-500'; }
+                if(h.tipo_evento === 'observacao') { badgeEvento = 'bg-purple-500/10 text-purple-500'; textoEvento = 'Observação'; }
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
+                        <td class="px-4 py-3 col-data text-xs text-gray-500">${dataFormatada}</td>
+                        <td class="px-4 py-3 col-evento"><span class="px-2 py-1 rounded text-[10px] font-bold uppercase ${badgeEvento}">${textoEvento}</span></td>
+                        <td class="px-4 py-3 col-desc">${h.descricao}</td>
+                        <td class="px-4 py-3 col-executor text-xs">${h.auth_users ? h.auth_users.email : 'Sistema'}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        async function adicionarObservacao(pneuId) {
+            const texto = prompt("Digite a observação para este pneu:");
+            if(!texto || texto.trim() === '') return;
+
+            const session = await supabaseClient.auth.getSession();
+            const { error } = await supabaseClient.from('historico_pneu').insert([{
+                pneu_id: pneuId,
+                tipo_evento: 'observacao',
+                descricao: texto,
+                usuario_id: session.data.session.user.id
+            }]);
+
+            if(error) alert("Erro ao salvar observação: " + error.message);
+            else {
+                alert("Observação registrada no histórico!");
+                // Se o histórico estiver aberto para este pneu, atualiza
+                if(pneuHistoricoAtual && pneuHistoricoAtual.id === pneuId) {
+                    abrirHistoricoPneu(pneuId);
+                }
+            }
+        }
+
+        function exportarPDFPneu() {
+            const elemento = document.getElementById('area-impressao-pneu');
+            const logo = document.getElementById('logo-pdf-pneu');
+            
+            // Mostra a logo temporariamente
+            logo.classList.remove('hidden');
+
+            const opt = {
+                margin:       10,
+                filename:     `Historico_Pneu_${pneuHistoricoAtual.numero_fogo}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            // Força o fundo branco para o PDF ficar bonito, independente do tema
+            const isDark = document.documentElement.classList.contains('dark');
+            if(isDark) {
+                elemento.style.backgroundColor = 'white';
+                elemento.style.color = 'black';
+                const tabela = document.getElementById('tabela-historico-pneu');
+                tabela.classList.remove('dark:bg-darkcard');
+                tabela.classList.add('bg-white', 'text-black');
+            }
+
+            html2pdf().set(opt).from(elemento).save().then(() => {
+                logo.classList.add('hidden');
+                if(isDark) {
+                    elemento.style.backgroundColor = '';
+                    elemento.style.color = '';
+                    const tabela = document.getElementById('tabela-historico-pneu');
+                    tabela.classList.add('dark:bg-darkcard');
+                    tabela.classList.remove('bg-white', 'text-black');
+                }
+            });
+        }
+
+        // Inicializa a tabela
         carregarPneus();
     </script>
 </body>
