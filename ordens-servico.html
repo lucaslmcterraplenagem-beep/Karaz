@@ -158,6 +158,35 @@
                     </div>
 
                     <div id="area-dinamica" class="bg-gray-50 dark:bg-slate-800/50 p-4 rounded-lg border border-gray-200 dark:border-slate-700 hidden mt-4"></div>
+                    <!-- NOVOS CAMPOS DE CONTROLE -->
+<div class="grid grid-cols-2 gap-4 mt-4">
+    <div>
+        <label class="block text-sm font-medium mb-1 text-brand">Custo do Serviço (R$)</label>
+        <input type="number" step="0.01" id="custo" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
+    </div>
+    <div>
+        <label class="block text-sm font-medium mb-1">Executado por</label>
+        <input type="text" id="executor" placeholder="Ex: Mecânico João / Oficina Externa" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
+    </div>
+</div>
+<div class="mt-4">
+    <label class="block text-sm font-medium mb-1">Local do Serviço</label>
+    <input type="text" id="local_servico" placeholder="Ex: Pátio Interno / Oficina X" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
+</div><!-- NOVOS CAMPOS DE CONTROLE -->
+<div class="grid grid-cols-2 gap-4 mt-4">
+    <div>
+        <label class="block text-sm font-medium mb-1 text-brand">Custo do Serviço (R$)</label>
+        <input type="number" step="0.01" id="custo" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
+    </div>
+    <div>
+        <label class="block text-sm font-medium mb-1">Executado por</label>
+        <input type="text" id="executor" placeholder="Ex: Mecânico João / Oficina Externa" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
+    </div>
+</div>
+<div class="mt-4">
+    <label class="block text-sm font-medium mb-1">Local do Serviço</label>
+    <input type="text" id="local_servico" placeholder="Ex: Pátio Interno / Oficina X" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
+</div>
 
                     <div id="div-custo" class="hidden mt-4">
                         <label class="block text-sm font-medium mb-1 text-brand">Custo Estimado (R$)</label>
@@ -690,7 +719,7 @@
             });
         }
 
-        async function salvarOS() {
+               async function salvarOS() {
             const btn = document.getElementById('btn-salvar');
             const vId = document.getElementById('veiculo_id').value;
             const tipo = document.getElementById('tipo').value;
@@ -701,10 +730,10 @@
             btn.innerHTML = 'Salvando...'; btn.disabled = true;
             const session = await supabaseClient.auth.getSession();
             
-            let desc = tipo === 'pneu' ? 'OS de Troca/Reparo' : document.getElementById('desc_manutencao')?.value || 'Manutenção';
+            let desc = document.getElementById('desc_manutencao')?.value || 'OS de ' + tipo;
             let pSaindo = null, pEntrando = null, dest = null;
 
-            if (tipo === 'pneu') {
+            if (tipo === 'Troca de pneu' || tipo.toLowerCase().includes('pneu')) {
                 pSaindo = document.getElementById('select_saindo')?.value || null;
                 pEntrando = document.getElementById('select_entrando_pneu')?.value || null;
                 dest = document.getElementById('select_destino')?.value || null;
@@ -716,11 +745,14 @@
                 km_abertura: parseFloat(km),
                 descricao: desc,
                 status: 'aberta',
-                custo: parseFloat(document.getElementById('custo').value) || 0,
                 aberta_por: session.data.session.user.id,
                 pneu_saindo_id: pSaindo,
                 pneu_entrando_id: pEntrando,
-                destino_pneu_saindo: dest
+                destino_pneu_saindo: dest,
+                // NOVOS CAMPOS
+                custo: parseFloat(document.getElementById('custo').value) || 0,
+                executor: document.getElementById('executor').value || 'Não informado',
+                local_servico: document.getElementById('local_servico').value || 'Interno'
             };
 
             const { error } = await supabaseClient.from('ordens_servico').insert([novaOS]);
