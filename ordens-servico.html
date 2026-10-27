@@ -47,7 +47,6 @@
                 <a href="ordens-servico.html" class="flex items-center gap-3 px-3 py-2.5 bg-brand/10 text-brand rounded-md font-medium transition-colors">
                     <i data-lucide="wrench" class="w-5 h-5"></i><span class="menu-text text-sm">Ordens de Serviço</span>
                 </a>
-                                <!-- Menu Ativo -->
                 <a href="cadastros.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
                     <i data-lucide="database" class="w-5 h-5"></i><span class="menu-text text-sm">Cadastros Gerais</span>
                 </a>
@@ -125,7 +124,7 @@
         </main>
     </div>
 
-    <!-- MODAL NOVA OS (DINÂMICO COM MAPA) -->
+    <!-- MODAL NOVA OS -->
     <div id="modal-os" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 backdrop-blur-md">
         <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-5xl border border-gray-200 dark:border-slate-700 overflow-hidden flex flex-col max-h-[90vh]">
             <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-800/30">
@@ -135,7 +134,6 @@
             
             <form id="form-os" class="flex-1 overflow-y-auto flex flex-col md:flex-row">
                 
-                <!-- COLUNA ESQUERDA: FORMULÁRIO -->
                 <div class="p-6 w-full md:w-1/2 space-y-4 border-r border-gray-200 dark:border-slate-700">
                     <div>
                         <label class="block text-sm font-medium mb-1">Veículo <span class="text-red-500">*</span></label>
@@ -148,7 +146,6 @@
                             <label class="block text-sm font-medium mb-1">Tipo de Serviço <span class="text-red-500">*</span></label>
                             <select id="tipo" required class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
                                 <option value="">Selecione...</option>
-                                
                             </select>
                         </div>
                         <div>
@@ -158,43 +155,33 @@
                     </div>
 
                     <div id="area-dinamica" class="bg-gray-50 dark:bg-slate-800/50 p-4 rounded-lg border border-gray-200 dark:border-slate-700 hidden mt-4"></div>
+                    
                     <!-- NOVOS CAMPOS DE CONTROLE -->
-<div class="grid grid-cols-2 gap-4 mt-4">
-    <div>
-        <label class="block text-sm font-medium mb-1 text-brand">Custo do Serviço (R$)</label>
-        <input type="number" step="0.01" id="custo" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
-    </div>
-    <div>
-        <label class="block text-sm font-medium mb-1">Executado por</label>
-        <input type="text" id="executor" placeholder="Ex: Mecânico João / Oficina Externa" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
-    </div>
-</div>
-<div class="mt-4">
-    <label class="block text-sm font-medium mb-1">Local do Serviço</label>
-    <input type="text" id="local_servico" placeholder="Ex: Pátio Interno / Oficina X" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
-</div>
-
-                    <div id="div-custo" class="hidden mt-4">
-                        <label class="block text-sm font-medium mb-1 text-brand">Custo Estimado (R$)</label>
-                        <input type="number" step="0.01" id="custo" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
+                    <div class="grid grid-cols-2 gap-4 mt-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1 text-brand">Custo do Serviço (R$)</label>
+                            <input type="number" step="0.01" id="custo" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Executado por</label>
+                            <input type="text" id="executor" placeholder="Ex: Mecânico João / Oficina Externa" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium mb-1">Local do Serviço</label>
+                        <input type="text" id="local_servico" placeholder="Ex: Pátio Interno / Oficina X" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
                     </div>
                 </div>
 
-                <!-- COLUNA DIREITA: MAPA INTERATIVO (NOVO DESIGN T) -->
                 <div id="coluna-mapa" class="w-full md:w-1/2 bg-gray-100 dark:bg-slate-900 p-6 flex flex-col items-center justify-start pt-12 relative overflow-y-auto">
                     <h4 class="text-sm font-bold text-gray-600 dark:text-gray-300 mb-4 text-center w-full absolute top-4">Clique no mapa para selecionar os pneus</h4>
                     
                     <div class="relative mt-12 mb-6 flex flex-col items-center">
-                        <!-- Cabine (Frente) -->
                         <div class="w-40 h-12 bg-slate-200 dark:bg-slate-700 rounded-t-xl border-4 border-b-0 border-slate-400 dark:border-slate-500 flex items-center justify-center z-10 relative shadow-sm">
                             <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Frente</span>
                         </div>
-
-                        <!-- Container dos Eixos -->
                         <div id="eixos-container-os" class="relative w-64 flex flex-col items-center gap-10 pt-4 pb-8 z-0">
-                            <!-- Linha central vertical -->
                             <div class="absolute top-0 bottom-0 left-1/2 w-3 bg-slate-400 dark:bg-slate-500 -translate-x-1/2 z-0 rounded-b-xl"></div>
-                            <!-- Eixos entram aqui via JS -->
                         </div>
                     </div>
                 </div>
@@ -220,7 +207,7 @@
         document.getElementById('btn-logout').addEventListener('click', async () => {
             await supabaseClient.auth.signOut(); window.location.href = "login.html";
         });
-                // Lógica para recolher a barra lateral
+
         const sidebar = document.getElementById('sidebar');
         const menuTexts = document.querySelectorAll('.menu-text');
         document.getElementById('toggle-sidebar').addEventListener('click', () => {
@@ -248,8 +235,7 @@
 
         const urlParams = new URLSearchParams(window.location.search);
 
-                    async function carregarDados() {
-            // 1. Carrega Veículos
+        async function carregarDados() {
             const { data: veiculos } = await supabaseClient.from('veiculos').select('*').order('placa');
             listaVeiculos = veiculos || [];
             
@@ -259,13 +245,12 @@
                 selectVeiculo.innerHTML += `<option value="${v.id}" data-km="${v.km_atual}">${v.placa} - ${v.modelo}</option>`;
             });
 
-            selectVeiculo.addEventListener('change', (e) => {
+            selectVeiculo.onchange = (e) => {
                 const opt = e.target.options[e.target.selectedIndex];
                 if(opt.dataset.km) document.getElementById('km_abertura').value = opt.dataset.km;
                 prepararMapaOS(e.target.value);
-            });
+            };
 
-            // 2. Carrega Tipos de Serviço Agrupados
             const { data: servicos } = await supabaseClient.from('tipos_servico').select('*').eq('ativo', true).order('grupo').order('nome');
             const selectTipo = document.getElementById('tipo');
             selectTipo.innerHTML = '<option value="">Selecione...</option>';
@@ -292,8 +277,8 @@
                 }
             }
 
-            // 3. Lógica de Mudança do Select de Tipo
-            selectTipo.addEventListener('change', async (e) => {
+            // EVITA DUPLICAÇÃO: Usa onchange em vez de addEventListener
+            selectTipo.onchange = async (e) => {
                 const opt = e.target.options[e.target.selectedIndex];
                 const comportamento = opt.dataset.comportamento; 
                 const vId = document.getElementById('veiculo_id').value;
@@ -324,15 +309,13 @@
 
                 } else {
                     areaDinamica.classList.remove('hidden');
-                    document.getElementById('div-custo').classList.remove('hidden');
                     areaDinamica.innerHTML = `<label class="block text-xs font-medium mb-1">Descrição / Detalhes</label><textarea id="desc_manutencao" rows="3" class="w-full text-sm px-3 py-2 border rounded-md dark:bg-slate-800 dark:border-slate-600"></textarea>`;
                 }
-            });
+            };
 
-            // Verifica se veio parâmetros da URL
             const veiculoIdParam = urlParams.get('veiculo_id');
             const pneuSaindoIdParam = urlParams.get('pneu_saindo_id');
-            const tipoParam = urlParams.get('tipo'); // Esse 'tipo' pode ser 'calibragem' que vem do mapa
+            const tipoParam = urlParams.get('tipo');
 
             if (veiculoIdParam) {
                 abrirModal();
@@ -478,7 +461,6 @@
             areaDinamica.innerHTML = '';
             areaDinamica.classList.add('hidden');
             colunaMapa.classList.add('hidden');
-            document.getElementById('div-custo').classList.add('hidden');
             pneuSaindo = null; slotEntrando = null;
             modal.classList.remove('hidden'); 
         }
@@ -490,40 +472,6 @@
             const { data: pneus } = await supabaseClient.from('pneus').select('*').eq('veiculo_id', veiculoId).eq('status', 'em_uso');
             pneusDoVeiculoOS = pneus || [];
         }
-
-        document.getElementById('tipo').addEventListener('change', async (e) => {
-            const tipo = e.target.value;
-            const vId = document.getElementById('veiculo_id').value;
-            areaDinamica.innerHTML = '';
-            colunaMapa.classList.add('hidden');
-
-            if (!vId) { alert("Selecione o veículo primeiro."); e.target.value = ''; return; }
-
-            if (tipo === 'pneu') {
-                colunaMapa.classList.remove('hidden');
-                areaDinamica.classList.remove('hidden');
-                const { data: est } = await supabaseClient.from('pneus').select('*').eq('status', 'estoque');
-                estoquePneus = est || [];
-                desenharMapaOS();
-                renderizarFormularioPneu();
-
-            } else if (tipo === 'calibragem') {
-                areaDinamica.classList.remove('hidden');
-                let html = `<p class="text-sm font-bold mb-2">Calibragem Rápida:</p><div class="space-y-2">`;
-                pneusDoVeiculoOS.forEach(p => {
-                    html += `<div class="flex items-center justify-between bg-white dark:bg-slate-900 p-2 rounded border border-gray-200 dark:border-slate-700">
-                        <span class="text-sm font-bold">${p.numero_fogo} (${p.posicao})</span>
-                        <input type="number" placeholder="PSI" class="w-20 px-2 py-1 text-sm border rounded dark:bg-slate-800 dark:border-slate-600">
-                    </div>`;
-                });
-                areaDinamica.innerHTML = html + '</div>';
-
-            } else if (tipo === 'preventiva' || tipo === 'corretiva') {
-                areaDinamica.classList.remove('hidden');
-                document.getElementById('div-custo').classList.remove('hidden');
-                areaDinamica.innerHTML = `<label class="block text-xs font-medium mb-1">Descrição</label><textarea id="desc_manutencao" rows="3" class="w-full text-sm px-3 py-2 border rounded-md dark:bg-slate-800 dark:border-slate-600"></textarea>`;
-            }
-        });
 
         // FUNÇÃO MESTRE: Calcula todas as posições do veículo
         function obterPosicoes(veiculo) {
@@ -557,7 +505,6 @@
 
             const { configArr } = obterPosicoes(veiculoSelecionadoOS);
 
-            // Desenha Eixos Normais
             configArr.forEach((qtdStr, idxEixo) => {
                 let qtd = parseInt(qtdStr);
                 const eixoDiv = document.createElement('div');
@@ -621,7 +568,6 @@
                 eixosContainerOS.appendChild(eixoDiv);
             });
 
-            // Desenha Estepes
             if (veiculoSelecionadoOS.quantidade_estepes > 0) {
                 const estepeDiv = document.createElement('div');
                 estepeDiv.className = "mt-6 pt-4 border-t-2 border-slate-400 dark:border-slate-600 border-dashed w-full z-10";
@@ -667,6 +613,7 @@
             renderizarFormularioPneu();
         }
 
+        // Otimização contra lentidão: onchange direto no HTML
         function renderizarFormularioPneu() {
             if (!veiculoSelecionadoOS) return;
 
@@ -677,7 +624,7 @@
                 <div class="grid grid-cols-2 gap-4 mb-4">
                     <div>
                         <label class="block text-xs font-medium mb-1 text-red-500">1. Pneu a ser Retirado</label>
-                        <select id="select_saindo" class="w-full text-sm px-3 py-2 border rounded-md dark:bg-slate-800 dark:border-slate-600">
+                        <select id="select_saindo" onchange="atualizarPneuSaindo(this.value)" class="w-full text-sm px-3 py-2 border rounded-md dark:bg-slate-800 dark:border-slate-600">
                             <option value="">Nenhum</option>
                             ${pneusDoVeiculoOS.map(p => `<option value="${p.id}" ${pneuSaindo === p.id ? 'selected' : ''}>${p.numero_fogo} (${p.posicao})</option>`).join('')}
                         </select>
@@ -685,6 +632,7 @@
                     <div>
                         <label class="block text-xs font-medium mb-1 text-gray-500">Destino do Pneu</label>
                         <select id="select_destino" class="w-full text-sm px-3 py-2 border rounded-md dark:bg-slate-800 dark:border-slate-600">
+                            <option value="reparo">Enviar p/ Reparo</option>
                             <option value="estoque">Voltar p/ Estoque</option>
                             <option value="reforma">Recapagem</option>
                             <option value="descarte">Descarte</option>
@@ -692,32 +640,33 @@
                     </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-medium mb-1 text-green-500">2. Novo Pneu / Slot de Entrada</label>
+                    <label class="block text-xs font-medium mb-1 text-green-500">2. Novo Pneu / Slot de Entrada (Opcional)</label>
                     <div class="flex gap-2">
-                        <select id="select_entrando_slot" class="w-1/3 text-sm px-3 py-2 border rounded-md dark:bg-slate-800 dark:border-slate-600">
-                            <option value="">Posição...</option>
+                        <select id="select_entrando_slot" onchange="atualizarSlotEntrando(this.value)" class="w-1/3 text-sm px-3 py-2 border rounded-md dark:bg-slate-800 dark:border-slate-600">
+                            <option value="">Deixar Vazio</option>
                             ${posicoes.map(p => `<option value="${p}" ${slotEntrando === p ? 'selected' : ''}>${p}</option>`).join('')}
                         </select>
                         <select id="select_entrando_pneu" class="w-2/3 text-sm px-3 py-2 border rounded-md dark:bg-slate-800 dark:border-slate-600">
-                            <option value="">Escolha do Estoque...</option>
+                            <option value="">Nenhum / Apenas Remover</option>
                             ${estoquePneus.map(p => `<option value="${p.id}">${p.numero_fogo} - ${p.marca}</option>`).join('')}
                         </select>
                     </div>
                 </div>
             `;
             areaDinamica.innerHTML = html;
-
-            document.getElementById('select_saindo').addEventListener('change', (e) => {
-                pneuSaindo = e.target.value || null;
-                desenharMapaOS();
-            });
-            document.getElementById('select_entrando_slot').addEventListener('change', (e) => {
-                slotEntrando = e.target.value || null;
-                desenharMapaOS();
-            });
         }
 
-               async function salvarOS() {
+        function atualizarPneuSaindo(id) {
+            pneuSaindo = id || null;
+            desenharMapaOS();
+        }
+
+        function atualizarSlotEntrando(posicao) {
+            slotEntrando = posicao || null;
+            desenharMapaOS();
+        }
+
+        async function salvarOS() {
             const btn = document.getElementById('btn-salvar');
             const vId = document.getElementById('veiculo_id').value;
             const tipo = document.getElementById('tipo').value;
@@ -747,7 +696,6 @@
                 pneu_saindo_id: pSaindo,
                 pneu_entrando_id: pEntrando,
                 destino_pneu_saindo: dest,
-                // NOVOS CAMPOS
                 custo: parseFloat(document.getElementById('custo').value) || 0,
                 executor: document.getElementById('executor').value || 'Não informado',
                 local_servico: document.getElementById('local_servico').value || 'Interno'
