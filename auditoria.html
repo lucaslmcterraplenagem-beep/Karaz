@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auditoria | Karaz</title>
+    
+    <script>
+        if (localStorage.theme === 'light') { document.documentElement.classList.remove('dark'); } 
+        else { document.documentElement.classList.add('dark'); }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] }, colors: { brand: '#ea580c', darkbg: '#0f172a', darkcard: '#1e293b' } } }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 dark:bg-darkbg dark:text-gray-100 font-sans h-screen flex overflow-hidden transition-colors duration-300 antialiased">
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="w-64 bg-white dark:bg-darkcard border-r border-gray-200 dark:border-slate-700 transition-all duration-300 flex flex-col z-20">
+        <div>
+            <div class="h-16 flex items-center justify-center border-b border-gray-200 dark:border-slate-700">
+                <h1 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">Karaz <span class="text-brand">Sistema</span></h1>
+            </div>
+            <nav class="p-3 space-y-1">
+                <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 rounded-md font-medium transition-colors"><i data-lucide="layout-dashboard" class="w-5 h-5"></i><span class="menu-text text-sm">Dashboard</span></a>
+                <a href="veiculos.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 rounded-md font-medium transition-colors"><i data-lucide="truck" class="w-5 h-5"></i><span class="menu-text text-sm">Veículos</span></a>
+                <a href="pneus.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 rounded-md font-medium transition-colors"><i data-lucide="disc" class="w-5 h-5"></i><span class="menu-text text-sm">Pneus</span></a>
+                <a href="ordens-servico.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 rounded-md font-medium transition-colors"><i data-lucide="wrench" class="w-5 h-5"></i><span class="menu-text text-sm">Ordens de Serviço</span></a>
+                <a href="cadastros.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 rounded-md font-medium transition-colors"><i data-lucide="database" class="w-5 h-5"></i><span class="menu-text text-sm">Cadastros Gerais</span></a>
+                
+                <!-- MENU AUDITORIA (ATIVO) -->
+                <a href="auditoria.html" class="flex items-center gap-3 px-3 py-2.5 bg-brand/10 text-brand rounded-md font-medium transition-colors">
+                    <i data-lucide="shield-check" class="w-5 h-5"></i><span class="menu-text text-sm">Auditoria</span>
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <div class="flex-1 flex flex-col h-screen overflow-hidden">
+        <header class="h-16 bg-white dark:bg-darkcard border-b border-gray-200 dark:border-slate-700 flex items-center justify-between px-6 transition-colors duration-300">
+            <div class="flex items-center gap-4">
+                <button id="toggle-sidebar" class="p-1.5 text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors rounded-md"><i data-lucide="menu" class="w-5 h-5"></i></button>
+                <h2 class="text-base font-semibold text-gray-800 dark:text-gray-200">Log de Auditoria</h2>
+            </div>
+            <div class="flex items-center gap-5">
+                <button id="toggle-theme" class="p-1.5 text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors"><i data-lucide="moon" class="w-5 h-5 hidden dark:block"></i><i data-lucide="sun" class="w-5 h-5 block dark:hidden"></i></button>
+                <div class="h-5 w-px bg-gray-300 dark:bg-slate-700"></div>
+                <div class="flex items-center gap-3">
+                    <p id="user-email" class="text-sm font-medium text-gray-800 dark:text-gray-200 hidden sm:block">...</p>
+                    <button id="btn-logout" class="p-2 text-gray-400 hover:text-red-500 transition-colors"><i data-lucide="log-out" class="w-5 h-5"></i></button>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-6 bg-gray-50 dark:bg-darkbg">
+            
+            <div class="bg-white dark:bg-darkcard p-4 rounded-lg border border-gray-200 dark:border-slate-700 mb-4 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex flex-wrap w-full gap-3 items-center">
+                    <div class="relative w-full sm:w-64">
+                        <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-gray-400"></i>
+                        <input type="text" id="busca-auditoria" placeholder="Buscar por e-mail ou tabela..." class="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:border-brand transition-colors">
+                    </div>
+                    <select id="filtro-acao" class="px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:border-brand text-gray-700 dark:text-gray-300">
+                        <option value="">Todas as Ações</option>
+                        <option value="insert">Criação (INSERT)</option>
+                        <option value="update">Alteração (UPDATE)</option>
+                        <option value="delete">Exclusão (DELETE)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-darkcard border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-50 dark:bg-slate-800/50 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider">
+                            <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Data / Hora</th>
+                            <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Usuário</th>
+                            <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Tabela</th>
+                            <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Ação</th>
+                            <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Detalhes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-auditoria" class="text-sm divide-y divide-gray-200 dark:divide-slate-700"></tbody>
+                </table>
+                <div id="aviso-vazio" class="p-8 text-center text-gray-500 dark:text-gray-400 text-sm hidden">Nenhum log de auditoria encontrado.</div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL DE DETALHES DA AUDITORIA -->
+    <div id="modal-detalhes-auditoria" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-4xl border border-gray-200 dark:border-slate-700 overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-800/30">
+                <h3 class="text-lg font-bold text-brand flex items-center gap-2"><i data-lucide="file-search" class="w-5 h-5"></i> Detalhes da Alteração</h3>
+                <button onclick="fecharModalDetalhes()" class="text-gray-400 hover:text-red-500"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto p-6 flex flex-col md:flex-row gap-6">
+                <!-- Dados Antigos -->
+                <div class="flex-1 bg-red-500/5 rounded-lg p-4 border border-red-500/20">
+                    <h4 class="text-sm font-bold text-red-500 uppercase mb-2">Dados Antigos (Antes)</h4>
+                    <pre id="json-antes" class="text-xs text-gray-600 dark:text-gray-400 whitespace-pre-wrap font-mono"></pre>
+                </div>
+                
+                <!-- Dados Novos -->
+                <div class="flex-1 bg-green-500/5 rounded-lg p-4 border border-green-500/20">
+                    <h4 class="text-sm font-bold text-green-500 uppercase mb-2">Dados Novos (Depois)</h4>
+                    <pre id="json-depois" class="text-xs text-gray-600 dark:text-gray-400 whitespace-pre-wrap font-mono"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/supabase-client.js"></script>
+    <script>
+        lucide.createIcons();
+        let todosLogs = [];
+
+        // --- AUTENTICAÇÃO E UI ---
+        supabaseClient.auth.getSession().then(({ data: { session } }) => {
+            if (!session) { window.location.href = "login.html"; } 
+            else { document.getElementById('user-email').innerText = session.user.email; }
+        });
+
+        document.getElementById('btn-logout').addEventListener('click', async () => {
+            await supabaseClient.auth.signOut(); window.location.href = "login.html";
+        });
+
+        const sidebar = document.getElementById('sidebar');
+        const menuTexts = document.querySelectorAll('.menu-text');
+        document.getElementById('toggle-sidebar').addEventListener('click', () => {
+            if (sidebar.classList.contains('w-64')) {
+                sidebar.classList.replace('w-64', 'w-20'); menuTexts.forEach(el => el.classList.add('hidden'));
+            } else {
+                sidebar.classList.replace('w-20', 'w-64'); menuTexts.forEach(el => el.classList.remove('hidden'));
+            }
+        });
+        const html = document.documentElement;
+        if (localStorage.theme === 'light') html.classList.remove('dark');
+        document.getElementById('toggle-theme').addEventListener('click', () => {
+            html.classList.toggle('dark'); localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
+        });
+
+        // --- CARREGAR DADOS ---
+        async function carregarAuditoria() {
+            const { data, error } = await supabaseClient.rpc('get_auditoria_logs');
+            
+            if (error) {
+                console.error(error);
+                document.getElementById('aviso-vazio').innerText = "Erro ao carregar auditoria. Verifique se você é Admin.";
+                document.getElementById('aviso-vazio').classList.remove('hidden');
+                return;
+            }
+
+            todosLogs = data || [];
+            renderizarTabela(todosLogs);
+        }
+
+        function renderizarTabela(lista) {
+            const tabela = document.getElementById('tabela-auditoria');
+            const aviso = document.getElementById('aviso-vazio');
+            tabela.innerHTML = '';
+
+            if (lista.length === 0) {
+                aviso.classList.remove('hidden');
+                return;
+            }
+            aviso.classList.add('hidden');
+
+            lista.forEach(log => {
+                const dataFormatada = new Date(log.created_at).toLocaleString('pt-BR');
+                
+                // Cor da Ação
+                let badgeAcao = 'bg-gray-500/10 text-gray-500';
+                if(log.acao === 'insert') badgeAcao = 'bg-green-500/10 text-green-500';
+                if(log.acao === 'update') badgeAcao = 'bg-blue-500/10 text-blue-500';
+                if(log.acao === 'delete') badgeAcao = 'bg-red-500/10 text-red-500';
+
+                tabela.innerHTML += `
+                    <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
+                        <td class="px-6 py-4 text-xs text-gray-500">${dataFormatada}</td>
+                        <td class="px-6 py-4 text-xs font-medium">${log.email_usuario || 'Sistema'}</td>
+                        <td class="px-6 py-4 font-bold uppercase text-sm">${log.tabela}</td>
+                        <td class="px-6 py-4"><span class="px-2 py-1 rounded text-[10px] font-bold uppercase ${badgeAcao}">${log.acao}</span></td>
+                        <td class="px-6 py-4">
+                            <button onclick="abrirDetalhes(${log.id})" class="text-brand hover:text-orange-700 font-medium text-xs flex items-center gap-1">
+                                <i data-lucide="search" class="w-3 h-3"></i> Ver JSON
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            lucide.createIcons();
+        }
+
+        // --- FILTROS ---
+        function aplicarFiltros() {
+            const termo = document.getElementById('busca-auditoria').value.toLowerCase();
+            const acao = document.getElementById('filtro-acao').value;
+
+            const filtrados = todosLogs.filter(log => {
+                const matchTexto = (log.email_usuario && log.email_usuario.toLowerCase().includes(termo)) || 
+                                   (log.tabela && log.tabela.toLowerCase().includes(termo));
+                const matchAcao = acao === "" || log.acao === acao;
+                return matchTexto && matchAcao;
+            });
+
+            renderizarTabela(filtrados);
+        }
+
+        document.getElementById('busca-auditoria').addEventListener('input', aplicarFiltros);
+        document.getElementById('filtro-acao').addEventListener('change', aplicarFiltros);
+
+        // --- MODAL DE DETALHES ---
+        function abrirDetalhes(id) {
+            const log = todosLogs.find(l => l.id === id);
+            if(!log) return;
+
+            const formatarJSON = (obj) => {
+                if(!obj) return "Nenhum dado registrado.";
+                return JSON.stringify(obj, null, 2);
+            };
+
+            document.getElementById('json-antes').innerText = formatarJSON(log.dados_antes);
+            document.getElementById('json-depois').innerText = formatarJSON(log.dados_depois);
+            
+            document.getElementById('modal-detalhes-auditoria').classList.remove('hidden');
+        }
+
+        function fecharModalDetalhes() {
+            document.getElementById('modal-detalhes-auditoria').classList.add('hidden');
+        }
+
+        carregarAuditoria();
+    </script>
+</body>
+</html>
