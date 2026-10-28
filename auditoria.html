@@ -151,20 +151,17 @@
             html.classList.toggle('dark'); localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
         });
 
-        // --- CARREGAR DADOS ---
-        async function carregarAuditoria() {
+                async function carregarAuditoria() {
             const { data, error } = await supabaseClient.rpc('get_auditoria_logs');
             
             if (error) {
                 console.error(error);
-                document.getElementById('aviso-vazio').innerText = "Erro ao carregar auditoria. Verifique se você é Admin.";
+                // MUDANÇA AQUI: Vai mostrar o erro real na tela
+                document.getElementById('aviso-vazio').innerText = "Erro no Banco: " + error.message;
                 document.getElementById('aviso-vazio').classList.remove('hidden');
                 return;
             }
-
-            todosLogs = data || [];
-            renderizarTabela(todosLogs);
-        }
+            // ... resto do código
 
         function renderizarTabela(lista) {
             const tabela = document.getElementById('tabela-auditoria');
