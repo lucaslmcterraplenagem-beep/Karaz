@@ -563,7 +563,14 @@
                 if(h.tipo_evento === 'calibragem') { badgeEvento = 'bg-orange-500/10 text-orange-500'; }
                 if(h.tipo_evento === 'remocao') { badgeEvento = 'bg-red-500/10 text-red-500'; }
                 if(h.tipo_evento === 'observacao') { badgeEvento = 'bg-purple-500/10 text-purple-500'; textoEvento = 'Observação'; }
-
+                if(h.tipo_evento === 'cadastro') { badgeEvento = 'bg-blue-500/10 text-blue-500'; }
+                if(h.tipo_evento === 'instalacao') { badgeEvento = 'bg-green-500/10 text-green-500'; }
+                if(h.tipo_evento === 'calibragem') { badgeEvento = 'bg-orange-500/10 text-orange-500'; }
+                if(h.tipo_evento === 'remocao') { badgeEvento = 'bg-red-500/10 text-red-500'; }
+                if(h.tipo_evento === 'observacao') { badgeEvento = 'bg-purple-500/10 text-purple-500'; textoEvento = 'Observação'; }
+                
+                // NOVO EVENTO DE OS:
+                if(h.tipo_evento === 'os_concluida') { badgeEvento = 'bg-indigo-500/10 text-indigo-500'; textoEvento = 'OS Concluída'; }
                 tbody.innerHTML += `
                     <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
                         <td class="px-4 py-3 col-data text-xs text-gray-500">${dataFormatada}</td>
