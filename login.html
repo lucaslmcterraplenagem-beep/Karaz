@@ -1,44 +1,64 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | LK Pneus</title>
-        <script>
-        // Evita o flash de tema na troca de páginas
-        if (localStorage.theme === 'light') {
-            document.documentElement.classList.remove('dark');
-        } else {
-            document.documentElement.classList.add('dark');
+    <title>Login | Karaz Sistema</title>
+    
+    <script>
+        if (localStorage.theme === 'light') { document.documentElement.classList.remove('dark'); } 
+        else { document.documentElement.classList.add('dark'); }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] }, colors: { brand: '#ea580c', darkbg: '#0f172a', darkcard: '#1e293b' } } }
         }
     </script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="bg-gray-900 text-white flex items-center justify-center h-screen font-sans">
-    <div class="bg-gray-800 p-8 rounded-xl shadow-2xl w-full max-w-md border border-gray-700">
+<body class="bg-gray-100 text-gray-800 dark:bg-darkbg dark:text-gray-100 font-sans h-screen flex items-center justify-center transition-colors duration-300 antialiased">
+
+    <div class="bg-white dark:bg-darkcard p-8 rounded-xl shadow-2xl w-full max-w-md border border-gray-200 dark:border-slate-700">
+        
         <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-orange-500">Karaz <span class="text-white">Sistema</span></h1>
-            <p class="text-gray-400 text-sm mt-2">Gestão de Frota e Pneus</p>
+            <h1 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Karaz <span class="text-brand">Sistema</span></h1>
+            <p class="text-gray-500 dark:text-gray-400 text-sm mt-2">Gestão de Frota e Pneus</p>
         </div>
-        <form id="login-form" class="space-y-6">
+
+        <form id="login-form" class="space-y-5">
             <div id="error-message" class="hidden bg-red-500/10 border border-red-500 text-red-500 text-sm p-3 rounded-md text-center"></div>
+
             <div>
-                <label class="block text-sm font-medium text-gray-300 mb-1">E-mail ou CPF</label>
-                <input type="text" id="email" required placeholder="seu@email.com" class="w-full bg-gray-900 border border-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">E-mail ou CPF</label>
+                <input type="text" id="email" required placeholder="seu@email.com ou CPF"
+                    class="w-full bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white px-4 py-3 rounded-lg focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand transition-colors">
             </div>
+
             <div>
-                <label class="block text-sm font-medium text-gray-300 mb-1">Senha</label>
-                <input type="password" id="password" required placeholder="••••••••" class="w-full bg-gray-900 border border-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Senha</label>
+                <input type="password" id="password" required placeholder="••••••••"
+                    class="w-full bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white px-4 py-3 rounded-lg focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand transition-colors">
             </div>
-            <button type="submit" id="btn-login" class="w-full bg-orange-600 hover:bg-orange-500 text-white font-bold py-3 px-4 rounded-lg transition-all duration-200 shadow-lg shadow-orange-600/30">
+
+            <button type="submit" id="btn-login"
+                class="w-full bg-brand hover:bg-orange-700 text-white font-bold py-3 px-4 rounded-lg transition-all duration-200 shadow-lg shadow-brand/30 flex justify-center items-center">
                 Acessar Sistema
             </button>
         </form>
-        <div class="mt-6 text-center text-xs text-gray-500">
-            &copy; 2026 Karaz Sistema. Sistema Seguro.
+        
+        <div class="mt-8 text-center text-xs text-gray-500">
+            &copy; 2026 Karaz Sistema. Todos os direitos reservados.
         </div>
     </div>
+
     <script src="js/supabase-client.js"></script>
     <script src="js/auth.js"></script>
 </body>
