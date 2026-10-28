@@ -368,13 +368,13 @@
             avisoVazio.classList.add('hidden');
 
             lista.forEach(p => {
-                // Lógica de cor do status
                 let badgeClass = 'bg-gray-500/10 text-gray-500';
                 let statusTexto = 'Desconhecido';
                 
                 if (p.status === 'estoque') { badgeClass = 'bg-blue-500/10 text-blue-500'; statusTexto = 'Estoque'; }
                 if (p.status === 'em_uso') { badgeClass = 'bg-green-500/10 text-green-500'; statusTexto = 'Em Uso'; }
-                if (p.status === 'reforma') { badgeClass = 'bg-yellow-500/10 text-yellow-500'; statusTexto = 'Reforma'; }
+                if (p.status === 'reforma') { badgeClass = 'bg-yellow-500/10 text-yellow-500'; statusTexto = 'Recapagem'; }
+                if (p.status === 'reparo') { badgeClass = 'bg-orange-500/10 text-orange-500'; statusTexto = 'Em Reparo'; } // <--- NOVO
                 if (p.status === 'descarte') { badgeClass = 'bg-red-500/10 text-red-500'; statusTexto = 'Descarte'; }
 
                 // Lógica de cor do sulco
