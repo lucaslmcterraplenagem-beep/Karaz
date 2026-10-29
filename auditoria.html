@@ -216,18 +216,32 @@
         document.getElementById('busca-auditoria').addEventListener('input', aplicarFiltros);
         document.getElementById('filtro-acao').addEventListener('change', aplicarFiltros);
 
-        // --- MODAL DE DETALHES ---
-        function abrirDetalhes(id) {
+              function abrirDetalhes(id) {
             const log = todosLogs.find(l => l.id === id);
             if(!log) return;
+
+            // Função que limpa os dados chatos do banco
+            const filtrarDados = (obj) => {
+                if(!obj) return null;
+                const clone = { ...obj };
+                delete clone.id;
+                delete clone.created_at;
+                delete clone.updated_at;
+                delete clone.deleted_at;
+                delete clone.ativo; // Geralmente não precisa ver se está ativo/inativo no log
+                return clone;
+            };
+
+            const antes = filtrarDados(log.dados_antes);
+            const depois = filtrarDados(log.dados_depois);
 
             const formatarJSON = (obj) => {
                 if(!obj) return "Nenhum dado registrado.";
                 return JSON.stringify(obj, null, 2);
             };
 
-            document.getElementById('json-antes').innerText = formatarJSON(log.dados_antes);
-            document.getElementById('json-depois').innerText = formatarJSON(log.dados_depois);
+            document.getElementById('json-antes').innerText = formatarJSON(antes);
+            document.getElementById('json-depois').innerText = formatarJSON(depois);
             
             document.getElementById('modal-detalhes-auditoria').classList.remove('hidden');
         }
