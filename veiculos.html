@@ -41,7 +41,7 @@
             <div class="h-16 flex items-center justify-center border-b border-gray-200 dark:border-slate-700">
                 <h1 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">Karaz <span class="text-brand">Sistema</span></h1>
             </div>
-            <nav class="p-3 space-y-1">
+                        <nav class="p-3 space-y-1">
                 <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
                     <i data-lucide="layout-dashboard" class="w-5 h-5"></i><span class="menu-text text-sm">Dashboard</span>
                 </a>
@@ -54,13 +54,11 @@
                 <a href="ordens-servico.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
                     <i data-lucide="wrench" class="w-5 h-5"></i><span class="menu-text text-sm">Ordens de Serviço</span>
                 </a>
-                                <!-- Menu Ativo -->
                 <a href="cadastros.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
                     <i data-lucide="database" class="w-5 h-5"></i><span class="menu-text text-sm">Cadastros Gerais</span>
-                                    <!-- NOVO MENU AUDITORIA -->
+                </a>
                 <a href="auditoria.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
                     <i data-lucide="shield-check" class="w-5 h-5"></i><span class="menu-text text-sm">Auditoria</span>
-                </a>
                 </a>
             </nav>
         </div>
@@ -707,7 +705,7 @@
         });
 
         const modalHist = document.getElementById('modal-historico');
-        async function abrirHistorico(veiculoId) {
+         async function abrirHistorico(veiculoId) {
             veiculoHistoricoAtual = todosVeiculos.find(x => x.id === veiculoId);
             if(!veiculoHistoricoAtual) return;
 
@@ -722,16 +720,16 @@
 
             const { data, error } = await supabaseClient
                 .from('historico_veiculo')
-                .select(`*, auth_users:usuario_id (email)`)
+                .select('*') // Sem JOIN que quebra
                 .eq('veiculo_id', veiculoId)
                 .order('created_at', { ascending: false });
 
             if (error) {
-                const { data: dataSimple } = await supabaseClient.from('historico_veiculo').select('*').eq('veiculo_id', veiculoId).order('created_at', { ascending: false });
-                todosHistoricos = dataSimple || [];
-            } else {
-                todosHistoricos = data || [];
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-red-500">Erro ao carregar histórico.</td></tr>';
+                return;
             }
+
+            todosHistoricos = data || [];
 
             if (todosHistoricos.length === 0) {
                 tbody.innerHTML = '';
@@ -739,9 +737,21 @@
                 return;
             }
 
+            // Pega o usuário logado para mostrar o email correto
+            const session = await supabaseClient.auth.getSession();
+            const currentUserId = session.data.session?.user?.id;
+
             tbody.innerHTML = '';
             todosHistoricos.forEach(h => {
                 const dataFormatada = new Date(h.created_at).toLocaleString('pt-BR');
+                
+                let emailUsuario = 'Sistema';
+                if (h.usuario_id === currentUserId) {
+                    emailUsuario = session.data.session.user.email; 
+                } else if (h.usuario_id) {
+                    emailUsuario = 'Usuário ID: ' + h.usuario_id.substring(0, 5) + '...'; 
+                }
+
                 tbody.innerHTML += `
                     <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
                         <td class="px-4 py-3 col-data text-xs text-gray-500">${dataFormatada}</td>
@@ -749,7 +759,7 @@
                         <td class="px-4 py-3 col-desc">${h.descricao}</td>
                         <td class="px-4 py-3 col-km text-xs">${h.km_registro ? h.km_registro + ' km' : '-'}</td>
                         <td class="px-4 py-3 col-horas text-xs">${veiculoHistoricoAtual.horas_atual} h</td>
-                        <td class="px-4 py-3 col-user text-xs">${h.auth_users ? h.auth_users.email : 'Sistema'}</td>
+                        <td class="px-4 py-3 col-user text-xs">${emailUsuario}</td>
                     </tr>
                 `;
             });
