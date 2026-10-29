@@ -41,7 +41,7 @@
             <div class="h-16 flex items-center justify-center border-b border-gray-200 dark:border-slate-700">
                 <h1 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">Karaz <span class="text-brand">Sistema</span></h1>
             </div>
-                        <nav class="p-3 space-y-1">
+            <nav class="p-3 space-y-1">
                 <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
                     <i data-lucide="layout-dashboard" class="w-5 h-5"></i><span class="menu-text text-sm">Dashboard</span>
                 </a>
@@ -196,7 +196,6 @@
                 </div>
 
                 <div id="tab-content-2" class="p-6 space-y-4 hidden">
-                    <!-- 4 COLUNAS AGORA (Eixos, Estepes, KM, Horas) -->
                     <div class="grid grid-cols-4 gap-4 mb-4">
                         <div>
                             <label class="block text-sm font-medium mb-1">Qtd. Eixos <span class="text-red-500">*</span></label>
@@ -219,9 +218,7 @@
                     <div class="flex gap-6">
                         <div class="flex-1">
                             <label class="block text-sm font-medium mb-2">Pneus por Eixo (Frente para Trás)</label>
-                            <div id="container-eixos" class="space-y-2 max-h-48 overflow-y-auto pr-2">
-                                <!-- Inputs gerados via JS -->
-                            </div>
+                            <div id="container-eixos" class="space-y-2 max-h-48 overflow-y-auto pr-2"></div>
                         </div>
                         
                         <div class="w-48 bg-slate-100 dark:bg-slate-800 rounded-lg p-4 flex flex-col items-center justify-center border border-gray-200 dark:border-slate-700">
@@ -451,6 +448,7 @@
                         <a href="mapa-veiculo.html?id=${v.id}" class="text-gray-400 hover:text-brand transition-colors" title="Mapa"><i data-lucide="map" class="w-5 h-5"></i></a>
                         <button onclick="editarVeiculo('${v.id}')" class="text-gray-400 hover:text-blue-500 transition-colors" title="Editar"><i data-lucide="edit" class="w-5 h-5"></i></button>
                         <button onclick="toggleAtivoVeiculo('${v.id}', ${v.ativo})" class="text-gray-400 ${v.ativo ? 'hover:text-red-500' : 'hover:text-green-500'} transition-colors" title="${v.ativo ? 'Inativar' : 'Ativar'}"><i data-lucide="power" class="w-5 h-5"></i></button>
+                        <button onclick="excluirVeiculo('${v.id}', '${v.placa}')" class="text-gray-400 hover:text-red-600 transition-colors" title="Excluir Definitivamente"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
                         <button onclick="abrirHistorico('${v.id}')" class="text-gray-400 hover:text-orange-500 transition-colors" title="Histórico"><i data-lucide="history" class="w-5 h-5"></i></button>
                     </td>
                 `;
@@ -466,6 +464,25 @@
             const { error } = await supabaseClient.from('veiculos').update({ ativo: !statusAtual }).eq('id', id);
             if (error) alert("Erro: " + error.message);
             else carregarDados();
+        }
+
+        // --- FUNÇÃO DE EXCLUIR VEÍCULO ---
+        async function excluirVeiculo(id, placa) {
+            const msg = `⚠️ ATENÇÃO: EXCLUIR VEÍCULO DEFINITIVAMENTE ⚠️\n\nVocê está prestes a apagar o veículo de placa ${placa}.\n\n- Esta ação NÃO PODE SER DESFEITA.\n- O veículo e seu histórico de mapa serão removidos.\n- Se houver Ordens de Serviço abertas para ele, a exclusão será bloqueada por segurança.\n- A ação ficará gravada permanentemente na Auditoria do sistema.\n\nDeseja realmente continuar?`;
+            
+            if(!window.confirm(msg)) return;
+
+            const { error } = await supabaseClient.from('veiculos').delete().eq('id', id);
+            
+            if (error) {
+                if(error.code === '23503') { // Erro de chave estrangeira (tem OS vinculada)
+                    alert("Erro: Não é possível excluir este veículo pois existem Ordens de Serviço vinculadas a ele. Exclua as OS primeiro ou inative o veículo.");
+                } else {
+                    alert("Erro ao excluir: " + error.message);
+                }
+            } else {
+                carregarDados();
+            }
         }
 
         // --- MODAL CADASTRO / EDIÇÃO ---
@@ -563,7 +580,6 @@
             document.getElementById('eixos').value = v.quantidade_eixos;
             document.getElementById('estepes').value = v.quantidade_estepes;
             document.getElementById('km').value = v.km_atual;
-            // Agora o 'horas' existe no HTML, então não vai dar erro null!
             document.getElementById('horas').value = v.horas_atual || 0;
 
             const container = document.getElementById('container-eixos');
@@ -573,7 +589,6 @@
             if (v.configuracao_eixos) {
                 configArr = v.configuracao_eixos.split(',');
             } else {
-                // Fallback para veículos criados antes da atualização
                 let pneusTotal = v.quantidade_pneus || 4;
                 let eixos = v.quantidade_eixos || 2;
                 if (v.tipo === 'caminhao' || v.tipo === 'carreta') {
