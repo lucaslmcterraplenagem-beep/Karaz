@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ordens de Serviço | Karaz</title>
+    <title>Cadastros Gerais | Karaz</title>
     
     <script>
         if (localStorage.theme === 'light') { document.documentElement.classList.remove('dark'); } 
@@ -34,8 +34,8 @@
                 <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 rounded-md font-medium transition-colors"><i data-lucide="layout-dashboard" class="w-5 h-5"></i><span class="menu-text text-sm">Dashboard</span></a>
                 <a href="veiculos.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 rounded-md font-medium transition-colors"><i data-lucide="truck" class="w-5 h-5"></i><span class="menu-text text-sm">Veículos</span></a>
                 <a href="pneus.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 rounded-md font-medium transition-colors"><i data-lucide="disc" class="w-5 h-5"></i><span class="menu-text text-sm">Pneus</span></a>
-                <a href="ordens-servico.html" class="flex items-center gap-3 px-3 py-2.5 bg-brand/10 text-brand rounded-md font-medium transition-colors"><i data-lucide="wrench" class="w-5 h-5"></i><span class="menu-text text-sm">Ordens de Serviço</span></a>
-                <a href="cadastros.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 rounded-md font-medium transition-colors"><i data-lucide="database" class="w-5 h-5"></i><span class="menu-text text-sm">Cadastros Gerais</span></a>
+                <a href="ordens-servico.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 rounded-md font-medium transition-colors"><i data-lucide="wrench" class="w-5 h-5"></i><span class="menu-text text-sm">Ordens de Serviço</span></a>
+                <a href="cadastros.html" class="flex items-center gap-3 px-3 py-2.5 bg-brand/10 text-brand rounded-md font-medium transition-colors"><i data-lucide="database" class="w-5 h-5"></i><span class="menu-text text-sm">Cadastros Gerais</span></a>
                 <a href="auditoria.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 rounded-md font-medium transition-colors"><i data-lucide="shield-check" class="w-5 h-5"></i><span class="menu-text text-sm">Auditoria</span></a>
             </nav>
         </div>
@@ -46,7 +46,7 @@
         <header class="h-16 bg-white dark:bg-darkcard border-b border-gray-200 dark:border-slate-700 flex items-center justify-between px-6 transition-colors duration-300">
             <div class="flex items-center gap-4">
                 <button id="toggle-sidebar" class="p-1.5 text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors rounded-md"><i data-lucide="menu" class="w-5 h-5"></i></button>
-                <h2 class="text-base font-semibold text-gray-800 dark:text-gray-200">Gestão de OS</h2>
+                <h2 class="text-base font-semibold text-gray-800 dark:text-gray-200">Cadastros Gerais</h2>
             </div>
             <div class="flex items-center gap-5">
                 <button id="toggle-theme" class="p-1.5 text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors"><i data-lucide="moon" class="w-5 h-5 hidden dark:block"></i><i data-lucide="sun" class="w-5 h-5 block dark:hidden"></i></button>
@@ -59,204 +59,201 @@
         </header>
 
         <main class="flex-1 overflow-y-auto p-6 bg-gray-50 dark:bg-darkbg">
-            <!-- KPIs -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div class="bg-white dark:bg-darkcard p-4 rounded-lg border border-gray-200 dark:border-slate-700">
-                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">OS Ativas</p>
-                    <p class="text-2xl font-bold text-blue-500" id="kpi-abertas">0</p>
+            
+            <div class="flex gap-6 mb-6 border-b border-gray-200 dark:border-slate-700">
+                <button onclick="mudarAba('servicos')" id="tab-servicos" class="pb-3 text-brand border-b-2 border-brand font-medium text-sm transition-colors">Tipos de Serviço</button>
+                <button onclick="mudarAba('motoristas')" id="tab-motoristas" class="pb-3 text-gray-500 border-b-2 border-transparent font-medium text-sm transition-colors">Colaboradores</button>
+                <button onclick="mudarAba('fornecedores')" id="tab-fornecedores" class="pb-3 text-gray-500 border-b-2 border-transparent font-medium text-sm transition-colors">Fornecedores</button>
+            </div>
+
+            <!-- CONTEÚDO: SERVIÇOS -->
+            <div id="content-servicos" class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <p class="text-sm text-gray-500">Gerencie os tipos de OS disponíveis no sistema.</p>
+                    <button onclick="abrirModalServico()" class="bg-brand hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> Novo Serviço</button>
                 </div>
-                <div class="bg-white dark:bg-darkcard p-4 rounded-lg border border-gray-200 dark:border-slate-700">
-                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Custo Total (Filtro)</p>
-                    <p class="text-2xl font-bold text-gray-900 dark:text-white" id="kpi-custo">R$ 0,00</p>
-                </div>
-                <div class="bg-white dark:bg-darkcard p-4 rounded-lg border border-gray-200 dark:border-slate-700">
-                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Total de OS</p>
-                    <p class="text-2xl font-bold text-gray-900 dark:text-white" id="kpi-total">0</p>
+                <div class="bg-white dark:bg-darkcard border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-gray-50 dark:bg-slate-800/50 text-xs uppercase text-gray-500">
+                            <tr>
+                                <th class="px-6 py-3 border-b border-gray-200 dark:border-slate-700">Nome / Grupo</th>
+                                <th class="px-6 py-3 border-b border-gray-200 dark:border-slate-700">Comportamento na OS</th>
+                                <th class="px-6 py-3 border-b border-gray-200 dark:border-slate-700 text-center">Status</th>
+                                <th class="px-6 py-3 border-b border-gray-200 dark:border-slate-700 text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-servicos" class="text-sm divide-y divide-gray-200 dark:divide-slate-700"></tbody>
+                    </table>
                 </div>
             </div>
 
-            <div class="bg-white dark:bg-darkcard p-4 rounded-lg border border-gray-200 dark:border-slate-700 mb-4 flex flex-col md:flex-row justify-between items-center gap-4">
-                <div class="flex flex-wrap w-full gap-3 items-center">
-                    <div class="relative w-full sm:w-64">
-                        <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-gray-400"></i>
-                        <input type="text" id="busca-os" placeholder="Buscar por Nº OS ou Placa..." class="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:border-brand transition-colors">
-                    </div>
+            <!-- CONTEÚDO: COLABORADORES -->
+            <div id="content-motoristas" class="hidden space-y-4">
+                <div class="flex justify-between items-center">
+                    <p class="text-sm text-gray-500">Gestão de colaboradores (Motoristas, Mecânicos e Administradores).</p>
+                    <button onclick="abrirModalMotorista()" class="bg-brand hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> Novo Colaborador</button>
                 </div>
-                <!-- CORREÇÃO: Adicionado whitespace-nowrap para o botão não quebrar -->
-                <button onclick="abrirModal()" class="w-full md:w-auto whitespace-nowrap bg-brand hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
-                    <i data-lucide="plus" class="w-4 h-4"></i> Nova OS
-                </button>
+                <div class="bg-white dark:bg-darkcard border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-gray-50 dark:bg-slate-800/50 text-xs uppercase text-gray-500">
+                            <tr>
+                                <th class="px-6 py-3 border-b border-gray-200 dark:border-slate-700">Nome</th>
+                                <th class="px-6 py-3 border-b border-gray-200 dark:border-slate-700">Acesso</th>
+                                <th class="px-6 py-3 border-b border-gray-200 dark:border-slate-700">CPF / Login</th>
+                                <th class="px-6 py-3 border-b border-gray-200 dark:border-slate-700">Telefone</th>
+                                <th class="px-6 py-3 border-b border-gray-200 dark:border-slate-700 text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-motoristas" class="text-sm divide-y divide-gray-200 dark:divide-slate-700"></tbody>
+                    </table>
+                </div>
             </div>
 
-            <div class="bg-white dark:bg-darkcard border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-gray-50 dark:bg-slate-800/50 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider">
-                            <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Nº OS / Data</th>
-                            <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Veículo</th>
-                            <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Serviço</th>
-                            <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Status / Custo</th>
-                            <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabela-os" class="text-sm divide-y divide-gray-200 dark:divide-slate-700"></tbody>
-                </table>
-                <div id="aviso-vazio" class="p-8 text-center text-gray-500 dark:text-gray-400 text-sm hidden">Nenhuma OS encontrada.</div>
+            <!-- CONTEÚDO: FORNECEDORES -->
+            <div id="content-fornecedores" class="hidden space-y-4">
+                <div class="flex justify-between items-center">
+                    <p class="text-sm text-gray-500">Cadastro de fornecedores de pneus e peças.</p>
+                    <button onclick="abrirModalFornecedor()" class="bg-brand hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> Novo Fornecedor</button>
+                </div>
+                <div class="bg-white dark:bg-darkcard border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-gray-50 dark:bg-slate-800/50 text-xs uppercase text-gray-500">
+                            <tr>
+                                <th class="px-6 py-3 border-b border-gray-200 dark:border-slate-700">Nome</th>
+                                <th class="px-6 py-3 border-b border-gray-200 dark:border-slate-700">CNPJ</th>
+                                <th class="px-6 py-3 border-b border-gray-200 dark:border-slate-700">Contato</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-fornecedores" class="text-sm divide-y divide-gray-200 dark:divide-slate-700"></tbody>
+                    </table>
+                </div>
             </div>
         </main>
     </div>
 
-    <!-- MODAL DE ABERTURA DE OS -->
-    <div id="modal-os" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 backdrop-blur-md">
-        <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-6xl border border-gray-200 dark:border-slate-700 overflow-hidden flex flex-col max-h-[95vh]">
-            
-            <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-800/30">
-                <div class="flex items-center gap-4">
-                    <h3 class="text-lg font-bold text-brand flex items-center gap-2"><i data-lucide="clipboard-list" class="w-5 h-5"></i> Abertura de OS</h3>
-                    <span class="bg-gray-200 dark:bg-slate-700 text-gray-600 dark:text-gray-300 px-3 py-1 rounded text-sm font-mono font-bold" id="numero-os-display">OS-XXXX</span>
-                </div>
-                <button onclick="fecharModal()" class="text-gray-400 hover:text-red-500"><i data-lucide="x" class="w-6 h-6"></i></button>
+    <!-- MODAIS -->
+    <div id="modal-servico" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-md border border-gray-200 dark:border-slate-700">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center">
+                <h3 class="text-lg font-semibold text-brand" id="titulo-modal-servico">Novo Tipo de Serviço</h3>
+                <button onclick="fecharModal('modal-servico')" class="text-gray-400 hover:text-red-500"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
-            
-            <form id="form-os" class="flex-1 overflow-y-auto flex flex-col lg:flex-row">
-                
-                <div class="p-6 w-full lg:w-2/5 space-y-5 border-r border-gray-200 dark:border-slate-700 bg-white dark:bg-darkcard z-10 shadow-[5px_0_15px_-5px_rgba(0,0,0,0.1)]">
-                    
-                    <div>
-                        <label class="block text-sm font-bold mb-1 text-gray-700 dark:text-gray-300">1. Veículo <span class="text-red-500">*</span></label>
-                        <select id="veiculo_id" required class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand font-medium">
-                            <option value="">Selecione o veículo...</option>
-                        </select>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium mb-1">KM Atual <span class="text-red-500">*</span></label>
-                            <input type="number" id="km_abertura" required class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Horas (Opcional)</label>
-                            <input type="number" step="0.1" id="hora_atual" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
-                        </div>
-                    </div>
-
-                    <div>
-                       <label class="block text-sm font-bold mb-1 text-gray-700 dark:text-gray-300">2. Solicitante <span class="text-red-500">*</span></label>
-                        <select id="solicitante_id" required class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
-                            <option value="">Selecione o solicitante...</option>
-                        </select>
-                    </div>
-
-                    <div class="border-t border-gray-200 dark:border-slate-700 pt-4">
-                        <label class="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300">3. Execução do Serviço <span class="text-red-500">*</span></label>
-                        <div class="flex gap-4 mb-3">
-                            <label class="flex items-center gap-2 cursor-pointer text-sm">
-                                <input type="radio" name="execucao_tipo" value="interna" checked onchange="toggleExecucao()" class="text-brand focus:ring-brand"> Interna (Mecânico)
-                            </label>
-                            <label class="flex items-center gap-2 cursor-pointer text-sm">
-                                <input type="radio" name="execucao_tipo" value="externa" onchange="toggleExecucao()" class="text-brand focus:ring-brand"> Externa (Fornecedor)
-                            </label>
-                        </div>
-                        
-                        <div id="campo-interno">
-                            <label class="block text-xs font-medium mb-1">Nome do Mecânico / Executor</label>
-                            <input type="text" id="executor" placeholder="Ex: João da Silva" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
-                        </div>
-                        
-                        <div id="campo-externo" class="hidden">
-                            <label class="block text-xs font-medium mb-1">Selecione o Fornecedor</label>
-                            <select id="fornecedor_id" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
-                                <option value="">Selecione o fornecedor...</option>
-                            </select>
-                            <label class="block text-xs font-medium mb-1 mt-2">Local do Serviço</label>
-                            <input type="text" id="local_servico" placeholder="Ex: Oficina do Fornecedor" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
-                        </div>
-                    </div>
+            <form id="form-servico" class="p-6 space-y-4">
+                <input type="hidden" id="id_servico">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Nome do Serviço <span class="text-red-500">*</span></label>
+                    <input type="text" id="nome_servico" required class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border rounded-md focus:border-brand">
                 </div>
-
-                <div class="w-full lg:w-3/5 bg-gray-50 dark:bg-slate-900 p-6 flex flex-col relative overflow-y-auto">
-                    
-                    <div id="aviso-escolha-veiculo" class="absolute inset-0 flex flex-col items-center justify-center text-gray-400">
-                        <i data-lucide="truck" class="w-16 h-16 mb-4 opacity-50"></i>
-                        <p>Selecione um veículo ao lado para carregar o mapa.</p>
-                    </div>
-
-                    <div id="area-mapa-servicos" class="hidden w-full h-full flex flex-col">
-                        
-                        <h4 class="text-sm font-bold text-gray-600 dark:text-gray-300 mb-4 text-center">Clique no pneu para selecionar o que será feito</h4>
-                        
-                        <div class="flex-1 flex items-center justify-center">
-                            <div class="relative flex flex-col items-center">
-                                <div class="w-40 h-12 bg-slate-300 dark:bg-slate-700 rounded-t-xl border-4 border-b-0 border-slate-400 dark:border-slate-500 flex items-center justify-center z-10 relative shadow-sm mb-4">
-                                    <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Frente</span>
-                                </div>
-                                <div id="eixos-container-os" class="relative w-64 flex flex-col items-center gap-10 pb-8 z-0">
-                                    <div class="absolute top-0 bottom-0 left-1/2 w-3 bg-slate-400 dark:bg-slate-500 -translate-x-1/2 z-0 rounded-b-xl"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div id="painel-servico-pneu" class="hidden mt-6 bg-white dark:bg-darkcard p-5 rounded-xl border-2 border-brand shadow-lg">
-                            <div class="flex justify-between items-center mb-3 border-b border-gray-200 dark:border-slate-700 pb-2">
-                                <span class="font-bold text-brand text-lg" id="pneu-selecionado-nome">Pneu Selecionado</span>
-                                <span class="text-xs font-bold bg-gray-100 dark:bg-slate-800 px-2 py-1 rounded" id="pneu-selecionado-pos">Posição</span>
-                            </div>
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-medium mb-1">O que fazer com este pneu? <span class="text-red-500">*</span></label>
-                                    <select id="select_servico_pneu" onchange="ajustarCamposServico()" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
-                                        <option value="">Selecione...</option>
-                                        <option value="troca">Troca de Pneu</option>
-                                        <option value="conserto">Conserto / Reparo</option>
-                                        <option value="recapagem">Recapagem</option>
-                                        <option value="descarte">Descarte</option>
-                                        <option value="rodizio">Rodízio (Mover para outra posição)</option>
-                                    </select>
-                                </div>
-                                
-                                <div id="div-custo" class="hidden">
-                                    <label class="block text-sm font-medium mb-1 text-brand">Custo (R$)</label>
-                                    <input type="number" step="0.01" id="custo" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
-                                </div>
-                            </div>
-
-                            <div id="campos-extras-servico" class="mt-4 hidden bg-gray-50 dark:bg-slate-800/50 p-4 rounded-lg border border-gray-200 dark:border-slate-700">
-                                <p class="text-sm font-medium mb-2" id="label-extra">Selecione o Novo Pneu:</p>
-                                <div class="flex gap-2">
-                                    <select id="select_novo_pneu_slot" class="w-1/3 text-sm px-3 py-2 border rounded-md dark:bg-slate-900 dark:border-slate-600"></select>
-                                    <select id="select_novo_pneu_id" class="w-2/3 text-sm px-3 py-2 border rounded-md dark:bg-slate-900 dark:border-slate-600"></select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Grupo (Para organizar no menu) <span class="text-red-500">*</span></label>
+                    <input type="text" id="grupo_servico" required placeholder="Ex: Pneus, Suspensão, Geral" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border rounded-md focus:border-brand">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Comportamento na OS <span class="text-red-500">*</span></label>
+                    <select id="comportamento_servico" required class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border rounded-md focus:border-brand">
+                        <option value="geral">Geral / Texto Livre</option>
+                        <option value="pneu_mapa">Abrir Mapa de Pneus</option>
+                        <option value="calibragem">Abrir Campos de Pressão</option>
+                        <option value="sulco">Abrir Campos de Sulco</option>
+                    </select>
+                </div>
+                <div class="pt-4 flex justify-end gap-3 border-t border-gray-200 dark:border-slate-700">
+                    <button type="button" onclick="fecharModal('modal-servico')" class="px-4 py-2 text-sm text-gray-600">Cancelar</button>
+                    <button type="submit" id="btn-salvar-servico" class="px-4 py-2 text-sm font-bold text-white bg-brand rounded-md">Salvar</button>
                 </div>
             </form>
+        </div>
+    </div>
 
-            <div class="px-6 py-4 border-t border-gray-200 dark:border-slate-700 flex justify-end gap-3 bg-gray-50 dark:bg-slate-800/30 z-20">
-                <button type="button" onclick="fecharModal()" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-md transition-colors">Cancelar</button>
-                <button type="button" onclick="salvarOS()" id="btn-salvar" class="px-6 py-2 text-sm font-bold text-white bg-brand hover:bg-orange-700 rounded-md transition-colors">Criar OS</button>
+    <!-- MODAL COLABORADOR (NOVO/EDITAR) -->
+    <div id="modal-motorista" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-md border border-gray-200 dark:border-slate-700">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center">
+                <h3 class="text-lg font-semibold text-brand" id="titulo-modal-motorista">Novo Colaborador</h3>
+                <button onclick="fecharModal('modal-motorista')" class="text-gray-400 hover:text-red-500"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
+            <form id="form-motorista" class="p-6 space-y-4">
+                <input type="hidden" id="user_id_editando">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Nome Completo <span class="text-red-500">*</span></label>
+                    <input type="text" id="nome_motorista" required class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border rounded-md focus:border-brand">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-1">Função / Acesso <span class="text-red-500">*</span></label>
+                    <select id="role_motorista" required onchange="ajustarCamposAcesso()" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border rounded-md focus:border-brand">
+                        <option value="motorista">Motorista (Acesso Simples)</option>
+                        <option value="mecanico">Mecânico (Acesso Padrão)</option>
+                        <option value="operador">Operador (Acesso Padrão)</option>
+                        <option value="admin">Administrador (Acesso Total)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium mb-1" id="label_identificador">CPF (Somente números) <span class="text-red-500">*</span></label>
+                    <input type="text" id="login_motorista" required class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border rounded-md focus:border-brand">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1" id="label_senha">PIN (4 dígitos)</label>
+                        <input type="password" id="senha_motorista" maxlength="4" placeholder="Deixe em branco p/ manter" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border rounded-md focus:border-brand">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Telefone</label>
+                        <input type="text" id="tel_motorista" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border rounded-md focus:border-brand">
+                    </div>
+                </div>
+                
+                <div class="pt-4 flex justify-end gap-3 border-t border-gray-200 dark:border-slate-700">
+                    <button type="button" onclick="fecharModal('modal-motorista')" class="px-4 py-2 text-sm text-gray-600">Cancelar</button>
+                    <button type="submit" id="btn-salvar-motorista" class="px-4 py-2 text-sm font-bold text-white bg-brand rounded-md">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-fornecedor" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-md border border-gray-200 dark:border-slate-700">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center">
+                <h3 class="text-lg font-semibold text-brand">Novo Fornecedor</h3>
+                <button onclick="fecharModal('modal-fornecedor')" class="text-gray-400 hover:text-red-500"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <form id="form-fornecedor" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Nome / Razão Social <span class="text-red-500">*</span></label>
+                    <input type="text" id="nome_fornecedor" required class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border rounded-md focus:border-brand">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">CNPJ</label>
+                        <input type="text" id="cnpj_fornecedor" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border rounded-md focus:border-brand">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Contato</label>
+                        <input type="text" id="contato_fornecedor" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border rounded-md focus:border-brand">
+                    </div>
+                </div>
+                <div class="pt-4 flex justify-end gap-3 border-t border-gray-200 dark:border-slate-700">
+                    <button type="button" onclick="fecharModal('modal-fornecedor')" class="px-4 py-2 text-sm text-gray-600">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 text-sm font-bold text-white bg-brand rounded-md">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed top-6 right-6 z-50 transform transition-transform duration-300 translate-x-[150%]">
+        <div class="bg-red-500 text-white px-6 py-4 rounded-lg shadow-2xl flex items-center gap-3 border border-red-400">
+            <i data-lucide="alert-circle" class="w-6 h-6"></i>
+            <p id="toast-message" class="font-medium text-sm"></p>
         </div>
     </div>
 
     <script src="js/supabase-client.js"></script>
     <script>
         lucide.createIcons();
+        let listaMotoristasGlobal = []; 
         
-        let todasOS = [];
-        let listaVeiculos = [];
-        let listaMotoristas = [];
-        let listaFornecedores = [];
-        let pneusDoVeiculoOS = [];
-        let estoquePneus = [];
-        
-        let pneuSaindoId = null;
-        let pneuSaindoPosicao = null;
-
-        const urlParams = new URLSearchParams(window.location.search);
-
-        // --- AUTENTICAÇÃO E UI ---
         supabaseClient.auth.getSession().then(({ data: { session } }) => {
             if (!session) { window.location.href = "login.html"; } 
             else { document.getElementById('user-email').innerText = session.user.email; }
@@ -281,383 +278,311 @@
             html.classList.toggle('dark'); localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
         });
 
-        // --- CARREGAR DADOS ---
-        async function carregarDados() {
-            // Veículos
-            const { data: veiculos } = await supabaseClient.from('veiculos').select('*').order('placa');
-            listaVeiculos = veiculos || [];
-            const selectVeiculo = document.getElementById('veiculo_id');
-            selectVeiculo.innerHTML = '<option value="">Selecione o veículo...</option>';
-            listaVeiculos.forEach(v => {
-                selectVeiculo.innerHTML += `<option value="${v.id}" data-km="${v.km_atual}" data-horas="${v.horas_atual || 0}">${v.placa} - ${v.modelo}</option>`;
+        function mudarAba(aba) {
+            ['servicos', 'motoristas', 'fornecedores'].forEach(a => {
+                document.getElementById(`content-${a}`).classList.add('hidden');
+                document.getElementById(`tab-${a}`).classList.remove('text-brand', 'border-brand');
+                document.getElementById(`tab-${a}`).classList.add('text-gray-500', 'border-transparent');
             });
+            document.getElementById(`content-${aba}`).classList.remove('hidden');
+            document.getElementById(`tab-${aba}`).classList.remove('text-gray-500', 'border-transparent');
+            document.getElementById(`tab-${aba}`).classList.add('text-brand', 'border-brand');
+        }
 
-            // Solicitantes
-            const { data: motoristas } = await supabaseClient.from('motoristas').select('*').order('nome');
-            listaMotoristas = motoristas || [];
-            const selectSolicitante = document.getElementById('solicitante_id');
-            selectSolicitante.innerHTML = '<option value="">Selecione o solicitante...</option>';
-            listaMotoristas.forEach(m => {
-                selectSolicitante.innerHTML += `<option value="${m.id}">${m.nome}</option>`;
-            });
+        function abrirModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function fecharModal(id) { document.getElementById(id).classList.add('hidden'); }
+        
+        function abrirModalServico() { 
+            document.getElementById('form-servico').reset(); 
+            document.getElementById('id_servico').value = ''; 
+            document.getElementById('titulo-modal-servico').innerText = 'Novo Tipo de Serviço';
+            abrirModal('modal-servico'); 
+        }
+        
+        function abrirModalMotorista() { 
+            document.getElementById('form-motorista').reset(); 
+            document.getElementById('user_id_editando').value = ''; 
+            document.getElementById('titulo-modal-motorista').innerText = 'Novo Colaborador';
+            document.getElementById('login_motorista').disabled = false;
+            document.getElementById('senha_motorista').required = true;
+            ajustarCamposAcesso();
+            abrirModal('modal-motorista'); 
+        }
 
-            // Fornecedores
-            const { data: fornecedores } = await supabaseClient.from('fornecedores').select('*').order('nome');
-            listaFornecedores = fornecedores || [];
-            const selectFornecedor = document.getElementById('fornecedor_id');
-            selectFornecedor.innerHTML = '<option value="">Selecione o fornecedor...</option>';
-            listaFornecedores.forEach(f => {
-                selectFornecedor.innerHTML += `<option value="${f.id}">${f.nome}</option>`;
-            });
+        function abrirModalFornecedor() { document.getElementById('form-fornecedor').reset(); abrirModal('modal-fornecedor'); }
 
-            // Estoques
-            const { data: est } = await supabaseClient.from('pneus').select('*').eq('status', 'estoque');
-            estoquePneus = est || [];
+        function mostrarErro(mensagem) {
+            const toast = document.getElementById('toast');
+            const msg = document.getElementById('toast-message');
+            msg.innerText = mensagem;
+            toast.classList.remove('translate-x-[150%]');
+            lucide.createIcons();
+            setTimeout(() => { toast.classList.add('translate-x-[150%]'); }, 4000);
+        }
 
-            // Lógica ao mudar veículo
-            selectVeiculo.onchange = (e) => {
-                const opt = e.target.options[e.target.selectedIndex];
-                if(opt.value) {
-                    document.getElementById('km_abertura').value = opt.dataset.km;
-                    document.getElementById('hora_atual').value = opt.dataset.horas;
-                    document.getElementById('aviso-escolha-veiculo').classList.add('hidden');
-                    document.getElementById('area-mapa-servicos').classList.remove('hidden');
-                    prepararMapaOS(opt.value);
-                } else {
-                    document.getElementById('aviso-escolha-veiculo').classList.remove('hidden');
-                    document.getElementById('area-mapa-servicos').classList.add('hidden');
-                }
-            };
+        // --- SERVIÇOS ---
+        async function editarServico(id) {
+            const { data } = await supabaseClient.from('tipos_servico').select('*').eq('id', id).single();
+            if(!data) return;
+            document.getElementById('id_servico').value = data.id;
+            document.getElementById('nome_servico').value = data.nome;
+            document.getElementById('grupo_servico').value = data.grupo;
+            document.getElementById('comportamento_servico').value = data.comportamento;
+            document.getElementById('titulo-modal-servico').innerText = 'Editar Serviço';
+            abrirModal('modal-servico');
+        }
 
-            // --- VERIFICAÇÃO DA URL CORRIGIDA ---
-            const veiculoIdParam = urlParams.get('veiculo_id');
-            const pneuSaindoIdParam = urlParams.get('pneu_saindo_id');
-            
-            // Se tiver o ID do veículo e do pneu na URL, abre o modal
-            if (veiculoIdParam && pneuSaindoIdParam) {
-                abrirModal();
-                selectVeiculo.value = veiculoIdParam;
-                selectVeiculo.dispatchEvent(new Event('change'));
+        async function toggleServico(id, statusAtual) {
+            const { error } = await supabaseClient.from('tipos_servico').update({ ativo: !statusAtual }).eq('id', id);
+            if(!error) carregarServicos();
+        }
+
+        async function carregarServicos() {
+            const { data } = await supabaseClient.from('tipos_servico').select('*').order('grupo').order('nome');
+            const tabela = document.getElementById('tabela-servicos');
+            tabela.innerHTML = '';
+            if(!data) return;
+
+            data.forEach(s => {
+                let compNome = s.comportamento;
+                let compCor = 'bg-gray-500/10 text-gray-500';
+                if(s.comportamento === 'pneu_mapa') { compNome = 'Abre Mapa'; compCor = 'bg-blue-500/10 text-blue-500'; }
+                if(s.comportamento === 'calibragem') { compNome = 'Calibragem'; compCor = 'bg-green-500/10 text-green-500'; }
+                if(s.comportamento === 'sulco') { compNome = 'Sulco'; compCor = 'bg-orange-500/10 text-orange-500'; }
                 
-                // Timeout para esperar o mapa e os pneus serem carregados na tela
-                setTimeout(async () => {
-                    await prepararMapaOS(veiculoIdParam); // Recarrega os pneus do veículo
-                    const pneu = pneusDoVeiculoOS.find(p => p.id === pneuSaindoIdParam);
-                    if (pneu) {
-                        selecionarPneu(pneu.id, pneu.numero_fogo, pneu.posicao);
-                        document.getElementById('select_servico_pneu').value = 'troca';
-                        ajustarCamposServico();
-                    }
-                }, 800); // 800ms para garantir que o Supabase respondeu e o DOM foi atualizado
-            }
+                const rowClass = s.ativo ? "" : "opacity-50";
+                const statusBadge = s.ativo ? '<span class="text-green-500 text-xs font-bold">Ativo</span>' : '<span class="text-red-500 text-xs font-bold">Inativo</span>';
 
-            await buscarOS();
-        }
-
-        // --- LÓGICA DO MODAL ---
-        const modal = document.getElementById('modal-os');
-        function abrirModal() { 
-            document.getElementById('form-os').reset(); 
-            document.getElementById('aviso-escolha-veiculo').classList.remove('hidden');
-            document.getElementById('area-mapa-servicos').classList.add('hidden');
-            document.getElementById('painel-servico-pneu').classList.add('hidden');
-            document.getElementById('numero-os-display').innerText = "OS-NOVA";
-            pneuSaindoId = null;
-            modal.classList.remove('hidden'); 
-        }
-        function fecharModal() { modal.classList.add('hidden'); }
-
-        function toggleExecucao() {
-            const isInterna = document.querySelector('input[name="execucao_tipo"]:checked').value === 'interna';
-            if(isInterna) {
-                document.getElementById('campo-interno').classList.remove('hidden');
-                document.getElementById('campo-externo').classList.add('hidden');
-            } else {
-                document.getElementById('campo-interno').classList.add('hidden');
-                document.getElementById('campo-externo').classList.remove('hidden');
-            }
-        }
-
-        // --- MAPA ---
-        async function prepararMapaOS(veiculoId) {
-            const { data: pneus } = await supabaseClient.from('pneus').select('*').eq('veiculo_id', veiculoId).eq('status', 'em_uso');
-            pneusDoVeiculoOS = pneus || [];
-            desenharMapa();
-        }
-
-        function desenharMapa() {
-            const container = document.getElementById('eixos-container-os');
-            container.innerHTML = '';
-            const veiculo = listaVeiculos.find(x => x.id === document.getElementById('veiculo_id').value);
-            if(!veiculo) return;
-
-            let configArr = veiculo.configuracao_eixos ? veiculo.configuracao_eixos.split(',') : [2, 4, 4, 2];
-            let estepes = veiculo.quantidade_estepes || 0;
-
-            configArr.forEach((qtdStr, idxEixo) => {
-                let qtd = parseInt(qtdStr);
-                const eixoDiv = document.createElement('div');
-                eixoDiv.className = "relative flex justify-between items-center w-full px-2 z-10";
-                eixoDiv.innerHTML = `<div class="absolute top-1/2 left-0 w-full h-3 bg-slate-400 dark:bg-slate-500 -translate-y-1/2 rounded-full z-0"></div>`;
-                
-                let ladoEsquerdoHtml = '<div class="flex gap-1">';
-                let ladoDireitoHtml = '<div class="flex gap-1">';
-
-                for (let i = 1; i <= qtd/2; i++) {
-                    const posEsq = `E${idxEixo+1}-E${i}`;
-                    const pneuEsq = pneusDoVeiculoOS.find(p => p.posicao === posEsq);
-                    ladoEsquerdoHtml += criarBotaoPneu(pneuEsq, posEsq);
-                    
-                    const posDir = `E${idxEixo+1}-D${i}`;
-                    const pneuDir = pneusDoVeiculoOS.find(p => p.posicao === posDir);
-                    ladoDireitoHtml += criarBotaoPneu(pneuDir, posDir);
-                }
-                ladoEsquerdoHtml += '</div>';
-                ladoDireitoHtml += '</div>';
-                eixoDiv.innerHTML += `${ladoEsquerdoHtml}<div class="w-8"></div>${ladoDireitoHtml}`;
-                container.appendChild(eixoDiv);
+                tabela.innerHTML += `
+                    <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50 ${rowClass}">
+                        <td class="px-6 py-4"><div class="font-bold">${s.nome}</div><div class="text-xs text-gray-500">${s.grupo}</div></td>
+                        <td class="px-6 py-4"><span class="px-2 py-1 rounded text-xs font-medium ${compCor}">${compNome}</span></td>
+                        <td class="px-6 py-4 text-center">${statusBadge}</td>
+                        <td class="px-6 py-4 text-center flex items-center justify-center gap-3">
+                            <button onclick="editarServico('${s.id}')" class="text-gray-400 hover:text-blue-500 transition-colors"><i data-lucide="edit" class="w-5 h-5"></i></button>
+                            <button onclick="toggleServico('${s.id}', ${s.ativo})" class="text-gray-400 ${s.ativo ? 'hover:text-red-500' : 'hover:text-green-500'} transition-colors"><i data-lucide="power" class="w-5 h-5"></i></button>
+                        </td>
+                    </tr>`;
             });
-
-            if (estepes > 0) {
-                const estepeDiv = document.createElement('div');
-                estepeDiv.className = "mt-6 pt-4 border-t-2 border-slate-400 dark:border-slate-600 border-dashed w-full z-10";
-                let htmlEstepes = '';
-                for (let i = 1; i <= estepes; i++) {
-                    const posicao = `ESTEPE-${i}`;
-                    const pneu = pneusDoVeiculoOS.find(p => p.posicao === posicao);
-                    htmlEstepes += criarBotaoPneu(pneu, posicao);
-                }
-                estepeDiv.innerHTML = `<p class="text-[9px] text-center text-slate-500 mb-2 font-bold uppercase">Estepe</p><div class="flex justify-center gap-3">${htmlEstepes}</div>`;
-                container.appendChild(estepeDiv);
-            }
             lucide.createIcons();
         }
 
-        function criarBotaoPneu(pneu, posicao) {
-            const idBtn = `pneu-${posicao.replace('-', '_')}`;
-            if (pneu) {
-                let cor = 'bg-green-500 border-green-600 text-white';
-                let sulco = pneu.sulco_atual !== null ? pneu.sulco_atual : pneu.sulco_inicial;
-                if (sulco <= 5) cor = 'bg-yellow-500 border-yellow-600 text-white';
-                if (sulco <= 3) cor = 'bg-red-500 border-red-600 text-white';
-                
-                return `<div id="${idBtn}" onclick="selecionarPneu('${pneu.id}', '${pneu.numero_fogo}', '${posicao}')" class="relative z-10 w-10 h-16 rounded-full border-2 shadow cursor-pointer hover:scale-110 transition-transform ${cor} flex flex-col items-center justify-center">
-                            <span class="text-[8px] font-bold leading-tight text-center px-1">${pneu.numero_fogo}</span>
-                        </div>`;
+        document.getElementById('form-servico').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-salvar-servico');
+            btn.innerHTML = 'Salvando...'; btn.disabled = true;
+            const id = document.getElementById('id_servico').value;
+            const dados = {
+                nome: document.getElementById('nome_servico').value,
+                grupo: document.getElementById('grupo_servico').value,
+                comportamento: document.getElementById('comportamento_servico').value
+            };
+            
+            let error;
+            if (id) {
+                const res = await supabaseClient.from('tipos_servico').update(dados).eq('id', id);
+                error = res.error;
             } else {
-                return `<div id="${idBtn}" class="relative z-10 w-10 h-16 rounded-full border-2 border-dashed border-gray-400 bg-gray-200/50 dark:bg-slate-800/50 shadow-inner flex items-center justify-center opacity-50 cursor-not-allowed" title="Posição Vazia">
-                            <i data-lucide="minus" class="w-4 h-4 text-gray-400"></i>
-                        </div>`;
+                const res = await supabaseClient.from('tipos_servico').insert([dados]);
+                error = res.error;
+            }
+            
+            if(error) {
+                mostrarErro(error.message.includes('unique') ? "Este serviço já está cadastrado." : error.message);
+            } else {
+                fecharModal('modal-servico');
+                carregarServicos();
+            }
+            btn.innerHTML = 'Salvar'; btn.disabled = false;
+        });
+
+        // --- COLABORADORES ---
+        function ajustarCamposAcesso() {
+            const role = document.getElementById('role_motorista').value;
+            const labelId = document.getElementById('label_identificador');
+            const inputId = document.getElementById('login_motorista');
+            const labelSenha = document.getElementById('label_senha');
+
+            if (role === 'motorista') {
+                labelId.innerHTML = 'CPF (Somente números) <span class="text-red-500">*</span>';
+                inputId.placeholder = 'Ex: 12345678900';
+                labelSenha.innerHTML = 'PIN (4 dígitos)';
+            } else {
+                labelId.innerHTML = 'E-mail Corporativo <span class="text-red-500">*</span>';
+                inputId.placeholder = 'mecanico@empresa.com';
+                labelSenha.innerHTML = 'Senha (Mín. 6 dígitos)';
             }
         }
 
-        function selecionarPneu(id, numeroFogo, posicao) {
-            pneuSaindoId = id;
-            pneuSaindoPosicao = posicao;
-
-            document.querySelectorAll('#eixos-container-os > div > div > div').forEach(el => {
-                el.classList.remove('ring-4', 'ring-brand', 'scale-110', 'z-30');
-            });
-            const elSelecionado = document.getElementById(`pneu-${posicao.replace('-', '_')}`);
-            if(elSelecionado) elSelecionado.classList.add('ring-4', 'ring-brand', 'scale-110', 'z-30');
-
-            document.getElementById('painel-servico-pneu').classList.remove('hidden');
-            document.getElementById('pneu-selecionado-nome').innerText = `Pneu: ${numeroFogo}`;
-            document.getElementById('pneu-selecionado-pos').innerText = posicao;
+        async function carregarMotoristas() {
+            const { data: motoristas, error: err1 } = await supabaseClient.from('motoristas').select('*').order('nome');
+            if (err1) { mostrarErro("Erro ao buscar motoristas."); return; }
             
-            document.getElementById('select_servico_pneu').value = '';
-            document.getElementById('campos-extras-servico').classList.add('hidden');
-            document.getElementById('div-custo').classList.remove('hidden');
-            
-            const selectSlot = document.getElementById('select_novo_pneu_slot');
-            selectSlot.innerHTML = '<option value="">Posição...</option>';
-            pneusDoVeiculoOS.forEach(p => {
-                if(p.id !== id) selectSlot.innerHTML += `<option value="${p.posicao}">${p.posicao} (Trocar com ${p.numero_fogo})</option>`;
-            });
-            selectSlot.innerHTML += `<option value="ESTEPE-1">Estepe</option>`;
+            const { data: roles, error: err2 } = await supabaseClient.from('user_roles').select('*');
+            if (err2) { mostrarErro("Erro ao buscar permissões."); return; }
 
-            const selectEstoque = document.getElementById('select_novo_pneu_id');
-            selectEstoque.innerHTML = '<option value="">Escolha do Estoque...</option>';
-            estoquePneus.forEach(p => {
-                selectEstoque.innerHTML += `<option value="${p.id}">${p.numero_fogo} - ${p.marca}</option>`;
-            });
-        }
+            listaMotoristasGlobal = motoristas || [];
+            const tabela = document.getElementById('tabela-motoristas');
+            tabela.innerHTML = '';
 
-        function ajustarCamposServico() {
-            const servico = document.getElementById('select_servico_pneu').value;
-            const extras = document.getElementById('campos-extras-servico');
-            const labelExtra = document.getElementById('label-extra');
-
-            if(servico === 'troca' || servico === 'recapagem' || servico === 'descarte' || servico === 'rodizio') {
-                extras.classList.remove('hidden');
-                if(servico === 'troca') labelExtra.innerText = "Selecione o Novo Pneu para o lugar:";
-                if(servico === 'recapagem') labelExtra.innerText = "Enviar para Recapar e colocar um Pneu Reserva no lugar:";
-                if(servico === 'descarte') labelExtra.innerText = "Descartar e colocar um Novo Pneu:";
-                if(servico === 'rodizio') labelExtra.innerText = "Mover este pneu para qual posição?";
-            } else {
-                extras.classList.add('hidden');
-            }
-        }
-
-        // --- SALVAR E GERENCIAR ---
-        async function salvarOS() {
-            const btn = document.getElementById('btn-salvar');
-            const vId = document.getElementById('veiculo_id').value;
-            const km = document.getElementById('km_abertura').value;
-            const solicitante = document.getElementById('solicitante_id').value;
-            const servicoPneu = document.getElementById('select_servico_pneu').value;
-            
-            if(!vId || !km || !solicitante || !pneuSaindoId || !servicoPneu) {
-                alert("Preencha todos os campos obrigatórios e selecione o pneu e o serviço.");
+            if (!motoristas || motoristas.length === 0) {
+                tabela.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-gray-500">Nenhum colaborador cadastrado.</td></tr>';
                 return;
             }
 
-            btn.innerHTML = 'Salvando...'; btn.disabled = true;
-            const session = await supabaseClient.auth.getSession();
-            
-            const execTipo = document.querySelector('input[name="execucao_tipo"]:checked').value;
-            let executorNome = '';
-            let fornecedorId = null;
-            let local = 'Interno';
-
-            if(execTipo === 'interna') {
-                executorNome = document.getElementById('executor').value || 'Mecânico Interno';
-            } else {
-                const fId = document.getElementById('fornecedor_id').value;
-                const f = listaFornecedores.find(x => x.id === fId);
-                executorNome = f ? f.nome : 'Fornecedor Externo';
-                fornecedorId = fId || null;
-                local = document.getElementById('local_servico').value || 'Oficina Externa';
-            }
-
-            let pEntrando = null;
-            let destino = null;
-
-            if(servicoPneu === 'conserto') {
-                destino = 'reparo';
-            } else if(servicoPneu === 'troca' || servicoPneu === 'recapagem' || servicoPneu === 'descarte') {
-                destino = servicoPneu === 'recapagem' ? 'reforma' : (servicoPneu === 'descarte' ? 'descarte' : 'estoque');
-                pEntrando = document.getElementById('select_novo_pneu_id').value || null;
-            } else if (servicoPneu === 'rodizio') {
-                destino = 'estoque'; 
-            }
-
-            const novaOS = {
-                veiculo_id: vId,
-                tipo: servicoPneu, 
-                km_abertura: parseFloat(km),
-                hora_atual: parseFloat(document.getElementById('hora_atual').value) || 0,
-                descricao: `Serviço de ${servicoPneu} no pneu ${pneuSaindoPosicao}`,
-                status: 'aberta',
-                aberta_por: session.data.session.user.id,
-                solicitante_id: solicitante,
-                execucao_tipo: execTipo,
-                fornecedor_id: fornecedorId,
-                executor: executorNome,
-                local_servico: local,
-                pneu_saindo_id: pneuSaindoId,
-                pneu_entrando_id: pEntrando,
-                destino_pneu_saindo: destino,
-                custo: parseFloat(document.getElementById('custo').value) || 0
-            };
-
-            const { error } = await supabaseClient.from('ordens_servico').insert([novaOS]);
-
-            if (error) {
-                alert("Erro: " + error.message);
-                btn.innerHTML = 'Criar OS'; btn.disabled = false;
-            } else {
-                fecharModal();
-                buscarOS();
-                btn.innerHTML = 'Criar OS'; btn.disabled = false;
-            }
-        }
-
-        async function buscarOS() {
-            const { data, error } = await supabaseClient.from('ordens_servico').select(`*, veiculos (placa, modelo)`).order('created_at', { ascending: false });
-            if (error) return console.error(error);
-            todasOS = data || [];
-            calcularKPIs(todasOS);
-            renderizarTabela(todasOS);
-        }
-
-        function calcularKPIs(lista) {
-            let ativas = 0;
-            let custoTotal = 0;
-            
-            lista.forEach(o => {
-                if (o.status === 'aberta' || o.status === 'em_andamento') ativas++;
-                let valor = parseFloat(o.custo);
-                if (!isNaN(valor)) custoTotal += valor;
-            });
-
-            document.getElementById('kpi-abertas').innerText = ativas;
-            document.getElementById('kpi-custo').innerText = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(custoTotal);
-            document.getElementById('kpi-total').innerText = lista.length;
-        }
-
-        document.getElementById('busca-os').addEventListener('input', (e) => {
-            const termo = e.target.value.toLowerCase();
-            const filtradas = todasOS.filter(o => {
-                return (o.os_numero && o.os_numero.toLowerCase().includes(termo)) || 
-                       (o.veiculos?.placa && o.veiculos.placa.toLowerCase().includes(termo));
-            });
-            calcularKPIs(filtradas);
-            renderizarTabela(filtradas);
-        });
-
-        function renderizarTabela(lista) {
-            const tabela = document.getElementById('tabela-os');
-            const avisoVazio = document.getElementById('aviso-vazio');
-            tabela.innerHTML = '';
-            
-            if (lista.length === 0) { avisoVazio.classList.remove('hidden'); return; }
-            avisoVazio.classList.add('hidden');
-
-            lista.forEach(o => {
-                let badgeClass = 'bg-blue-500/10 text-blue-500'; let statusTexto = 'Aberta';
-                if (o.status === 'em_andamento') { badgeClass = 'bg-yellow-500/10 text-yellow-500'; statusTexto = 'Em Andamento'; }
-                if (o.status === 'concluida') { badgeClass = 'bg-green-500/10 text-green-500'; statusTexto = 'Concluída'; }
-                if (o.status === 'cancelada') { badgeClass = 'bg-red-500/10 text-red-500'; statusTexto = 'Cancelada'; }
-
-                const data = new Date(o.created_at).toLocaleDateString('pt-BR');
-                let botoes = '';
-                if (o.status === 'aberta') botoes = `<button onclick="mudarStatus('${o.id}', 'em_andamento')" class="text-yellow-500 border border-yellow-500/30 px-2 py-1 rounded text-xs">Iniciar</button>`;
-                else if (o.status === 'em_andamento') botoes = `<button onclick="concluirOS('${o.id}')" class="text-green-500 border border-green-500/30 px-2 py-1 rounded text-xs">Concluir</button>`;
+            motoristas.forEach(m => {
+                const roleInfo = roles.find(r => r.user_id === m.user_id);
+                let roleNome = roleInfo ? roleInfo.role : 'Sem Acesso';
+                
+                let badgeRole = 'bg-gray-500/10 text-gray-500';
+                if(roleNome === 'admin') badgeRole = 'bg-red-500/10 text-red-500';
+                if(roleNome === 'mecanico') badgeRole = 'bg-blue-500/10 text-blue-500';
+                if(roleNome === 'motorista') badgeRole = 'bg-green-500/10 text-green-500';
+                if(roleNome === 'operador') badgeRole = 'bg-orange-500/10 text-orange-500';
 
                 tabela.innerHTML += `
-                    <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
-                        <td class="px-6 py-4"><div class="font-bold uppercase">${o.os_numero || 'S/N'}</div><div class="text-xs text-gray-500">${data}</div></td>
-                        <td class="px-6 py-4"><div class="font-bold uppercase">${o.veiculos?.placa}</div><div class="text-xs text-gray-500">${o.veiculos?.modelo}</div></td>
-                        <td class="px-6 py-4"><div class="font-medium capitalize">${o.tipo}</div><div class="text-xs text-gray-500 truncate max-w-xs">${o.descricao}</div></td>
-                        <td class="px-6 py-4"><span class="px-2 py-1 text-xs font-medium rounded-full ${badgeClass} block w-max mb-1">${statusTexto}</span><div class="text-xs font-medium">R$ ${o.custo || '0,00'}</div></td>
-                        <td class="px-6 py-4 text-right">${botoes}</td>
-                    </tr>
-                `;
+                    <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50">
+                        <td class="px-6 py-4 font-bold">${m.nome}</td>
+                        <td class="px-6 py-4"><span class="px-2 py-1 rounded text-xs font-bold ${badgeRole} uppercase">${roleNome}</span></td>
+                        <td class="px-6 py-4">${m.cnh || '-'}</td>
+                        <td class="px-6 py-4">${m.telefone || '-'}</td>
+                        <td class="px-6 py-4 text-center flex items-center justify-center gap-3">
+                            <button onclick="editarMotorista('${m.id}')" class="text-gray-400 hover:text-blue-500 transition-colors" title="Editar"><i data-lucide="edit" class="w-5 h-5"></i></button>
+                            <button onclick="excluirMotorista('${m.user_id}', '${m.nome}')" class="text-gray-400 hover:text-red-500 transition-colors" title="Excluir"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                        </td>
+                    </tr>`;
             });
+            lucide.createIcons();
         }
 
-        async function mudarStatus(id, novoStatus) {
-            await supabaseClient.from('ordens_servico').update({ status: novoStatus }).eq('id', id);
-            buscarOS();
-        }
+        async function editarMotorista(id) {
+            const m = listaMotoristasGlobal.find(x => x.id === id);
+            if (!m) return;
 
-        async function concluirOS(id) {
-            if(!confirm("Concluir esta OS? As movimentações de pneus serão aplicadas.")) return;
-            const os = todasOS.find(o => o.id === id);
+            // Pega a role dele
+            const { data: roleData } = await supabaseClient.from('user_roles').select('role').eq('user_id', m.user_id).single();
+
+            document.getElementById('user_id_editando').value = m.user_id;
+            document.getElementById('nome_motorista').value = m.nome;
+            document.getElementById('role_motorista').value = roleData ? roleData.role : 'motorista';
+            document.getElementById('login_motorista').value = m.cnh || '';
+            document.getElementById('login_motorista').disabled = true; // Bloqueia edição de CPF/Email para evitar bugs no Auth
+            document.getElementById('tel_motorista').value = m.telefone || '';
+            document.getElementById('senha_motorista').value = '';
+            document.getElementById('senha_motorista').required = false; // Senha não é obrigatória na edição
             
-            const { error } = await supabaseClient.rpc('concluir_os', {
-                p_os_id: id,
-                p_pneu_saindo_id: os.pneu_saindo_id || null,
-                p_pneu_entrando_id: os.pneu_entrando_id || null,
-                p_destino: os.destino_pneu_saindo || 'estoque'
-            });
-
-            if (error) alert("Erro: " + error.message);
-            else { alert("OS Concluída!"); buscarOS(); }
+            document.getElementById('titulo-modal-motorista').innerText = 'Editar Colaborador';
+            ajustarCamposAcesso();
+            abrirModal('modal-motorista');
         }
 
-        carregarDados();
+        async function excluirMotorista(userId, nome) {
+            if (!userId) {
+                mostrarErro("Este colaborador não tem um login vinculado (usuário antigo).");
+                return;
+            }
+
+            if(!confirm(`Tem certeza que deseja EXCLUIR o colaborador ${nome}? Esta ação não pode ser desfeita.`)) return;
+
+            const { error } = await supabaseClient.rpc('excluir_colaborador', { p_user_id: userId });
+            
+            if (error) {
+                mostrarErro("Erro ao excluir: " + error.message);
+            } else {
+                carregarMotoristas();
+            }
+        }
+
+        document.getElementById('form-motorista').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-salvar-motorista');
+            btn.innerHTML = 'Salvando...'; btn.disabled = true;
+
+            const userId = document.getElementById('user_id_editando').value;
+
+            if (userId) {
+                // MODO EDIÇÃO
+                const roleNova = document.getElementById('role_motorista').value;
+                
+                // Atualiza tabela motoristas
+                const { error: err1 } = await supabaseClient.from('motoristas').update({
+                    nome: document.getElementById('nome_motorista').value,
+                    telefone: document.getElementById('tel_motorista').value
+                }).eq('user_id', userId);
+
+                // Atualiza role
+                const { error: err2 } = await supabaseClient.from('user_roles').update({ role: roleNova }).eq('user_id', userId);
+
+                // Atualiza senha se foi preenchida
+                const novaSenha = document.getElementById('senha_motorista').value;
+                if (novaSenha && novaSenha.length >= 4) {
+                    // Para atualizar a senha pelo frontend do admin, precisaríamos de uma RPC específica. 
+                    // Como não temos, avisamos que a senha não foi alterada.
+                    alert("Dados atualizados! Para alterar a senha, o usuário deve usar a tela de login.");
+                }
+
+                if(err1 || err2) {
+                    mostrarErro("Erro ao atualizar colaborador.");
+                } else {
+                    fecharModal('modal-motorista');
+                    carregarMotoristas();
+                }
+
+            } else {
+                // MODO CRIAÇÃO
+                const dados = {
+                    p_nome: document.getElementById('nome_motorista').value,
+                    p_identificador: document.getElementById('login_motorista').value,
+                    p_senha: document.getElementById('senha_motorista').value,
+                    p_role: document.getElementById('role_motorista').value,
+                    p_telefone: document.getElementById('tel_motorista').value
+                };
+
+                const { error } = await supabaseClient.rpc('criar_colaborador', dados);
+                
+                if(error) {
+                    mostrarErro("Erro: " + error.message);
+                } else {
+                    fecharModal('modal-motorista');
+                    carregarMotoristas();
+                }
+            }
+            
+            btn.innerHTML = 'Salvar'; btn.disabled = false;
+        });
+
+        // --- FORNECEDORES ---
+        async function carregarFornecedores() {
+            const { data } = await supabaseClient.from('fornecedores').select('*').order('nome');
+            const tabela = document.getElementById('tabela-fornecedores');
+            tabela.innerHTML = '';
+            if(!data) return;
+
+            data.forEach(f => {
+                tabela.innerHTML += `
+                    <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50">
+                        <td class="px-6 py-4 font-bold">${f.nome}</td>
+                        <td class="px-6 py-4">${f.cnpj || '-'}</td>
+                        <td class="px-6 py-4">${f.contato || '-'}</td>
+                    </tr>`;
+            });
+        }
+
+        document.getElementById('form-fornecedor').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const dados = {
+                nome: document.getElementById('nome_fornecedor').value,
+                cnpj: document.getElementById('cnpj_fornecedor').value,
+                contato: document.getElementById('contato_fornecedor').value
+            };
+            const { error } = await supabaseClient.from('fornecedores').insert([dados]);
+            if(error) mostrarErro("Erro: " + error.message);
+            else { fecharModal('modal-fornecedor'); carregarFornecedores(); }
+        });
+
+        carregarServicos();
+        carregarMotoristas();
+        carregarFornecedores();
     </script>
 </body>
 </html>
