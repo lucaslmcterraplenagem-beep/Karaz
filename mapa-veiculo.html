@@ -301,8 +301,9 @@
             }
         }
 
-        function selecionarPneu(id) {
+       function selecionarPneu(id) {
             pneuSelecionadoInfo = pneusDoVeiculo.find(p => p.id === id);
+            
             const painel = document.getElementById('painel-pneu');
             const conteudo = document.getElementById('conteudo-pneu');
             
@@ -337,6 +338,7 @@
                 </div>
                 
                 <div class="pt-4 mt-2 border-t border-gray-200 dark:border-slate-700 space-y-2">
+                    <!-- MUDANÇA AQUI: TEXTO E AÇÃO -->
                     <button onclick="abrirOS('${pneuSelecionadoInfo.id}', '${pneuSelecionadoInfo.posicao}')" class="w-full bg-brand hover:bg-orange-700 text-white py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2">
                         <i data-lucide="wrench" class="w-4 h-4"></i> Abrir OS
                     </button>
@@ -347,6 +349,11 @@
             `;
             lucide.createIcons();
             renderizarChassi(); 
+        }
+
+        function abrirOS(pneuId, posicao) {
+            // MUDANÇA AQUI: Passa o ID do veículo, do pneu e a posição para a tela de OS
+            window.location.href = `ordens-servico.html?veiculo_id=${veiculoId}&pneu_saindo_id=${pneuId}&posicao=${posicao}&acao=abrir`;
         }
 
         function abrirOS(pneuId, posicao) {
