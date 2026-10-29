@@ -169,8 +169,7 @@
                             <select id="fornecedor_id" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
                                 <option value="">Selecione o fornecedor...</option>
                             </select>
-                            <label class="block text-xs font-medium mb-1 mt-2">Local do Serviço</label>
-                            <input type="text" id="local_servico" placeholder="Ex: Oficina do Fornecedor" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
+                            <!-- REMOVIDO O CAMPO LOCAL DO SERVIÇO DAQUI -->
                         </div>
                     </div>
                 </div>
@@ -338,7 +337,7 @@
                 }
             };
 
-            // Verifica URL
+            // Verifica URL (Abertura via mapa)
             const veiculoIdParam = urlParams.get('veiculo_id');
             const pneuSaindoIdParam = urlParams.get('pneu_saindo_id');
             
@@ -525,7 +524,7 @@
             const execTipo = document.querySelector('input[name="execucao_tipo"]:checked').value;
             let executorNome = '';
             let fornecedorId = null;
-            let local = 'Interno';
+            let local = 'Interno'; // Padrão agora é Interno
 
             if(execTipo === 'interna') {
                 executorNome = document.getElementById('executor').value || 'Mecânico Interno';
@@ -534,7 +533,7 @@
                 const f = listaFornecedores.find(x => x.id === fId);
                 executorNome = f ? f.nome : 'Fornecedor Externo';
                 fornecedorId = fId || null;
-                local = document.getElementById('local_servico').value || 'Oficina Externa';
+                local = 'Oficina do Fornecedor'; // Hardcoded já que removemos o campo
             }
 
             let pEntrando = null;
