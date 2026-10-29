@@ -24,7 +24,7 @@
 </head>
 <body class="bg-gray-100 text-gray-800 dark:bg-darkbg dark:text-gray-100 font-sans h-screen flex overflow-hidden transition-colors duration-300 antialiased">
 
-    <!-- SIDEBAR (Mantida) -->
+    <!-- SIDEBAR -->
     <aside id="sidebar" class="w-64 bg-white dark:bg-darkcard border-r border-gray-200 dark:border-slate-700 transition-all duration-300 flex flex-col z-20">
         <div>
             <div class="h-16 flex items-center justify-center border-b border-gray-200 dark:border-slate-700">
@@ -36,9 +36,7 @@
                 <a href="pneus.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 rounded-md font-medium transition-colors"><i data-lucide="disc" class="w-5 h-5"></i><span class="menu-text text-sm">Pneus</span></a>
                 <a href="ordens-servico.html" class="flex items-center gap-3 px-3 py-2.5 bg-brand/10 text-brand rounded-md font-medium transition-colors"><i data-lucide="wrench" class="w-5 h-5"></i><span class="menu-text text-sm">Ordens de Serviço</span></a>
                 <a href="cadastros.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 rounded-md font-medium transition-colors"><i data-lucide="database" class="w-5 h-5"></i><span class="menu-text text-sm">Cadastros Gerais</span></a>
-                <a href="auditoria.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 rounded-md font-medium transition-colors">
-                    <i data-lucide="shield-check" class="w-5 h-5"></i><span class="menu-text text-sm">Auditoria</span>
-                </a>
+                <a href="auditoria.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 rounded-md font-medium transition-colors"><i data-lucide="shield-check" class="w-5 h-5"></i><span class="menu-text text-sm">Auditoria</span></a>
             </nav>
         </div>
     </aside>
@@ -84,7 +82,8 @@
                         <input type="text" id="busca-os" placeholder="Buscar por Nº OS ou Placa..." class="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:border-brand transition-colors">
                     </div>
                 </div>
-                <button onclick="abrirModal()" class="w-full md:w-auto bg-brand hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
+                <!-- CORREÇÃO: Adicionado whitespace-nowrap para o botão não quebrar -->
+                <button onclick="abrirModal()" class="w-full md:w-auto whitespace-nowrap bg-brand hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
                     <i data-lucide="plus" class="w-4 h-4"></i> Nova OS
                 </button>
             </div>
@@ -245,7 +244,6 @@
     <script>
         lucide.createIcons();
         
-        // Variáveis Globais
         let todasOS = [];
         let listaVeiculos = [];
         let listaMotoristas = [];
@@ -256,7 +254,6 @@
         let pneuSaindoId = null;
         let pneuSaindoPosicao = null;
 
-        // Variável de URL no escopo GLOBAL para não dar erro
         const urlParams = new URLSearchParams(window.location.search);
 
         // --- AUTENTICAÇÃO E UI ---
@@ -332,23 +329,26 @@
                 }
             };
 
-            // Verifica URL (Abertura via mapa)
+            // --- VERIFICAÇÃO DA URL CORRIGIDA ---
             const veiculoIdParam = urlParams.get('veiculo_id');
             const pneuSaindoIdParam = urlParams.get('pneu_saindo_id');
             
-            if (veiculoIdParam && urlParams.get('acao') === 'abrir') {
+            // Se tiver o ID do veículo e do pneu na URL, abre o modal
+            if (veiculoIdParam && pneuSaindoIdParam) {
                 abrirModal();
                 selectVeiculo.value = veiculoIdParam;
                 selectVeiculo.dispatchEvent(new Event('change'));
                 
+                // Timeout para esperar o mapa e os pneus serem carregados na tela
                 setTimeout(async () => {
+                    await prepararMapaOS(veiculoIdParam); // Recarrega os pneus do veículo
                     const pneu = pneusDoVeiculoOS.find(p => p.id === pneuSaindoIdParam);
                     if (pneu) {
                         selecionarPneu(pneu.id, pneu.numero_fogo, pneu.posicao);
                         document.getElementById('select_servico_pneu').value = 'troca';
                         ajustarCamposServico();
                     }
-                }, 500);
+                }, 800); // 800ms para garantir que o Supabase respondeu e o DOM foi atualizado
             }
 
             await buscarOS();
