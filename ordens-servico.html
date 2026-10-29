@@ -36,15 +36,14 @@
                 <a href="pneus.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 rounded-md font-medium transition-colors"><i data-lucide="disc" class="w-5 h-5"></i><span class="menu-text text-sm">Pneus</span></a>
                 <a href="ordens-servico.html" class="flex items-center gap-3 px-3 py-2.5 bg-brand/10 text-brand rounded-md font-medium transition-colors"><i data-lucide="wrench" class="w-5 h-5"></i><span class="menu-text text-sm">Ordens de Serviço</span></a>
                 <a href="cadastros.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 rounded-md font-medium transition-colors"><i data-lucide="database" class="w-5 h-5"></i><span class="menu-text text-sm">Cadastros Gerais</span></a>
-                           <!-- NOVO MENU AUDITORIA -->
-                <a href="auditoria.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
+                <a href="auditoria.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 rounded-md font-medium transition-colors">
                     <i data-lucide="shield-check" class="w-5 h-5"></i><span class="menu-text text-sm">Auditoria</span>
                 </a>
             </nav>
         </div>
     </aside>
 
-    <!-- CONTEÚDO PRINCIPAL (Mantido) -->
+    <!-- CONTEÚDO PRINCIPAL -->
     <div class="flex-1 flex flex-col h-screen overflow-hidden">
         <header class="h-16 bg-white dark:bg-darkcard border-b border-gray-200 dark:border-slate-700 flex items-center justify-between px-6 transition-colors duration-300">
             <div class="flex items-center gap-4">
@@ -108,9 +107,7 @@
         </main>
     </div>
 
-    <!-- ========================================== -->
-    <!-- MODAL DE ABERTURA DE OS (Mantido)          -->
-    <!-- ========================================== -->
+    <!-- MODAL DE ABERTURA DE OS -->
     <div id="modal-os" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 backdrop-blur-md">
         <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-6xl border border-gray-200 dark:border-slate-700 overflow-hidden flex flex-col max-h-[95vh]">
             
@@ -247,6 +244,8 @@
     <script src="js/supabase-client.js"></script>
     <script>
         lucide.createIcons();
+        
+        // Variáveis Globais
         let todasOS = [];
         let listaVeiculos = [];
         let listaMotoristas = [];
@@ -256,11 +255,11 @@
         
         let pneuSaindoId = null;
         let pneuSaindoPosicao = null;
-        
-        const urlParams = new URLSearchParams(window.location.search);
-                lucide.createIcons();
 
-        // --- INICIALIZAÇÃO E AUTENTICAÇÃO ---
+        // Variável de URL no escopo GLOBAL para não dar erro
+        const urlParams = new URLSearchParams(window.location.search);
+
+        // --- AUTENTICAÇÃO E UI ---
         supabaseClient.auth.getSession().then(({ data: { session } }) => {
             if (!session) { window.location.href = "login.html"; } 
             else { document.getElementById('user-email').innerText = session.user.email; }
@@ -270,7 +269,6 @@
             await supabaseClient.auth.signOut(); window.location.href = "login.html";
         });
 
-        // UI Lógica
         const sidebar = document.getElementById('sidebar');
         const menuTexts = document.querySelectorAll('.menu-text');
         document.getElementById('toggle-sidebar').addEventListener('click', () => {
@@ -286,34 +284,71 @@
             html.classList.toggle('dark'); localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
         });
 
-             async function carregarDados() {
-            // ... (código de carregar veículos, motoristas e fornecedores mantido igual) ...
+        // --- CARREGAR DADOS ---
+        async function carregarDados() {
+            // Veículos
+            const { data: veiculos } = await supabaseClient.from('veiculos').select('*').order('placa');
+            listaVeiculos = veiculos || [];
+            const selectVeiculo = document.getElementById('veiculo_id');
+            selectVeiculo.innerHTML = '<option value="">Selecione o veículo...</option>';
+            listaVeiculos.forEach(v => {
+                selectVeiculo.innerHTML += `<option value="${v.id}" data-km="${v.km_atual}" data-horas="${v.horas_atual || 0}">${v.placa} - ${v.modelo}</option>`;
+            });
 
-            // Verifica se veio parâmetros da URL
+            // Solicitantes
+            const { data: motoristas } = await supabaseClient.from('motoristas').select('*').order('nome');
+            listaMotoristas = motoristas || [];
+            const selectSolicitante = document.getElementById('solicitante_id');
+            selectSolicitante.innerHTML = '<option value="">Selecione o solicitante...</option>';
+            listaMotoristas.forEach(m => {
+                selectSolicitante.innerHTML += `<option value="${m.id}">${m.nome}</option>`;
+            });
+
+            // Fornecedores
+            const { data: fornecedores } = await supabaseClient.from('fornecedores').select('*').order('nome');
+            listaFornecedores = fornecedores || [];
+            const selectFornecedor = document.getElementById('fornecedor_id');
+            selectFornecedor.innerHTML = '<option value="">Selecione o fornecedor...</option>';
+            listaFornecedores.forEach(f => {
+                selectFornecedor.innerHTML += `<option value="${f.id}">${f.nome}</option>`;
+            });
+
+            // Estoques
+            const { data: est } = await supabaseClient.from('pneus').select('*').eq('status', 'estoque');
+            estoquePneus = est || [];
+
+            // Lógica ao mudar veículo
+            selectVeiculo.onchange = (e) => {
+                const opt = e.target.options[e.target.selectedIndex];
+                if(opt.value) {
+                    document.getElementById('km_abertura').value = opt.dataset.km;
+                    document.getElementById('hora_atual').value = opt.dataset.horas;
+                    document.getElementById('aviso-escolha-veiculo').classList.add('hidden');
+                    document.getElementById('area-mapa-servicos').classList.remove('hidden');
+                    prepararMapaOS(opt.value);
+                } else {
+                    document.getElementById('aviso-escolha-veiculo').classList.remove('hidden');
+                    document.getElementById('area-mapa-servicos').classList.add('hidden');
+                }
+            };
+
+            // Verifica URL (Abertura via mapa)
             const veiculoIdParam = urlParams.get('veiculo_id');
             const pneuSaindoIdParam = urlParams.get('pneu_saindo_id');
-            const posicaoParam = urlParams.get('posicao');
-            const acaoParam = urlParams.get('acao');
-
-            if (veiculoIdParam && acaoParam === 'abrir') {
+            
+            if (veiculoIdParam && urlParams.get('acao') === 'abrir') {
                 abrirModal();
                 selectVeiculo.value = veiculoIdParam;
                 selectVeiculo.dispatchEvent(new Event('change'));
                 
-                // Aguarda o mapa carregar para selecionar o pneu
                 setTimeout(async () => {
-                    // Encontra o pneu no array do veículo e simula o clique nele
                     const pneu = pneusDoVeiculoOS.find(p => p.id === pneuSaindoIdParam);
                     if (pneu) {
                         selecionarPneu(pneu.id, pneu.numero_fogo, pneu.posicao);
-                        // Já muda o select de serviço para "Troca" para agilizar
                         document.getElementById('select_servico_pneu').value = 'troca';
                         ajustarCamposServico();
                     }
-                }, 500); // 500ms para garantir que o DOM do mapa foi desenhado
-            } 
-            else if (veiculoIdParam && urlParams.get('tipo') === 'calibragem') {
-                // ... (lógica de calibragem mantida) ...
+                }, 500);
             }
 
             await buscarOS();
@@ -343,9 +378,8 @@
             }
         }
 
-        // --- MAPA OTIMIZADO ---
+        // --- MAPA ---
         async function prepararMapaOS(veiculoId) {
-            const v = listaVeiculos.find(x => x.id === veiculoId);
             const { data: pneus } = await supabaseClient.from('pneus').select('*').eq('veiculo_id', veiculoId).eq('status', 'em_uso');
             pneusDoVeiculoOS = pneus || [];
             desenharMapa();
@@ -547,18 +581,14 @@
             renderizarTabela(todasOS);
         }
 
-        // --- FUNÇÕES QUE FALTAVAM (KPIs E BUSCA) ---
         function calcularKPIs(lista) {
             let ativas = 0;
             let custoTotal = 0;
             
             lista.forEach(o => {
                 if (o.status === 'aberta' || o.status === 'em_andamento') ativas++;
-                
                 let valor = parseFloat(o.custo);
-                if (!isNaN(valor)) {
-                    custoTotal += valor;
-                }
+                if (!isNaN(valor)) custoTotal += valor;
             });
 
             document.getElementById('kpi-abertas').innerText = ativas;
