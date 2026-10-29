@@ -256,6 +256,9 @@
         
         let pneuSaindoId = null;
         let pneuSaindoPosicao = null;
+        
+        const urlParams = new URLSearchParams(window.location.search);
+                lucide.createIcons();
 
         // --- INICIALIZAÇÃO E AUTENTICAÇÃO ---
         supabaseClient.auth.getSession().then(({ data: { session } }) => {
