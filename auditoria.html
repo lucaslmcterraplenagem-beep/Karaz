@@ -36,8 +36,6 @@
                 <a href="pneus.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 rounded-md font-medium transition-colors"><i data-lucide="disc" class="w-5 h-5"></i><span class="menu-text text-sm">Pneus</span></a>
                 <a href="ordens-servico.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 rounded-md font-medium transition-colors"><i data-lucide="wrench" class="w-5 h-5"></i><span class="menu-text text-sm">Ordens de Serviço</span></a>
                 <a href="cadastros.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 rounded-md font-medium transition-colors"><i data-lucide="database" class="w-5 h-5"></i><span class="menu-text text-sm">Cadastros Gerais</span></a>
-                
-                <!-- MENU AUDITORIA (ATIVO) -->
                 <a href="auditoria.html" class="flex items-center gap-3 px-3 py-2.5 bg-brand/10 text-brand rounded-md font-medium transition-colors">
                     <i data-lucide="shield-check" class="w-5 h-5"></i><span class="menu-text text-sm">Auditoria</span>
                 </a>
@@ -106,13 +104,11 @@
             </div>
             
             <div class="flex-1 overflow-y-auto p-6 flex flex-col md:flex-row gap-6">
-                <!-- Dados Antigos -->
                 <div class="flex-1 bg-red-500/5 rounded-lg p-4 border border-red-500/20">
                     <h4 class="text-sm font-bold text-red-500 uppercase mb-2">Dados Antigos (Antes)</h4>
                     <pre id="json-antes" class="text-xs text-gray-600 dark:text-gray-400 whitespace-pre-wrap font-mono"></pre>
                 </div>
                 
-                <!-- Dados Novos -->
                 <div class="flex-1 bg-green-500/5 rounded-lg p-4 border border-green-500/20">
                     <h4 class="text-sm font-bold text-green-500 uppercase mb-2">Dados Novos (Depois)</h4>
                     <pre id="json-depois" class="text-xs text-gray-600 dark:text-gray-400 whitespace-pre-wrap font-mono"></pre>
@@ -151,17 +147,20 @@
             html.classList.toggle('dark'); localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
         });
 
-                async function carregarAuditoria() {
+        // --- CARREGAR DADOS ---
+        async function carregarAuditoria() {
             const { data, error } = await supabaseClient.rpc('get_auditoria_logs');
             
             if (error) {
                 console.error(error);
-                // MUDANÇA AQUI: Vai mostrar o erro real na tela
-                document.getElementById('aviso-vazio').innerText = "Erro no Banco: " + error.message;
+                document.getElementById('aviso-vazio').innerText = "Erro ao carregar auditoria: " + error.message;
                 document.getElementById('aviso-vazio').classList.remove('hidden');
                 return;
             }
-            // ... resto do código
+
+            todosLogs = data || [];
+            renderizarTabela(todosLogs);
+        }
 
         function renderizarTabela(lista) {
             const tabela = document.getElementById('tabela-auditoria');
@@ -177,7 +176,6 @@
             lista.forEach(log => {
                 const dataFormatada = new Date(log.created_at).toLocaleString('pt-BR');
                 
-                // Cor da Ação
                 let badgeAcao = 'bg-gray-500/10 text-gray-500';
                 if(log.acao === 'insert') badgeAcao = 'bg-green-500/10 text-green-500';
                 if(log.acao === 'update') badgeAcao = 'bg-blue-500/10 text-blue-500';
