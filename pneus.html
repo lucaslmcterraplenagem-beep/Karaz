@@ -57,10 +57,9 @@
                 </a>
                 <a href="cadastros.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
                     <i data-lucide="database" class="w-5 h-5"></i><span class="menu-text text-sm">Cadastros Gerais</span>
-                                    <!-- NOVO MENU AUDITORIA -->
+                </a>
                 <a href="auditoria.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
                     <i data-lucide="shield-check" class="w-5 h-5"></i><span class="menu-text text-sm">Auditoria</span>
-                </a>
                 </a>
             </nav>
         </div>
@@ -118,7 +117,8 @@
                         <option value="">Todos os Status</option>
                         <option value="estoque">Estoque</option>
                         <option value="em_uso">Em Uso</option>
-                        <option value="reforma">Reforma</option>
+                        <option value="reparo">Em Reparo</option>
+                        <option value="reforma">Recapagem</option>
                         <option value="descarte">Descarte</option>
                     </select>
                 </div>
@@ -219,7 +219,7 @@
         </div>
     </div>
 
-    <!-- MODAL DE HISTÓRICO DO PNEU (NOVO) -->
+    <!-- MODAL DE HISTÓRICO DO PNEU -->
     <div id="modal-historico-pneu" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-6xl border border-gray-200 dark:border-slate-700 overflow-hidden flex flex-col max-h-[90vh]">
             
@@ -260,7 +260,6 @@
                 <!-- Cabeçalho exclusivo para o PDF -->
                 <div id="logo-pdf-pneu" class="hidden mb-6 flex justify-between items-end border-b-2 border-brand pb-4">
                     <div class="flex items-center gap-3">
-                        <!-- Substitua o src pelo caminho da sua logo se tiver -->
                         <img src="logo.png" alt="Logo Karaz" class="h-10 w-auto object-contain" onerror="this.style.display='none'">
                         <h1 class="text-2xl font-bold text-gray-800">Karaz <span class="text-brand">Sistema</span></h1>
                     </div>
@@ -323,7 +322,6 @@
         const tabela = document.getElementById('tabela-pneus');
         const avisoVazio = document.getElementById('aviso-vazio');
 
-        // Formata dinheiro
         const formatarDinheiro = (valor) => {
             return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor || 0);
         };
@@ -352,7 +350,6 @@
                     estoque++;
                     valorEstoque += (p.valor_pago || 0);
                 }
-                // Crítico se sulco_atual for <= 3 (ou se for null, usa o inicial)
                 let sulco = p.sulco_atual !== null ? p.sulco_atual : p.sulco_inicial;
                 if (sulco <= 3) criticos++;
             });
@@ -378,10 +375,9 @@
                 if (p.status === 'estoque') { badgeClass = 'bg-blue-500/10 text-blue-500'; statusTexto = 'Estoque'; }
                 if (p.status === 'em_uso') { badgeClass = 'bg-green-500/10 text-green-500'; statusTexto = 'Em Uso'; }
                 if (p.status === 'reforma') { badgeClass = 'bg-yellow-500/10 text-yellow-500'; statusTexto = 'Recapagem'; }
-                if (p.status === 'reparo') { badgeClass = 'bg-orange-500/10 text-orange-500'; statusTexto = 'Em Reparo'; } // <--- NOVO
+                if (p.status === 'reparo') { badgeClass = 'bg-orange-500/10 text-orange-500'; statusTexto = 'Em Reparo'; }
                 if (p.status === 'descarte') { badgeClass = 'bg-red-500/10 text-red-500'; statusTexto = 'Descarte'; }
 
-                // Lógica de cor do sulco
                 let sulcoColor = 'text-green-500';
                 let sulcoAtual = p.sulco_atual !== null ? p.sulco_atual : p.sulco_inicial;
                 if (sulcoAtual <= 5) sulcoColor = 'text-yellow-500';
@@ -413,6 +409,9 @@
                         </button>
                         <button onclick="adicionarObservacao('${p.id}')" class="text-gray-400 hover:text-purple-500 transition-colors" title="Adicionar Observação">
                             <i data-lucide="message-square" class="w-5 h-5"></i>
+                        </button>
+                        <button onclick="excluirPneu('${p.id}', '${p.numero_fogo}')" class="text-gray-400 hover:text-red-600 transition-colors" title="Excluir Definitivamente">
+                            <i data-lucide="trash-2" class="w-5 h-5"></i>
                         </button>
                     </td>
                 `;
@@ -491,7 +490,6 @@
                 btn.innerHTML = 'Salvar Pneu';
                 btn.disabled = false;
             } else {
-                // Registrar no Histórico
                 await supabaseClient.from('historico_pneu').insert([{
                     pneu_id: data[0].id,
                     tipo_evento: 'cadastro',
@@ -506,8 +504,27 @@
             }
         });
 
+        // --- FUNÇÃO DE EXCLUIR PNEU ---
+        async function excluirPneu(id, numero_fogo) {
+            const msg = `⚠️ ATENÇÃO: EXCLUIR PNEU DEFINITIVAMENTE ⚠️\n\nVocê está prestes a apagar o pneu Nº de Fogo ${numero_fogo}.\n\n- Esta ação NÃO PODE SER DESFEITA.\n- O histórico do pneu será apagado.\n- Se o pneu estiver instalado em um veículo, a exclusão será bloqueada.\n- A ação ficará gravada permanentemente na Auditoria do sistema.\n\nDeseja realmente continuar?`;
+            
+            if(!window.confirm(msg)) return;
+
+            const { error } = await supabaseClient.from('pneus').delete().eq('id', id);
+            
+            if (error) {
+                if(error.code === '23503') {
+                    alert("Erro: Não é possível excluir. Este pneu possui histórico de instalação ou está em uso. Mude o status para 'Descarte' em vez de excluir.");
+                } else {
+                    alert("Erro ao excluir: " + error.message);
+                }
+            } else {
+                carregarPneus();
+            }
+        }
+
         // ==========================================
-        // --- LÓGICA DO HISTÓRICO DO PNEU (NOVO) ---
+        // --- LÓGICA DO HISTÓRICO DO PNEU ---
         // ==========================================
         let pneuHistoricoAtual = null;
 
@@ -519,16 +536,14 @@
             });
         }
 
-               async function abrirHistoricoPneu(id) {
+        async function abrirHistoricoPneu(id) {
             pneuHistoricoAtual = todosPneus.find(p => p.id === id);
             if(!pneuHistoricoAtual) return;
 
-            // Preenche o cabeçalho
             document.getElementById('hist-titulo').innerText = `Histórico: ${pneuHistoricoAtual.numero_fogo}`;
             document.getElementById('hist-subtitulo').innerText = `${pneuHistoricoAtual.marca} ${pneuHistoricoAtual.medida} | DOT: ${pneuHistoricoAtual.dot || '-'}`;
             document.getElementById('pdf-pneu-info').innerText = `Pneu: ${pneuHistoricoAtual.numero_fogo} | Sulco Inicial: ${pneuHistoricoAtual.sulco_inicial}mm`;
 
-            // Abre o modal
             document.getElementById('modal-historico-pneu').classList.remove('hidden');
             
             const tbody = document.getElementById('tbody-historico-pneu');
@@ -536,7 +551,6 @@
             tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-gray-500">Buscando eventos...</td></tr>';
             aviso.classList.add('hidden');
 
-            // Busca o histórico no banco (SEM O JOIN)
             const { data, error } = await supabaseClient
                 .from('historico_pneu')
                 .select('*')
@@ -544,7 +558,6 @@
                 .order('created_at', { ascending: false });
 
             if (error) {
-                console.error("Erro no banco:", error); // Mostra o erro real no F12
                 tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-red-500">Erro ao carregar histórico. Verifique o console (F12).</td></tr>';
                 return;
             }
@@ -567,14 +580,8 @@
                 if(h.tipo_evento === 'calibragem') { badgeEvento = 'bg-orange-500/10 text-orange-500'; }
                 if(h.tipo_evento === 'remocao') { badgeEvento = 'bg-red-500/10 text-red-500'; }
                 if(h.tipo_evento === 'observacao') { badgeEvento = 'bg-purple-500/10 text-purple-500'; textoEvento = 'Observação'; }
-                if(h.tipo_evento === 'cadastro') { badgeEvento = 'bg-blue-500/10 text-blue-500'; }
-                if(h.tipo_evento === 'instalacao') { badgeEvento = 'bg-green-500/10 text-green-500'; }
-                if(h.tipo_evento === 'calibragem') { badgeEvento = 'bg-orange-500/10 text-orange-500'; }
-                if(h.tipo_evento === 'remocao') { badgeEvento = 'bg-red-500/10 text-red-500'; }
-                if(h.tipo_evento === 'observacao') { badgeEvento = 'bg-purple-500/10 text-purple-500'; textoEvento = 'Observação'; }
-                
-                // NOVO EVENTO DE OS:
                 if(h.tipo_evento === 'os_concluida') { badgeEvento = 'bg-indigo-500/10 text-indigo-500'; textoEvento = 'OS Concluída'; }
+                
                 tbody.innerHTML += `
                     <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
                         <td class="px-4 py-3 col-data text-xs text-gray-500">${dataFormatada}</td>
@@ -601,7 +608,6 @@
             if(error) alert("Erro ao salvar observação: " + error.message);
             else {
                 alert("Observação registrada no histórico!");
-                // Se o histórico estiver aberto para este pneu, atualiza
                 if(pneuHistoricoAtual && pneuHistoricoAtual.id === pneuId) {
                     abrirHistoricoPneu(pneuId);
                 }
@@ -612,7 +618,6 @@
             const elemento = document.getElementById('area-impressao-pneu');
             const logo = document.getElementById('logo-pdf-pneu');
             
-            // Mostra a logo temporariamente
             logo.classList.remove('hidden');
 
             const opt = {
@@ -623,7 +628,6 @@
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
             
-            // Força o fundo branco para o PDF ficar bonito, independente do tema
             const isDark = document.documentElement.classList.contains('dark');
             if(isDark) {
                 elemento.style.backgroundColor = 'white';
@@ -645,7 +649,6 @@
             });
         }
 
-        // Inicializa a tabela
         carregarPneus();
     </script>
 </body>
