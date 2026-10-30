@@ -24,6 +24,32 @@
 </head>
 <body class="bg-gray-100 text-gray-800 dark:bg-darkbg dark:text-gray-100 font-sans h-[100dvh] flex flex-col overflow-hidden antialiased">
 
+    <!-- TELA DE LOGIN (SOBREPOSIÇÃO) -->
+    <div id="tela-login" class="absolute inset-0 z-50 bg-gray-100 dark:bg-darkbg flex flex-col items-center justify-center p-6">
+        <div class="w-full max-w-sm">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 rounded-2xl bg-brand flex items-center justify-center mx-auto mb-4 shadow-lg shadow-brand/30">
+                    <i data-lucide="disc" class="w-8 h-8 text-white"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">App Aferição</h1>
+                <p class="text-gray-500 mt-1">Acesso do Pátio</p>
+            </div>
+            
+            <form id="form-login" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">E-mail do Pátio</label>
+                    <input type="email" id="login-email" required class="w-full p-3 bg-white dark:bg-darkcard border border-gray-300 dark:border-slate-600 rounded-lg focus:border-brand text-base" placeholder="patio@empresa.com">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Senha</label>
+                    <input type="password" id="login-senha" required class="w-full p-3 bg-white dark:bg-darkcard border border-gray-300 dark:border-slate-600 rounded-lg focus:border-brand text-base" placeholder="••••••••">
+                </div>
+                <div id="login-erro" class="hidden text-red-500 text-sm bg-red-500/10 p-3 rounded-lg text-center"></div>
+                <button type="submit" id="btn-login" class="w-full bg-brand hover:bg-orange-700 text-white font-bold py-3 rounded-lg shadow-lg transition-colors">Entrar no App</button>
+            </form>
+        </div>
+    </div>
+
     <!-- CABEÇALHO FIXO -->
     <header class="bg-white dark:bg-darkcard border-b border-gray-200 dark:border-slate-700 p-4 flex justify-between items-center shrink-0 z-20">
         <div class="flex items-center gap-2">
@@ -32,7 +58,7 @@
             </div>
             <h1 class="text-lg font-bold text-gray-900 dark:text-white">App Aferição</h1>
         </div>
-        <button onclick="window.location.href='dashboard.html'" class="text-gray-500 hover:text-red-500 p-2">
+        <button onclick="fazerLogout()" class="text-gray-500 hover:text-red-500 p-2" title="Sair do App">
             <i data-lucide="log-out" class="w-6 h-6"></i>
         </button>
     </header>
@@ -41,7 +67,7 @@
     <main class="flex-1 overflow-y-auto p-4 pb-24 relative">
         
         <!-- TELA 1: LISTA DE VEÍCULOS -->
-        <div id="tela-veiculos">
+        <div id="tela-veiculos" class="hidden">
             <div class="mb-4">
                 <div class="relative">
                     <i data-lucide="search" class="w-5 h-5 absolute left-3 top-3.5 text-gray-400"></i>
@@ -49,18 +75,15 @@
                         class="w-full pl-10 pr-4 py-3 bg-white dark:bg-darkcard border border-gray-300 dark:border-slate-600 rounded-xl text-base focus:outline-none focus:border-brand shadow-sm">
                 </div>
             </div>
-            <div id="lista-veiculos" class="space-y-3">
-                <!-- Cards de veículos via JS -->
-            </div>
+            <div id="lista-veiculos" class="space-y-3"></div>
         </div>
 
-        <!-- TELA 2: DETALHES DO VEÍCULO E LISTA DE PNEUS (OCULTA INICIALMENTE) -->
+        <!-- TELA 2: DETALHES DO VEÍCULO E LISTA DE PNEUS -->
         <div id="tela-pneus" class="hidden">
             <button onclick="voltarParaVeiculos()" class="flex items-center gap-1 text-sm font-medium text-brand mb-4 p-2 -ml-2">
                 <i data-lucide="arrow-left" class="w-4 h-4"></i> Voltar para Veículos
             </button>
 
-            <!-- Cabeçalho do Veículo -->
             <div class="bg-white dark:bg-darkcard p-4 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm mb-6 flex items-center gap-4">
                 <div class="inline-flex flex-col border-2 border-gray-900 dark:border-white rounded-md overflow-hidden w-20 shadow-sm shrink-0">
                     <div class="bg-[#003399] text-white text-[7px] text-center font-bold py-0.5 tracking-widest">BRASIL</div>
@@ -72,11 +95,8 @@
                 </div>
             </div>
 
-            <!-- Lista de Pneus -->
             <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">Selecione o Pneu</h3>
-            <div id="lista-pneus" class="space-y-6">
-                <!-- Pneus agrupados por eixo via JS -->
-            </div>
+            <div id="lista-pneus" class="space-y-6"></div>
         </div>
     </main>
 
@@ -95,7 +115,6 @@
         </div>
 
         <div class="p-4 overflow-y-auto space-y-4">
-            <!-- Tipo de Ação -->
             <div>
                 <label class="block text-sm font-medium mb-1">O que você vai fazer? <span class="text-red-500">*</span></label>
                 <select id="input-acao" class="w-full p-3 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg focus:border-brand text-base">
@@ -105,13 +124,11 @@
                 </select>
             </div>
 
-            <!-- KM / Horas -->
             <div>
                 <label class="block text-sm font-medium mb-1">KM ou Horas Atual <span class="text-red-500">*</span></label>
                 <input type="number" id="input-km" placeholder="Ex: 150000" class="w-full p-3 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg focus:border-brand text-base">
             </div>
 
-            <!-- Pressão e Sulco -->
             <div class="grid grid-cols-2 gap-3">
                 <div id="div-pressao">
                     <label class="block text-sm font-medium mb-1 text-brand">Pressão (PSI)</label>
@@ -123,13 +140,11 @@
                 </div>
             </div>
 
-            <!-- Observação -->
             <div>
                 <label class="block text-sm font-medium mb-1">Observação (Opcional)</label>
                 <textarea id="input-obs" rows="2" placeholder="Ex: Pneu com prego..." class="w-full p-3 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg focus:border-brand text-base"></textarea>
             </div>
 
-            <!-- Foto -->
             <div>
                 <label class="block text-sm font-medium mb-1">Anexar Foto (Opcional)</label>
                 <input type="file" id="input-foto" accept="image/*" capture="environment" class="w-full p-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand/10 file:text-brand hover:file:bg-brand/20">
@@ -169,7 +184,43 @@
         let veiculoSelecionado = null;
         let pneuSelecionado = null;
 
-        // 1. Carregar Veículos
+        // --- 1. LÓGICA DE LOGIN ---
+        supabaseClient.auth.getSession().then(({ data: { session } }) => {
+            if (session) {
+                document.getElementById('tela-login').classList.add('hidden');
+                document.getElementById('tela-veiculos').classList.remove('hidden');
+                carregarVeiculos();
+            }
+        });
+
+        document.getElementById('form-login').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const senha = document.getElementById('login-senha').value;
+            const btn = document.getElementById('btn-login');
+            const erroDiv = document.getElementById('login-erro');
+
+            btn.innerHTML = 'Entrando...'; btn.disabled = true; erroDiv.classList.add('hidden');
+
+            const { error } = await supabaseClient.auth.signInWithPassword({ email, password: senha });
+
+            if (error) {
+                erroDiv.innerText = "E-mail ou senha incorretos.";
+                erroDiv.classList.remove('hidden');
+                btn.innerHTML = 'Entrar no App'; btn.disabled = false;
+            } else {
+                document.getElementById('tela-login').classList.add('hidden');
+                document.getElementById('tela-veiculos').classList.remove('hidden');
+                carregarVeiculos();
+            }
+        });
+
+        async function fazerLogout() {
+            await supabaseClient.auth.signOut();
+            window.location.reload();
+        }
+
+        // --- 2. LÓGICA DE VEÍCULOS ---
         async function carregarVeiculos() {
             const { data, error } = await supabaseClient.from('veiculos').select('*').eq('ativo', true).order('placa');
             if (error) return console.error(error);
@@ -204,7 +255,6 @@
             lucide.createIcons();
         }
 
-        // Busca Rápida de Veículos
         document.getElementById('busca-veiculo').addEventListener('input', (e) => {
             const termo = e.target.value.toLowerCase();
             const filtrados = veiculos.filter(v => 
@@ -215,7 +265,7 @@
             renderizarListaVeiculos(filtrados);
         });
 
-        // 2. Selecionar Veículo e Mostrar Pneus
+        // --- 3. LÓGICA DE PNEUS ---
         async function selecionarVeiculo(id) {
             veiculoSelecionado = veiculos.find(v => v.id === id);
             if(!veiculoSelecionado) return;
@@ -227,7 +277,6 @@
             document.getElementById('modelo-visual').innerText = veiculoSelecionado.modelo;
             document.getElementById('prefixo-visual').innerText = veiculoSelecionado.prefixo || 'S/ Prefixo';
 
-            // Buscar pneus do veículo
             const { data: pneus, error } = await supabaseClient.from('pneus').select('*').eq('veiculo_id', id).eq('status', 'em_uso');
             if (error) return console.error(error);
 
@@ -238,7 +287,6 @@
             const container = document.getElementById('lista-pneus');
             container.innerHTML = '';
             
-            // Lógica para agrupar por eixo (ex: configuracao_eixos = "2,4,4")
             let configArr = veiculoSelecionado.configuracao_eixos ? veiculoSelecionado.configuracao_eixos.split(',') : [2, 4, 4, 2];
             
             configArr.forEach((qtdStr, indexEixo) => {
@@ -248,14 +296,11 @@
                 
                 let htmlPneus = '';
                 
-                // Monta os botões (Esquerdo e Direito)
                 for(let i=1; i <= qtd/2; i++) {
-                    // Lado Esquerdo
                     const posEsq = `E${indexEixo+1}-E${i}`;
                     const pneuEsq = pneus.find(p => p.posicao === posEsq);
                     htmlPneus += criarBotaoPneuApp(pneuEsq, posEsq);
 
-                    // Lado Direito
                     const posDir = `E${indexEixo+1}-D${i}`;
                     const pneuDir = pneus.find(p => p.posicao === posDir);
                     htmlPneus += criarBotaoPneuApp(pneuDir, posDir);
@@ -263,9 +308,7 @@
 
                 eixoDiv.innerHTML = `
                     <h4 class="text-xs font-bold text-gray-400 uppercase mb-3 border-b border-gray-100 dark:border-slate-700 pb-2">${indexEixo+1}º Eixo</h4>
-                    <div class="grid grid-cols-2 gap-3">
-                        ${htmlPneus}
-                    </div>
+                    <div class="grid grid-cols-2 gap-3">${htmlPneus}</div>
                 `;
                 container.appendChild(eixoDiv);
             });
@@ -286,11 +329,7 @@
                     </button>
                 `;
             } else {
-                return `
-                    <div class="bg-gray-100 dark:bg-slate-800 border-2 border-dashed border-gray-300 dark:border-slate-600 text-gray-400 p-3 rounded-lg flex items-center justify-center text-sm font-medium">
-                        Vazio
-                    </div>
-                `;
+                return `<div class="bg-gray-100 dark:bg-slate-800 border-2 border-dashed border-gray-300 dark:border-slate-600 text-gray-400 p-3 rounded-lg flex items-center justify-center text-sm font-medium">Vazio</div>`;
             }
         }
 
@@ -300,33 +339,17 @@
             veiculoSelecionado = null;
         }
 
-        // 3. Lógica da Gaveta de Aferição
+        // --- 4. GAVETA E AFERIÇÃO ---
         function abrirGaveta(pneuId, numeroFogo, posicao) {
             pneuSelecionado = { id: pneuId, numeroFogo: numeroFogo, posicao: posicao };
             
             document.getElementById('gaveta-pneu-info').innerText = `Pneu: ${numeroFogo} | Posição: ${posicao}`;
-            document.getElementById('input-km').value = ''; // Limpa KM
+            document.getElementById('input-km').value = '';
             document.getElementById('input-pressao').value = '';
             document.getElementById('input-sulco').value = '';
             document.getElementById('input-obs').value = '';
             document.getElementById('input-foto').value = '';
-            document.getElementById('input-acao').value = 'calibragem';
             
-            // Esconde/Mostra campos conforme ação
-            document.getElementById('input-acao').onchange = (e) => {
-                if(e.target.value === 'observacao') {
-                    document.getElementById('div-pressao').classList.add('hidden');
-                    document.getElementById('div-sulco').classList.add('hidden');
-                } else if (e.target.value === 'sulco') {
-                    document.getElementById('div-pressao').classList.add('hidden');
-                    document.getElementById('div-sulco').classList.remove('hidden');
-                } else {
-                    document.getElementById('div-pressao').classList.remove('hidden');
-                    document.getElementById('div-sulco').classList.remove('hidden');
-                }
-            };
-            document.getElementById('input-acao').dispatchEvent(new Event('change'));
-
             document.getElementById('overlay-gaveta').classList.remove('hidden');
             document.getElementById('gaveta-afericao').classList.remove('translate-y-full');
         }
@@ -336,7 +359,6 @@
             document.getElementById('gaveta-afericao').classList.add('translate-y-full');
         }
 
-        // 4. Modal do PIN e Salvamento
         function abrirModalPin() {
             const km = document.getElementById('input-km').value;
             if(!km) {
@@ -375,21 +397,16 @@
             let fotoUrl = null;
             const fileInput = document.getElementById('input-foto');
 
-            // 1. Upload da Foto (se houver)
             if (fileInput.files.length > 0) {
                 const file = fileInput.files[0];
                 const fileName = `${Date.now()}_${pneuSelecionado.numeroFogo}.jpg`;
-                const { data: uploadData, error: uploadError } = await supabaseClient.storage
-                    .from('fotos-pneus')
-                    .upload(fileName, file);
-                
+                const { data: uploadData, error: uploadError } = await supabaseClient.storage.from('fotos-pneus').upload(fileName, file);
                 if(!uploadError) {
                     const { data: urlData } = supabaseClient.storage.from('fotos-pneus').getPublicUrl(fileName);
                     fotoUrl = urlData.publicUrl;
                 }
             }
 
-            // 2. Chamar a RPC no banco
             const { error } = await supabaseClient.rpc('registrar_afericao_app', {
                 p_veiculo_id: veiculoSelecionado.id,
                 p_pneu_id: pneuSelecionado.id,
@@ -407,18 +424,13 @@
                 erroDiv.classList.remove('hidden');
                 btn.innerHTML = 'Confirmar'; btn.disabled = false;
             } else {
-                // Sucesso!
                 alert("✅ Aferição registrada com sucesso!");
                 fecharModalPin();
                 fecharGaveta();
                 btn.innerHTML = 'Confirmar'; btn.disabled = false;
-                // Recarrega a lista de pneus para atualizar as cores se necessário
-                selecionarVeiculo(veiculoSelecionado.id);
+                selecionarVeiculo(veiculoSelecionado.id); // Atualiza as cores na tela
             }
         }
-
-        // Inicialização
-        carregarVeiculos();
     </script>
 </body>
 </html>
