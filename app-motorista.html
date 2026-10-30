@@ -100,17 +100,11 @@
 
             <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">Selecione o Pneu</h3>
             
-            <!-- NOVO VISUAL DO MAPA MOBILE -->
             <div class="relative bg-slate-100 dark:bg-slate-900 rounded-3xl p-4 pb-12 flex flex-col items-center w-full max-w-sm mx-auto shadow-inner border border-gray-200 dark:border-slate-700">
-                
-                <!-- Cabine (Frente) -->
                 <div class="w-3/4 h-12 bg-slate-300 dark:bg-slate-700 rounded-t-xl border-4 border-b-0 border-slate-400 dark:border-slate-500 flex items-center justify-center mb-8 relative z-10">
                     <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Frente</span>
                 </div>
-
-                <!-- Linha do Chassi -->
                 <div class="absolute top-20 bottom-8 left-1/2 w-3 bg-slate-300 dark:bg-slate-600 -translate-x-1/2 z-0 rounded-full"></div>
-
                 <div id="lista-pneus" class="w-full flex flex-col gap-8 relative z-10"></div>
             </div>
         </div>
@@ -133,19 +127,21 @@
         <div class="p-4 overflow-y-auto space-y-4">
             <div>
                 <label class="block text-sm font-medium mb-1">O que você vai fazer? <span class="text-red-500">*</span></label>
-                <select id="input-acao" class="w-full p-3 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg focus:border-brand text-base">
+                <select id="input-acao" class="w-full p-3 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg focus:border-brand text-base" onchange="ajustarCamposAcao()">
                     <option value="calibragem">Calibrar (Pressão)</option>
                     <option value="sulco">Medir Sulco</option>
                     <option value="observacao">Somente Observação</option>
                 </select>
             </div>
 
+            <!-- KM (Agora com asterisco dinâmico) -->
             <div>
-                <label class="block text-sm font-medium mb-1">KM ou Horas Atual <span class="text-red-500">*</span></label>
+                <label class="block text-sm font-medium mb-1">KM ou Horas Atual <span id="obrigatorio-km" class="text-red-500">*</span></label>
                 <input type="number" id="input-km" placeholder="Ex: 150000" class="w-full p-3 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg focus:border-brand text-base">
             </div>
 
-            <div class="grid grid-cols-2 gap-3">
+            <!-- Campos de Pressão e Sulco -->
+            <div class="grid grid-cols-2 gap-3" id="campos-tecnicos">
                 <div id="div-pressao">
                     <label class="block text-sm font-medium mb-1 text-brand">Pressão (PSI)</label>
                     <input type="number" id="input-pressao" placeholder="Ex: 110" class="w-full p-3 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg focus:border-brand text-base">
@@ -153,6 +149,8 @@
                 <div id="div-sulco">
                     <label class="block text-sm font-medium mb-1">Sulco (mm)</label>
                     <input type="number" step="0.1" id="input-sulco" placeholder="Ex: 12.5" class="w-full p-3 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg focus:border-brand text-base">
+                    <!-- Aviso sobre o medidor de sulco -->
+                    <p class="text-[10px] text-gray-500 mt-1 leading-tight">*Medição realizada com paquímetro específico.</p>
                 </div>
             </div>
 
@@ -252,7 +250,7 @@
             renderizarListaVeiculos(veiculos.filter(v => v.placa.toLowerCase().includes(termo) || (v.prefixo && v.prefixo.toLowerCase().includes(termo)) || v.modelo.toLowerCase().includes(termo)));
         });
 
-        // --- LÓGICA DE PNEUS (NOVO DESIGN) ---
+        // --- LÓGICA DE PNEUS ---
         async function selecionarVeiculo(id) {
             veiculoSelecionado = veiculos.find(v => v.id === id);
             if(!veiculoSelecionado) return;
@@ -281,7 +279,6 @@
                 let eixoDiv = document.createElement('div');
                 eixoDiv.className = "relative flex justify-between items-center w-full px-2";
                 
-                // Barra do eixo
                 eixoDiv.innerHTML = `<div class="absolute top-1/2 left-0 w-full h-3 bg-slate-300 dark:bg-slate-600 -translate-y-1/2 rounded-full z-0"></div>`;
 
                 let htmlPneus = '';
@@ -291,22 +288,15 @@
                 let ladoDireitoHtml = '<div class="flex gap-1 z-10">';
 
                 for (let i = 1; i <= pneusPorLado; i++) {
-                    // Define se é Externo ou Interno
                     let labelPosicao = "";
-                    if (pneusPorLado === 1) {
-                        labelPosicao = "Unico";
-                    } else if (pneusPorLado === 2) {
-                        labelPosicao = i === 1 ? "Externo" : "Interno";
-                    } else {
-                        labelPosicao = `${i}º`;
-                    }
+                    if (pneusPorLado === 1) labelPosicao = "Unico";
+                    else if (pneusPorLado === 2) labelPosicao = i === 1 ? "Externo" : "Interno";
+                    else labelPosicao = `${i}º`;
 
-                    // Pneu Esquerdo
                     const posEsq = `E${indexEixo+1}-E${i}`;
                     const pneuEsq = pneus.find(p => p.posicao === posEsq);
                     ladoEsquerdoHtml += criarBotaoPneuApp(pneuEsq, posEsq, labelPosicao, 'Esq');
                     
-                    // Pneu Direito
                     const posDir = `E${indexEixo+1}-D${i}`;
                     const pneuDir = pneus.find(p => p.posicao === posDir);
                     ladoDireitoHtml += criarBotaoPneuApp(pneuDir, posDir, labelPosicao, 'Dir');
@@ -358,8 +348,35 @@
             document.getElementById('input-sulco').value = '';
             document.getElementById('input-obs').value = '';
             document.getElementById('input-foto').value = '';
+            document.getElementById('input-acao').value = 'calibragem';
+            
+            ajustarCamposAcao(); // Reseta os campos visíveis
+
             document.getElementById('overlay-gaveta').classList.remove('hidden');
             document.getElementById('gaveta-afericao').classList.remove('translate-y-full');
+        }
+
+        function ajustarCamposAcao() {
+            const acao = document.getElementById('input-acao').value;
+            const camposTecnicos = document.getElementById('campos-tecnicos');
+            const divPressao = document.getElementById('div-pressao');
+            const divSulco = document.getElementById('div-sulco');
+            const obrigatorioKm = document.getElementById('obrigatorio-km');
+
+            if (acao === 'observacao') {
+                camposTecnicos.classList.add('hidden'); // Esconde pressão e sulco
+                obrigatorioKm.classList.add('hidden'); // Tira o asterisco do KM
+            } else if (acao === 'sulco') {
+                camposTecnicos.classList.remove('hidden');
+                divPressao.classList.add('hidden');
+                divSulco.classList.remove('hidden');
+                obrigatorioKm.classList.remove('hidden');
+            } else {
+                camposTecnicos.classList.remove('hidden');
+                divPressao.classList.remove('hidden');
+                divSulco.classList.remove('hidden');
+                obrigatorioKm.classList.remove('hidden');
+            }
         }
 
         function fecharGaveta() {
@@ -369,13 +386,18 @@
 
         async function salvarAfericaoDireto() {
             const btn = document.querySelector('#gaveta-afericao button:last-child');
-            const km = document.getElementById('input-km').value;
-            if(!km) return alert("Por favor, preencha o KM/Horas atual.");
+            const acao = document.getElementById('input-acao').value;
+            const kmInput = document.getElementById('input-km').value;
+            
+            // Validação condicional do KM
+            if(acao !== 'observacao' && !kmInput) {
+                return alert("Por favor, preencha o KM/Horas atual.");
+            }
 
             btn.innerHTML = 'Salvando...'; btn.disabled = true;
 
-            const acao = document.getElementById('input-acao').value;
-            const pressao = acao === 'calibragem' ? parseFloat(document.getElementById('input-pressao').value) : null;
+            const km = kmInput ? parseFloat(kmInput) : null;
+            const pressao = (acao === 'calibragem') ? parseFloat(document.getElementById('input-pressao').value) : null;
             const sulco = (acao === 'calibragem' || acao === 'sulco') ? parseFloat(document.getElementById('input-sulco').value) : null;
             const obs = document.getElementById('input-obs').value;
             
@@ -395,7 +417,7 @@
             const { error } = await supabaseClient.rpc('registrar_afericao_app', {
                 p_veiculo_id: veiculoSelecionado.id,
                 p_pneu_id: pneuSelecionado.id,
-                p_km: parseFloat(km),
+                p_km: km,
                 p_sulco: sulco,
                 p_pressao: pressao,
                 p_observacao: obs,
