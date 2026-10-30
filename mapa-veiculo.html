@@ -404,10 +404,11 @@
 
         function fecharModal() { document.getElementById('modal-instalar').classList.add('hidden'); }
 
-        async function instalarPneu(pneuId, numeroFogo) {
+               async function instalarPneu(pneuId, numeroFogo) {
             const session = await supabaseClient.auth.getSession();
             const userId = session.data.session.user.id;
 
+            // 1. Atualiza o banco (NUVEM)
             const { error } = await supabaseClient.from('pneus').update({
                 status: 'em_uso',
                 veiculo_id: veiculoId,
@@ -416,6 +417,7 @@
 
             if (error) { alert("Erro ao instalar pneu: " + error.message); return; }
 
+            // 2. Grava históricos (NUVEM)
             await supabaseClient.from('historico_pneu').insert([{
                 pneu_id: pneuId, tipo_evento: 'instalacao',
                 descricao: `Pneu instalado no veículo ${veiculoAtual.placa} na posição ${pneuSlotSelecionado}.`,
@@ -428,12 +430,22 @@
                 usuario_id: userId
             }]);
 
+            // 3. A MÁGICA DA VELOCIDADE AQUI:
+            // Em vez de recarregar a página inteira, nós apenas atualizamos a memória local e desenhamos de novo.
+            // Buscamos o pneu que acabou de ser instalado
+            const { data: pneuNovo } = await supabaseClient.from('pneus').select('*').eq('id', pneuId).single();
+            
+            if (pneuNovo) {
+                // Atualiza o array que está na memória do navegador
+                pneusDoVeiculo.push(pneuNovo);
+                // Redesenha o chassi na hora (milissegundos)
+                renderizarChassi();
+            }
+
             fecharModal();
             pneuSelecionadoInfo = null;
             document.getElementById('painel-pneu').classList.add('opacity-50', 'pointer-events-none');
             document.getElementById('conteudo-pneu').innerHTML = '<p class="text-gray-500 text-center py-4">Clique em um pneu no mapa para ver os detalhes.</p>';
-            
-            carregarMapa();
         }
 
         carregarMapa();
