@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>App Aferição | Karaz</title>
+    
+    <script>
+        if (localStorage.theme === 'light') { document.documentElement.classList.remove('dark'); } 
+        else { document.documentElement.classList.add('dark'); }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] }, colors: { brand: '#ea580c', darkbg: '#0f172a', darkcard: '#1e293b' } } }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 dark:bg-darkbg dark:text-gray-100 font-sans h-[100dvh] flex flex-col overflow-hidden antialiased">
+
+    <!-- CABEÇALHO FIXO -->
+    <header class="bg-white dark:bg-darkcard border-b border-gray-200 dark:border-slate-700 p-4 flex justify-between items-center shrink-0 z-20">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-full bg-brand flex items-center justify-center">
+                <i data-lucide="disc" class="w-5 h-5 text-white"></i>
+            </div>
+            <h1 class="text-lg font-bold text-gray-900 dark:text-white">App Aferição</h1>
+        </div>
+        <button onclick="window.location.href='dashboard.html'" class="text-gray-500 hover:text-red-500 p-2">
+            <i data-lucide="log-out" class="w-6 h-6"></i>
+        </button>
+    </header>
+
+    <!-- ÁREA DE CONTEÚDO ROLÁVEL -->
+    <main class="flex-1 overflow-y-auto p-4 pb-24 relative">
+        
+        <!-- TELA 1: LISTA DE VEÍCULOS -->
+        <div id="tela-veiculos">
+            <div class="mb-4">
+                <div class="relative">
+                    <i data-lucide="search" class="w-5 h-5 absolute left-3 top-3.5 text-gray-400"></i>
+                    <input type="text" id="busca-veiculo" placeholder="Buscar por placa, prefixo..." 
+                        class="w-full pl-10 pr-4 py-3 bg-white dark:bg-darkcard border border-gray-300 dark:border-slate-600 rounded-xl text-base focus:outline-none focus:border-brand shadow-sm">
+                </div>
+            </div>
+            <div id="lista-veiculos" class="space-y-3">
+                <!-- Cards de veículos via JS -->
+            </div>
+        </div>
+
+        <!-- TELA 2: DETALHES DO VEÍCULO E LISTA DE PNEUS (OCULTA INICIALMENTE) -->
+        <div id="tela-pneus" class="hidden">
+            <button onclick="voltarParaVeiculos()" class="flex items-center gap-1 text-sm font-medium text-brand mb-4 p-2 -ml-2">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i> Voltar para Veículos
+            </button>
+
+            <!-- Cabeçalho do Veículo -->
+            <div class="bg-white dark:bg-darkcard p-4 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm mb-6 flex items-center gap-4">
+                <div class="inline-flex flex-col border-2 border-gray-900 dark:border-white rounded-md overflow-hidden w-20 shadow-sm shrink-0">
+                    <div class="bg-[#003399] text-white text-[7px] text-center font-bold py-0.5 tracking-widest">BRASIL</div>
+                    <div id="placa-visual" class="bg-white text-black text-center font-bold text-sm leading-none py-1 uppercase">...</div>
+                </div>
+                <div>
+                    <h2 id="modelo-visual" class="font-bold text-lg leading-tight text-gray-900 dark:text-white">...</h2>
+                    <p id="prefixo-visual" class="text-sm text-gray-500 font-medium">...</p>
+                </div>
+            </div>
+
+            <!-- Lista de Pneus -->
+            <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">Selecione o Pneu</h3>
+            <div id="lista-pneus" class="space-y-6">
+                <!-- Pneus agrupados por eixo via JS -->
+            </div>
+        </div>
+    </main>
+
+    <!-- GAVETA DE AFERIÇÃO (BOTTOM SHEET) -->
+    <div id="overlay-gaveta" class="hidden fixed inset-0 bg-black/60 z-40 backdrop-blur-sm" onclick="fecharGaveta()"></div>
+    <div id="gaveta-afericao" class="fixed bottom-0 left-0 right-0 bg-white dark:bg-darkcard rounded-t-2xl shadow-2xl border-t border-gray-200 dark:border-slate-700 z-50 transform translate-y-full transition-transform duration-300 flex flex-col max-h-[90vh]">
+        
+        <div class="p-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center">
+            <div>
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Aferição do Pneu</h3>
+                <p id="gaveta-pneu-info" class="text-sm text-brand font-medium">...</p>
+            </div>
+            <button onclick="fecharGaveta()" class="p-2 text-gray-400 hover:text-red-500 bg-gray-100 dark:bg-slate-800 rounded-full">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <div class="p-4 overflow-y-auto space-y-4">
+            <!-- Tipo de Ação -->
+            <div>
+                <label class="block text-sm font-medium mb-1">O que você vai fazer? <span class="text-red-500">*</span></label>
+                <select id="input-acao" class="w-full p-3 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg focus:border-brand text-base">
+                    <option value="calibragem">Calibrar (Pressão)</option>
+                    <option value="sulco">Medir Sulco</option>
+                    <option value="observacao">Somente Observação</option>
+                </select>
+            </div>
+
+            <!-- KM / Horas -->
+            <div>
+                <label class="block text-sm font-medium mb-1">KM ou Horas Atual <span class="text-red-500">*</span></label>
+                <input type="number" id="input-km" placeholder="Ex: 150000" class="w-full p-3 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg focus:border-brand text-base">
+            </div>
+
+            <!-- Pressão e Sulco -->
+            <div class="grid grid-cols-2 gap-3">
+                <div id="div-pressao">
+                    <label class="block text-sm font-medium mb-1 text-brand">Pressão (PSI)</label>
+                    <input type="number" id="input-pressao" placeholder="Ex: 110" class="w-full p-3 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg focus:border-brand text-base">
+                </div>
+                <div id="div-sulco">
+                    <label class="block text-sm font-medium mb-1">Sulco (mm)</label>
+                    <input type="number" step="0.1" id="input-sulco" placeholder="Ex: 12.5" class="w-full p-3 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg focus:border-brand text-base">
+                </div>
+            </div>
+
+            <!-- Observação -->
+            <div>
+                <label class="block text-sm font-medium mb-1">Observação (Opcional)</label>
+                <textarea id="input-obs" rows="2" placeholder="Ex: Pneu com prego..." class="w-full p-3 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg focus:border-brand text-base"></textarea>
+            </div>
+
+            <!-- Foto -->
+            <div>
+                <label class="block text-sm font-medium mb-1">Anexar Foto (Opcional)</label>
+                <input type="file" id="input-foto" accept="image/*" capture="environment" class="w-full p-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand/10 file:text-brand hover:file:bg-brand/20">
+            </div>
+
+            <button onclick="abrirModalPin()" class="w-full mt-4 bg-brand hover:bg-orange-700 text-white font-bold py-4 rounded-xl shadow-lg transition-colors text-lg">
+                Salvar Aferição
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL DE PIN DE ASSINATURA -->
+    <div id="modal-pin" class="hidden fixed inset-0 bg-black/80 z-[60] flex items-center justify-center p-4 backdrop-blur-md">
+        <div class="bg-white dark:bg-darkcard rounded-2xl w-full max-w-sm p-6 text-center shadow-2xl">
+            <div class="w-16 h-16 bg-brand/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="lock" class="w-8 h-8 text-brand"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2">Assinatura do Motorista</h3>
+            <p class="text-sm text-gray-500 mb-6">Digite seu PIN de 4 dígitos para confirmar a aferição.</p>
+            
+            <input type="number" id="input-pin" maxlength="4" placeholder="••••" 
+                class="w-full text-center text-3xl tracking-[1em] font-bold p-4 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-xl focus:border-brand mb-6 focus:outline-none">
+            
+            <div class="flex gap-3">
+                <button onclick="fecharModalPin()" class="flex-1 py-3 text-gray-600 dark:text-gray-300 font-medium bg-gray-100 dark:bg-slate-800 rounded-lg">Cancelar</button>
+                <button onclick="salvarAfericao()" id="btn-confirmar-pin" class="flex-1 py-3 text-white font-bold bg-brand hover:bg-orange-700 rounded-lg">Confirmar</button>
+            </div>
+            <div id="erro-pin" class="hidden text-red-500 text-sm mt-3 font-medium"></div>
+        </div>
+    </div>
+
+    <script src="js/supabase-client.js"></script>
+    <script>
+        lucide.createIcons();
+        
+        let veiculos = [];
+        let veiculoSelecionado = null;
+        let pneuSelecionado = null;
+
+        // 1. Carregar Veículos
+        async function carregarVeiculos() {
+            const { data, error } = await supabaseClient.from('veiculos').select('*').eq('ativo', true).order('placa');
+            if (error) return console.error(error);
+            veiculos = data || [];
+            renderizarListaVeiculos(veiculos);
+        }
+
+        function renderizarListaVeiculos(lista) {
+            const container = document.getElementById('lista-veiculos');
+            container.innerHTML = '';
+            if(lista.length === 0) {
+                container.innerHTML = '<p class="text-center text-gray-500 py-4">Nenhum veículo encontrado.</p>';
+                return;
+            }
+
+            lista.forEach(v => {
+                container.innerHTML += `
+                    <div onclick="selecionarVeiculo('${v.id}')" class="bg-white dark:bg-darkcard p-4 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm flex items-center justify-between active:scale-95 transition-transform cursor-pointer">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-gray-100 dark:bg-slate-800 flex items-center justify-center">
+                                <i data-lucide="truck" class="w-5 h-5 text-gray-500"></i>
+                            </div>
+                            <div>
+                                <div class="font-bold text-lg text-gray-900 dark:text-white uppercase">${v.placa}</div>
+                                <div class="text-sm text-gray-500">${v.prefixo || 'S/ Prefixo'} • ${v.modelo}</div>
+                            </div>
+                        </div>
+                        <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400"></i>
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+        }
+
+        // Busca Rápida de Veículos
+        document.getElementById('busca-veiculo').addEventListener('input', (e) => {
+            const termo = e.target.value.toLowerCase();
+            const filtrados = veiculos.filter(v => 
+                v.placa.toLowerCase().includes(termo) || 
+                (v.prefixo && v.prefixo.toLowerCase().includes(termo)) || 
+                v.modelo.toLowerCase().includes(termo)
+            );
+            renderizarListaVeiculos(filtrados);
+        });
+
+        // 2. Selecionar Veículo e Mostrar Pneus
+        async function selecionarVeiculo(id) {
+            veiculoSelecionado = veiculos.find(v => v.id === id);
+            if(!veiculoSelecionado) return;
+
+            document.getElementById('tela-veiculos').classList.add('hidden');
+            document.getElementById('tela-pneus').classList.remove('hidden');
+
+            document.getElementById('placa-visual').innerText = veiculoSelecionado.placa;
+            document.getElementById('modelo-visual').innerText = veiculoSelecionado.modelo;
+            document.getElementById('prefixo-visual').innerText = veiculoSelecionado.prefixo || 'S/ Prefixo';
+
+            // Buscar pneus do veículo
+            const { data: pneus, error } = await supabaseClient.from('pneus').select('*').eq('veiculo_id', id).eq('status', 'em_uso');
+            if (error) return console.error(error);
+
+            renderizarListaPneus(pneus || []);
+        }
+
+        function renderizarListaPneus(pneus) {
+            const container = document.getElementById('lista-pneus');
+            container.innerHTML = '';
+            
+            // Lógica para agrupar por eixo (ex: configuracao_eixos = "2,4,4")
+            let configArr = veiculoSelecionado.configuracao_eixos ? veiculoSelecionado.configuracao_eixos.split(',') : [2, 4, 4, 2];
+            
+            configArr.forEach((qtdStr, indexEixo) => {
+                let qtd = parseInt(qtdStr);
+                let eixoDiv = document.createElement('div');
+                eixoDiv.className = "bg-white dark:bg-darkcard rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm";
+                
+                let htmlPneus = '';
+                
+                // Monta os botões (Esquerdo e Direito)
+                for(let i=1; i <= qtd/2; i++) {
+                    // Lado Esquerdo
+                    const posEsq = `E${indexEixo+1}-E${i}`;
+                    const pneuEsq = pneus.find(p => p.posicao === posEsq);
+                    htmlPneus += criarBotaoPneuApp(pneuEsq, posEsq);
+
+                    // Lado Direito
+                    const posDir = `E${indexEixo+1}-D${i}`;
+                    const pneuDir = pneus.find(p => p.posicao === posDir);
+                    htmlPneus += criarBotaoPneuApp(pneuDir, posDir);
+                }
+
+                eixoDiv.innerHTML = `
+                    <h4 class="text-xs font-bold text-gray-400 uppercase mb-3 border-b border-gray-100 dark:border-slate-700 pb-2">${indexEixo+1}º Eixo</h4>
+                    <div class="grid grid-cols-2 gap-3">
+                        ${htmlPneus}
+                    </div>
+                `;
+                container.appendChild(eixoDiv);
+            });
+        }
+
+        function criarBotaoPneuApp(pneu, posicao) {
+            if(pneu) {
+                let sulco = pneu.sulco_atual !== null ? pneu.sulco_atual : pneu.sulco_inicial;
+                let cor = 'bg-green-500 border-green-600';
+                if (sulco <= 5) cor = 'bg-yellow-500 border-yellow-600';
+                if (sulco <= 3) cor = 'bg-red-500 border-red-600';
+
+                return `
+                    <button onclick="abrirGaveta('${pneu.id}', '${pneu.numero_fogo}', '${posicao}')" 
+                        class="${cor} text-white p-3 rounded-lg font-bold flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform">
+                        <span class="text-xs font-normal opacity-90">${posicao.replace('-E', ' Esq').replace('-D', ' Dir')}</span>
+                        <span class="text-lg">${pneu.numero_fogo}</span>
+                    </button>
+                `;
+            } else {
+                return `
+                    <div class="bg-gray-100 dark:bg-slate-800 border-2 border-dashed border-gray-300 dark:border-slate-600 text-gray-400 p-3 rounded-lg flex items-center justify-center text-sm font-medium">
+                        Vazio
+                    </div>
+                `;
+            }
+        }
+
+        function voltarParaVeiculos() {
+            document.getElementById('tela-pneus').classList.add('hidden');
+            document.getElementById('tela-veiculos').classList.remove('hidden');
+            veiculoSelecionado = null;
+        }
+
+        // 3. Lógica da Gaveta de Aferição
+        function abrirGaveta(pneuId, numeroFogo, posicao) {
+            pneuSelecionado = { id: pneuId, numeroFogo: numeroFogo, posicao: posicao };
+            
+            document.getElementById('gaveta-pneu-info').innerText = `Pneu: ${numeroFogo} | Posição: ${posicao}`;
+            document.getElementById('input-km').value = ''; // Limpa KM
+            document.getElementById('input-pressao').value = '';
+            document.getElementById('input-sulco').value = '';
+            document.getElementById('input-obs').value = '';
+            document.getElementById('input-foto').value = '';
+            document.getElementById('input-acao').value = 'calibragem';
+            
+            // Esconde/Mostra campos conforme ação
+            document.getElementById('input-acao').onchange = (e) => {
+                if(e.target.value === 'observacao') {
+                    document.getElementById('div-pressao').classList.add('hidden');
+                    document.getElementById('div-sulco').classList.add('hidden');
+                } else if (e.target.value === 'sulco') {
+                    document.getElementById('div-pressao').classList.add('hidden');
+                    document.getElementById('div-sulco').classList.remove('hidden');
+                } else {
+                    document.getElementById('div-pressao').classList.remove('hidden');
+                    document.getElementById('div-sulco').classList.remove('hidden');
+                }
+            };
+            document.getElementById('input-acao').dispatchEvent(new Event('change'));
+
+            document.getElementById('overlay-gaveta').classList.remove('hidden');
+            document.getElementById('gaveta-afericao').classList.remove('translate-y-full');
+        }
+
+        function fecharGaveta() {
+            document.getElementById('overlay-gaveta').classList.add('hidden');
+            document.getElementById('gaveta-afericao').classList.add('translate-y-full');
+        }
+
+        // 4. Modal do PIN e Salvamento
+        function abrirModalPin() {
+            const km = document.getElementById('input-km').value;
+            if(!km) {
+                alert("Por favor, preencha o KM/Horas atual.");
+                return;
+            }
+            document.getElementById('input-pin').value = '';
+            document.getElementById('erro-pin').classList.add('hidden');
+            document.getElementById('modal-pin').classList.remove('hidden');
+        }
+
+        function fecharModalPin() {
+            document.getElementById('modal-pin').classList.add('hidden');
+        }
+
+        async function salvarAfericao() {
+            const btn = document.getElementById('btn-confirmar-pin');
+            const pin = document.getElementById('input-pin').value;
+            const erroDiv = document.getElementById('erro-pin');
+            
+            if(pin.length < 4) {
+                erroDiv.innerText = "Digite os 4 dígitos do PIN.";
+                erroDiv.classList.remove('hidden');
+                return;
+            }
+
+            btn.innerHTML = 'Salvando...'; btn.disabled = true;
+            erroDiv.classList.add('hidden');
+
+            const km = parseFloat(document.getElementById('input-km').value);
+            const acao = document.getElementById('input-acao').value;
+            const pressao = acao === 'calibragem' ? parseFloat(document.getElementById('input-pressao').value) : null;
+            const sulco = (acao === 'calibragem' || acao === 'sulco') ? parseFloat(document.getElementById('input-sulco').value) : null;
+            const obs = document.getElementById('input-obs').value;
+            
+            let fotoUrl = null;
+            const fileInput = document.getElementById('input-foto');
+
+            // 1. Upload da Foto (se houver)
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const fileName = `${Date.now()}_${pneuSelecionado.numeroFogo}.jpg`;
+                const { data: uploadData, error: uploadError } = await supabaseClient.storage
+                    .from('fotos-pneus')
+                    .upload(fileName, file);
+                
+                if(!uploadError) {
+                    const { data: urlData } = supabaseClient.storage.from('fotos-pneus').getPublicUrl(fileName);
+                    fotoUrl = urlData.publicUrl;
+                }
+            }
+
+            // 2. Chamar a RPC no banco
+            const { error } = await supabaseClient.rpc('registrar_afericao_app', {
+                p_veiculo_id: veiculoSelecionado.id,
+                p_pneu_id: pneuSelecionado.id,
+                p_pin: pin,
+                p_km: km,
+                p_sulco: sulco,
+                p_pressao: pressao,
+                p_observacao: obs,
+                p_foto_url: fotoUrl,
+                p_tipo_acao: acao
+            });
+
+            if (error) {
+                erroDiv.innerText = error.message;
+                erroDiv.classList.remove('hidden');
+                btn.innerHTML = 'Confirmar'; btn.disabled = false;
+            } else {
+                // Sucesso!
+                alert("✅ Aferição registrada com sucesso!");
+                fecharModalPin();
+                fecharGaveta();
+                btn.innerHTML = 'Confirmar'; btn.disabled = false;
+                // Recarrega a lista de pneus para atualizar as cores se necessário
+                selecionarVeiculo(veiculoSelecionado.id);
+            }
+        }
+
+        // Inicialização
+        carregarVeiculos();
+    </script>
+</body>
+</html>
