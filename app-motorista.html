@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>App Aferição | Karaz</title>
+    <title>Aferição de Pneus | Karaz</title>
     
     <script>
         if (localStorage.theme === 'light') { document.documentElement.classList.remove('dark'); } 
@@ -24,28 +24,28 @@
 </head>
 <body class="bg-gray-100 text-gray-800 dark:bg-darkbg dark:text-gray-100 font-sans h-[100dvh] flex flex-col overflow-hidden antialiased">
 
-    <!-- TELA DE LOGIN (SOBREPOSIÇÃO) -->
+    <!-- TELA DE LOGIN -->
     <div id="tela-login" class="absolute inset-0 z-50 bg-gray-100 dark:bg-darkbg flex flex-col items-center justify-center p-6">
         <div class="w-full max-w-sm">
             <div class="text-center mb-8">
                 <div class="w-16 h-16 rounded-2xl bg-brand flex items-center justify-center mx-auto mb-4 shadow-lg shadow-brand/30">
                     <i data-lucide="disc" class="w-8 h-8 text-white"></i>
                 </div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">App Aferição</h1>
-                <p class="text-gray-500 mt-1">Acesso do Pátio</p>
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Aferição de Pneus</h1>
+                <p class="text-gray-500 mt-1">Acesso do Motorista</p>
             </div>
             
             <form id="form-login" class="space-y-4">
                 <div>
-                    <label class="block text-sm font-medium mb-1">E-mail do Pátio</label>
-                    <input type="email" id="login-email" required class="w-full p-3 bg-white dark:bg-darkcard border border-gray-300 dark:border-slate-600 rounded-lg focus:border-brand text-base" placeholder="patio@empresa.com">
+                    <label class="block text-sm font-medium mb-1">CPF (Somente números)</label>
+                    <input type="text" id="login-email" required class="w-full p-3 bg-white dark:bg-darkcard border border-gray-300 dark:border-slate-600 rounded-lg focus:border-brand text-base" placeholder="Ex: 12345678900">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium mb-1">Senha</label>
-                    <input type="password" id="login-senha" required class="w-full p-3 bg-white dark:bg-darkcard border border-gray-300 dark:border-slate-600 rounded-lg focus:border-brand text-base" placeholder="••••••••">
+                    <label class="block text-sm font-medium mb-1">Senha / PIN</label>
+                    <input type="password" id="login-senha" required class="w-full p-3 bg-white dark:bg-darkcard border border-gray-300 dark:border-slate-600 rounded-lg focus:border-brand text-base" placeholder="••••">
                 </div>
                 <div id="login-erro" class="hidden text-red-500 text-sm bg-red-500/10 p-3 rounded-lg text-center"></div>
-                <button type="submit" id="btn-login" class="w-full bg-brand hover:bg-orange-700 text-white font-bold py-3 rounded-lg shadow-lg transition-colors">Entrar no App</button>
+                <button type="submit" id="btn-login" class="w-full bg-brand hover:bg-orange-700 text-white font-bold py-3 rounded-lg shadow-lg transition-colors">Entrar</button>
             </form>
         </div>
     </div>
@@ -56,7 +56,10 @@
             <div class="w-8 h-8 rounded-full bg-brand flex items-center justify-center">
                 <i data-lucide="disc" class="w-5 h-5 text-white"></i>
             </div>
-            <h1 class="text-lg font-bold text-gray-900 dark:text-white">App Aferição</h1>
+            <div>
+                <h1 class="text-lg font-bold text-gray-900 dark:text-white leading-tight">Aferição de Pneus</h1>
+                <p id="nome-motorista-header" class="text-xs text-gray-500">...</p>
+            </div>
         </div>
         <button onclick="fazerLogout()" class="text-gray-500 hover:text-red-500 p-2" title="Sair do App">
             <i data-lucide="log-out" class="w-6 h-6"></i>
@@ -96,7 +99,20 @@
             </div>
 
             <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">Selecione o Pneu</h3>
-            <div id="lista-pneus" class="space-y-6"></div>
+            
+            <!-- NOVO VISUAL DO MAPA MOBILE -->
+            <div class="relative bg-slate-100 dark:bg-slate-900 rounded-3xl p-4 pb-12 flex flex-col items-center w-full max-w-sm mx-auto shadow-inner border border-gray-200 dark:border-slate-700">
+                
+                <!-- Cabine (Frente) -->
+                <div class="w-3/4 h-12 bg-slate-300 dark:bg-slate-700 rounded-t-xl border-4 border-b-0 border-slate-400 dark:border-slate-500 flex items-center justify-center mb-8 relative z-10">
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Frente</span>
+                </div>
+
+                <!-- Linha do Chassi -->
+                <div class="absolute top-20 bottom-8 left-1/2 w-3 bg-slate-300 dark:bg-slate-600 -translate-x-1/2 z-0 rounded-full"></div>
+
+                <div id="lista-pneus" class="w-full flex flex-col gap-8 relative z-10"></div>
+            </div>
         </div>
     </main>
 
@@ -106,7 +122,7 @@
         
         <div class="p-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center">
             <div>
-                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Aferição do Pneu</h3>
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Aferição</h3>
                 <p id="gaveta-pneu-info" class="text-sm text-brand font-medium">...</p>
             </div>
             <button onclick="fecharGaveta()" class="p-2 text-gray-400 hover:text-red-500 bg-gray-100 dark:bg-slate-800 rounded-full">
@@ -150,29 +166,9 @@
                 <input type="file" id="input-foto" accept="image/*" capture="environment" class="w-full p-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand/10 file:text-brand hover:file:bg-brand/20">
             </div>
 
-            <button onclick="abrirModalPin()" class="w-full mt-4 bg-brand hover:bg-orange-700 text-white font-bold py-4 rounded-xl shadow-lg transition-colors text-lg">
+            <button onclick="salvarAfericaoDireto()" class="w-full mt-4 bg-brand hover:bg-orange-700 text-white font-bold py-4 rounded-xl shadow-lg transition-colors text-lg">
                 Salvar Aferição
             </button>
-        </div>
-    </div>
-
-    <!-- MODAL DE PIN DE ASSINATURA -->
-    <div id="modal-pin" class="hidden fixed inset-0 bg-black/80 z-[60] flex items-center justify-center p-4 backdrop-blur-md">
-        <div class="bg-white dark:bg-darkcard rounded-2xl w-full max-w-sm p-6 text-center shadow-2xl">
-            <div class="w-16 h-16 bg-brand/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i data-lucide="lock" class="w-8 h-8 text-brand"></i>
-            </div>
-            <h3 class="text-xl font-bold mb-2">Assinatura do Motorista</h3>
-            <p class="text-sm text-gray-500 mb-6">Digite seu PIN de 4 dígitos para confirmar a aferição.</p>
-            
-            <input type="number" id="input-pin" maxlength="4" placeholder="••••" 
-                class="w-full text-center text-3xl tracking-[1em] font-bold p-4 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-xl focus:border-brand mb-6 focus:outline-none">
-            
-            <div class="flex gap-3">
-                <button onclick="fecharModalPin()" class="flex-1 py-3 text-gray-600 dark:text-gray-300 font-medium bg-gray-100 dark:bg-slate-800 rounded-lg">Cancelar</button>
-                <button onclick="salvarAfericao()" id="btn-confirmar-pin" class="flex-1 py-3 text-white font-bold bg-brand hover:bg-orange-700 rounded-lg">Confirmar</button>
-            </div>
-            <div id="erro-pin" class="hidden text-red-500 text-sm mt-3 font-medium"></div>
         </div>
     </div>
 
@@ -184,43 +180,44 @@
         let veiculoSelecionado = null;
         let pneuSelecionado = null;
 
-        // --- 1. LÓGICA DE LOGIN ---
-        supabaseClient.auth.getSession().then(({ data: { session } }) => {
-            if (session) {
-                document.getElementById('tela-login').classList.add('hidden');
-                document.getElementById('tela-veiculos').classList.remove('hidden');
-                carregarVeiculos();
-            }
+        // --- LÓGICA DE LOGIN ---
+        supabaseClient.auth.getSession().then(async ({ data: { session } }) => {
+            if (session) await iniciarApp(session);
         });
+
+        async function iniciarApp(session) {
+            const { data: motorista } = await supabaseClient.from('motoristas').select('nome').eq('user_id', session.user.id).single();
+            document.getElementById('nome-motorista-header').innerText = motorista ? motorista.nome : session.user.email;
+            document.getElementById('tela-login').classList.add('hidden');
+            document.getElementById('tela-veiculos').classList.remove('hidden');
+            carregarVeiculos();
+        }
 
         document.getElementById('form-login').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = document.getElementById('login-email').value;
+            let email = document.getElementById('login-email').value.trim();
             const senha = document.getElementById('login-senha').value;
             const btn = document.getElementById('btn-login');
             const erroDiv = document.getElementById('login-erro');
 
             btn.innerHTML = 'Entrando...'; btn.disabled = true; erroDiv.classList.add('hidden');
 
-            const { error } = await supabaseClient.auth.signInWithPassword({ email, password: senha });
+            if (email.length === 11 && /^\d+$/.test(email)) email = email + '@colaborador.karaz.com';
+
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password: senha });
 
             if (error) {
-                erroDiv.innerText = "E-mail ou senha incorretos.";
+                erroDiv.innerText = "CPF ou senha incorretos.";
                 erroDiv.classList.remove('hidden');
-                btn.innerHTML = 'Entrar no App'; btn.disabled = false;
+                btn.innerHTML = 'Entrar'; btn.disabled = false;
             } else {
-                document.getElementById('tela-login').classList.add('hidden');
-                document.getElementById('tela-veiculos').classList.remove('hidden');
-                carregarVeiculos();
+                await iniciarApp(data.session);
             }
         });
 
-        async function fazerLogout() {
-            await supabaseClient.auth.signOut();
-            window.location.reload();
-        }
+        async function fazerLogout() { await supabaseClient.auth.signOut(); window.location.reload(); }
 
-        // --- 2. LÓGICA DE VEÍCULOS ---
+        // --- LÓGICA DE VEÍCULOS ---
         async function carregarVeiculos() {
             const { data, error } = await supabaseClient.from('veiculos').select('*').eq('ativo', true).order('placa');
             if (error) return console.error(error);
@@ -231,18 +228,13 @@
         function renderizarListaVeiculos(lista) {
             const container = document.getElementById('lista-veiculos');
             container.innerHTML = '';
-            if(lista.length === 0) {
-                container.innerHTML = '<p class="text-center text-gray-500 py-4">Nenhum veículo encontrado.</p>';
-                return;
-            }
+            if(lista.length === 0) return container.innerHTML = '<p class="text-center text-gray-500 py-4">Nenhum veículo encontrado.</p>';
 
             lista.forEach(v => {
                 container.innerHTML += `
                     <div onclick="selecionarVeiculo('${v.id}')" class="bg-white dark:bg-darkcard p-4 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm flex items-center justify-between active:scale-95 transition-transform cursor-pointer">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-gray-100 dark:bg-slate-800 flex items-center justify-center">
-                                <i data-lucide="truck" class="w-5 h-5 text-gray-500"></i>
-                            </div>
+                            <div class="w-10 h-10 rounded-full bg-gray-100 dark:bg-slate-800 flex items-center justify-center"><i data-lucide="truck" class="w-5 h-5 text-gray-500"></i></div>
                             <div>
                                 <div class="font-bold text-lg text-gray-900 dark:text-white uppercase">${v.placa}</div>
                                 <div class="text-sm text-gray-500">${v.prefixo || 'S/ Prefixo'} • ${v.modelo}</div>
@@ -257,15 +249,10 @@
 
         document.getElementById('busca-veiculo').addEventListener('input', (e) => {
             const termo = e.target.value.toLowerCase();
-            const filtrados = veiculos.filter(v => 
-                v.placa.toLowerCase().includes(termo) || 
-                (v.prefixo && v.prefixo.toLowerCase().includes(termo)) || 
-                v.modelo.toLowerCase().includes(termo)
-            );
-            renderizarListaVeiculos(filtrados);
+            renderizarListaVeiculos(veiculos.filter(v => v.placa.toLowerCase().includes(termo) || (v.prefixo && v.prefixo.toLowerCase().includes(termo)) || v.modelo.toLowerCase().includes(termo)));
         });
 
-        // --- 3. LÓGICA DE PNEUS ---
+        // --- LÓGICA DE PNEUS (NOVO DESIGN) ---
         async function selecionarVeiculo(id) {
             veiculoSelecionado = veiculos.find(v => v.id === id);
             if(!veiculoSelecionado) return;
@@ -292,29 +279,48 @@
             configArr.forEach((qtdStr, indexEixo) => {
                 let qtd = parseInt(qtdStr);
                 let eixoDiv = document.createElement('div');
-                eixoDiv.className = "bg-white dark:bg-darkcard rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm";
+                eixoDiv.className = "relative flex justify-between items-center w-full px-2";
                 
+                // Barra do eixo
+                eixoDiv.innerHTML = `<div class="absolute top-1/2 left-0 w-full h-3 bg-slate-300 dark:bg-slate-600 -translate-y-1/2 rounded-full z-0"></div>`;
+
                 let htmlPneus = '';
+                let pneusPorLado = qtd / 2;
                 
-                for(let i=1; i <= qtd/2; i++) {
+                let ladoEsquerdoHtml = '<div class="flex gap-1 z-10">';
+                let ladoDireitoHtml = '<div class="flex gap-1 z-10">';
+
+                for (let i = 1; i <= pneusPorLado; i++) {
+                    // Define se é Externo ou Interno
+                    let labelPosicao = "";
+                    if (pneusPorLado === 1) {
+                        labelPosicao = "Unico";
+                    } else if (pneusPorLado === 2) {
+                        labelPosicao = i === 1 ? "Externo" : "Interno";
+                    } else {
+                        labelPosicao = `${i}º`;
+                    }
+
+                    // Pneu Esquerdo
                     const posEsq = `E${indexEixo+1}-E${i}`;
                     const pneuEsq = pneus.find(p => p.posicao === posEsq);
-                    htmlPneus += criarBotaoPneuApp(pneuEsq, posEsq);
-
+                    ladoEsquerdoHtml += criarBotaoPneuApp(pneuEsq, posEsq, labelPosicao, 'Esq');
+                    
+                    // Pneu Direito
                     const posDir = `E${indexEixo+1}-D${i}`;
                     const pneuDir = pneus.find(p => p.posicao === posDir);
-                    htmlPneus += criarBotaoPneuApp(pneuDir, posDir);
+                    ladoDireitoHtml += criarBotaoPneuApp(pneuDir, posDir, labelPosicao, 'Dir');
                 }
+                
+                ladoEsquerdoHtml += '</div>';
+                ladoDireitoHtml += '</div>';
 
-                eixoDiv.innerHTML = `
-                    <h4 class="text-xs font-bold text-gray-400 uppercase mb-3 border-b border-gray-100 dark:border-slate-700 pb-2">${indexEixo+1}º Eixo</h4>
-                    <div class="grid grid-cols-2 gap-3">${htmlPneus}</div>
-                `;
+                eixoDiv.innerHTML += `${ladoEsquerdoHtml}<div class="w-8"></div>${ladoDireitoHtml}`;
                 container.appendChild(eixoDiv);
             });
         }
 
-        function criarBotaoPneuApp(pneu, posicao) {
+        function criarBotaoPneuApp(pneu, posicao, labelPosicao, lado) {
             if(pneu) {
                 let sulco = pneu.sulco_atual !== null ? pneu.sulco_atual : pneu.sulco_inicial;
                 let cor = 'bg-green-500 border-green-600';
@@ -323,13 +329,17 @@
 
                 return `
                     <button onclick="abrirGaveta('${pneu.id}', '${pneu.numero_fogo}', '${posicao}')" 
-                        class="${cor} text-white p-3 rounded-lg font-bold flex flex-col items-center justify-center shadow-sm active:scale-95 transition-transform">
-                        <span class="text-xs font-normal opacity-90">${posicao.replace('-E', ' Esq').replace('-D', ' Dir')}</span>
-                        <span class="text-lg">${pneu.numero_fogo}</span>
+                        class="${cor} text-white p-2 rounded-full font-bold flex flex-col items-center justify-center shadow-md active:scale-95 transition-transform w-16 h-24">
+                        <span class="text-[9px] font-normal opacity-90 leading-tight">${lado} ${labelPosicao !== 'Unico' ? labelPosicao : ''}</span>
+                        <span class="text-sm mt-1">${pneu.numero_fogo}</span>
                     </button>
                 `;
             } else {
-                return `<div class="bg-gray-100 dark:bg-slate-800 border-2 border-dashed border-gray-300 dark:border-slate-600 text-gray-400 p-3 rounded-lg flex items-center justify-center text-sm font-medium">Vazio</div>`;
+                return `
+                    <div class="bg-gray-100 dark:bg-slate-800 border-2 border-dashed border-gray-300 dark:border-slate-600 text-gray-400 p-2 rounded-full flex items-center justify-center w-16 h-24">
+                        <i data-lucide="minus" class="w-5 h-5"></i>
+                    </div>
+                `;
             }
         }
 
@@ -339,17 +349,15 @@
             veiculoSelecionado = null;
         }
 
-        // --- 4. GAVETA E AFERIÇÃO ---
+        // --- GAVETA E AFERIÇÃO ---
         function abrirGaveta(pneuId, numeroFogo, posicao) {
             pneuSelecionado = { id: pneuId, numeroFogo: numeroFogo, posicao: posicao };
-            
             document.getElementById('gaveta-pneu-info').innerText = `Pneu: ${numeroFogo} | Posição: ${posicao}`;
             document.getElementById('input-km').value = '';
             document.getElementById('input-pressao').value = '';
             document.getElementById('input-sulco').value = '';
             document.getElementById('input-obs').value = '';
             document.getElementById('input-foto').value = '';
-            
             document.getElementById('overlay-gaveta').classList.remove('hidden');
             document.getElementById('gaveta-afericao').classList.remove('translate-y-full');
         }
@@ -359,36 +367,13 @@
             document.getElementById('gaveta-afericao').classList.add('translate-y-full');
         }
 
-        function abrirModalPin() {
+        async function salvarAfericaoDireto() {
+            const btn = document.querySelector('#gaveta-afericao button:last-child');
             const km = document.getElementById('input-km').value;
-            if(!km) {
-                alert("Por favor, preencha o KM/Horas atual.");
-                return;
-            }
-            document.getElementById('input-pin').value = '';
-            document.getElementById('erro-pin').classList.add('hidden');
-            document.getElementById('modal-pin').classList.remove('hidden');
-        }
-
-        function fecharModalPin() {
-            document.getElementById('modal-pin').classList.add('hidden');
-        }
-
-        async function salvarAfericao() {
-            const btn = document.getElementById('btn-confirmar-pin');
-            const pin = document.getElementById('input-pin').value;
-            const erroDiv = document.getElementById('erro-pin');
-            
-            if(pin.length < 4) {
-                erroDiv.innerText = "Digite os 4 dígitos do PIN.";
-                erroDiv.classList.remove('hidden');
-                return;
-            }
+            if(!km) return alert("Por favor, preencha o KM/Horas atual.");
 
             btn.innerHTML = 'Salvando...'; btn.disabled = true;
-            erroDiv.classList.add('hidden');
 
-            const km = parseFloat(document.getElementById('input-km').value);
             const acao = document.getElementById('input-acao').value;
             const pressao = acao === 'calibragem' ? parseFloat(document.getElementById('input-pressao').value) : null;
             const sulco = (acao === 'calibragem' || acao === 'sulco') ? parseFloat(document.getElementById('input-sulco').value) : null;
@@ -410,8 +395,7 @@
             const { error } = await supabaseClient.rpc('registrar_afericao_app', {
                 p_veiculo_id: veiculoSelecionado.id,
                 p_pneu_id: pneuSelecionado.id,
-                p_pin: pin,
-                p_km: km,
+                p_km: parseFloat(km),
                 p_sulco: sulco,
                 p_pressao: pressao,
                 p_observacao: obs,
@@ -420,15 +404,13 @@
             });
 
             if (error) {
-                erroDiv.innerText = error.message;
-                erroDiv.classList.remove('hidden');
-                btn.innerHTML = 'Confirmar'; btn.disabled = false;
+                alert("Erro ao salvar: " + error.message);
+                btn.innerHTML = 'Salvar Aferição'; btn.disabled = false;
             } else {
                 alert("✅ Aferição registrada com sucesso!");
-                fecharModalPin();
                 fecharGaveta();
-                btn.innerHTML = 'Confirmar'; btn.disabled = false;
-                selecionarVeiculo(veiculoSelecionado.id); // Atualiza as cores na tela
+                btn.innerHTML = 'Salvar Aferição'; btn.disabled = false;
+                selecionarVeiculo(veiculoSelecionado.id);
             }
         }
     </script>
