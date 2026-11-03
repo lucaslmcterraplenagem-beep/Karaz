@@ -610,7 +610,26 @@
                 carregarMapa(); // Recarrega o mapa para atualizar o visual dos pneus na tela
             }
         }
-
+        // ==========================================
+        // TEMPO REAL (REALTIME) - MAPA VEÍCULO
+        // ==========================================
+        const channel = supabaseClient.channel('realtime-mapa')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'calibragens' }, payload => {
+                // Se o ADM não estiver com nenhum modal aberto, atualiza o mapa na hora
+                if (document.getElementById('gaveta-afericao').classList.contains('md:translate-x-full') && 
+                    document.getElementById('modal-instalar').classList.contains('hidden')) {
+                    console.log('Novidade no banco! Atualizando mapa...');
+                    carregarMapa(); 
+                }
+            })
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'pneus' }, payload => {
+                 // Escuta também se um pneu for instalado/removido
+                 if (document.getElementById('gaveta-afericao').classList.contains('md:translate-x-full') && 
+                    document.getElementById('modal-instalar').classList.contains('hidden')) {
+                    carregarMapa(); 
+                }
+            })
+            .subscribe();
         carregarMapa();
     </script>
 </body>
