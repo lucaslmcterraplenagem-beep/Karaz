@@ -333,17 +333,21 @@
         const tabela = document.getElementById('tabela-veiculos');
         const avisoVazio = document.getElementById('aviso-vazio');
 
-        async function carregarDados() {
+       async function carregarDados() {
             const { data: veiculos } = await supabaseClient.from('veiculos').select('*').order('created_at', { ascending: false });
             todosVeiculos = veiculos || [];
             
-            const { data: pneus } = await supabaseClient.from('pneus').select('veiculo_id, sulco_atual, sulco_inicial').eq('status', 'em_uso');
+            // Busca os pneus (agora incluindo o 'id' para podermos cruzar com a calibragem)
+            const { data: pneus } = await supabaseClient.from('pneus').select('id, veiculo_id, sulco_atual, sulco_inicial').eq('status', 'em_uso');
             todosPneus = pneus || [];
+
+            // NOVO: Busca todas as calibragens para saber a data da última de cada pneu
+            const { data: calibragens } = await supabaseClient.from('calibragens').select('pneu_id, created_at');
+            window.todasCalibragens = calibragens || []; // Salva globalmente para usar no KPI
 
             calcularKPIs();
             renderizarTabela();
         }
-
         function calcularKPIs() {
             let ativos = todosVeiculos.filter(v => v.ativo);
             document.getElementById('kpi-total-veiculos').innerText = ativos.length;
@@ -364,11 +368,42 @@
             let hoje = new Date();
             let semAfericao = 0;
             
+            // Mapeia a data da última calibragem de cada pneu
+            const ultimaCalibragemPorPneu = {};
+            if (window.todasCalibragens) {
+                window.todasCalibragens.forEach(c => {
+                    if (!ultimaCalibragemPorPneu[c.pneu_id] || new Date(c.created_at) > new Date(ultimaCalibragemPorPneu[c.pneu_id])) {
+                        ultimaCalibragemPorPneu[c.pneu_id] = c.created_at;
+                    }
+                });
+            }
+            
             ativos.forEach(v => {
-                let dataCadastro = new Date(v.created_at);
-                let diffDias = Math.floor((hoje - dataCadastro) / (1000 * 60 * 60 * 24));
-                if (diffDias > diasLimite) semAfericao++;
+                // Começa considerando a data de criação do veículo
+                let dataMaisRecente = new Date(v.created_at); 
+                
+                // Pega todos os pneus deste veículo
+                const pneusDoVeiculo = todosPneus.filter(p => p.veiculo_id === v.id);
+                
+                // Verifica se algum desses pneus tem calibragem registrada
+                pneusDoVeiculo.forEach(p => {
+                    if (ultimaCalibragemPorPneu[p.id]) {
+                        let dataCalib = new Date(ultimaCalibragemPorPneu[p.id]);
+                        // Se a calibragem for mais nova que a data atual, atualiza a data de referência
+                        if (dataCalib > dataMaisRecente) {
+                            dataMaisRecente = dataCalib;
+                        }
+                    }
+                });
+
+                let diffDias = Math.floor((hoje - dataMaisRecente) / (1000 * 60 * 60 * 24));
+                
+                // Se passou do limite de dias, conta como "sem aferição"
+                if (diffDias > diasLimite) {
+                    semAfericao++;
+                }
             });
+            
             document.getElementById('kpi-sem-afericao').innerText = semAfericao;
         }
 
