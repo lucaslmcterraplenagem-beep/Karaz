@@ -275,7 +275,7 @@
             renderizarListaPneus(pneus || []);
         }
 
-        function renderizarListaPneus(pneus) {
+             function renderizarListaPneus(pneus) {
             const container = document.getElementById('lista-pneus');
             container.innerHTML = '';
             
@@ -315,6 +315,27 @@
                 eixoDiv.innerHTML += `${ladoEsquerdoHtml}<div class="w-8"></div>${ladoDireitoHtml}`;
                 container.appendChild(eixoDiv);
             });
+
+            // --- CÓDIGO NOVO PARA EXIBIR ESTEPES NO CELULAR ---
+            let estepes = veiculoSelecionado.quantidade_estepes || 0;
+            if (estepes > 0) {
+                const estepeDiv = document.createElement('div');
+                estepeDiv.className = "mt-8 pt-4 border-t-2 border-slate-300 dark:border-slate-700 border-dashed w-full text-center";
+                
+                let htmlEstepes = '';
+                for (let i = 1; i <= estepes; i++) {
+                    const posicao = `ESTEPE-${i}`;
+                    const pneu = pneus.find(p => p.posicao === posicao);
+                    htmlEstepes += criarBotaoPneuApp(pneu, posicao, '', 'Estepe'); 
+                }
+                
+                estepeDiv.innerHTML = `
+                    <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">Estepes</p>
+                    <div class="flex justify-center gap-2">${htmlEstepes}</div>
+                `;
+                container.appendChild(estepeDiv);
+            }
+            // ---------------------------------------------------------
         }
 
         function criarBotaoPneuApp(pneu, posicao, labelPosicao, lado) {
