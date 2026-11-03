@@ -136,6 +136,7 @@
                             <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Marca / Modelo</th>
                             <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Medida / DOT</th>
                             <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Sulco (Atual/Inicial)</th>
+                            <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Pressão (PSI)</th>
                             <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Status</th>
                             <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700 text-center">Ações</th>
                         </tr>
@@ -326,15 +327,39 @@
             return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor || 0);
         };
 
-        async function carregarPneus() {
-            const { data, error } = await supabaseClient
+                async function carregarPneus() {
+            // 1. Busca os pneus
+            const { data: pneusData, error: errorPneus } = await supabaseClient
                 .from('pneus')
                 .select('*')
                 .order('created_at', { ascending: false });
 
-            if (error) return console.error(error);
+            if (errorPneus) return console.error(errorPneus);
+
+            // 2. Busca as últimas calibragens de todos os pneus de uma vez (otimização)
+            const { data: calibragensData, error: errorCalib } = await supabaseClient
+                .from('calibragens')
+                .select('pneu_id, pressao_psi, created_at')
+                .order('created_at', { ascending: false });
+
+            if (errorCalib) console.error(errorCalib);
+
+            // 3. Cria um "dicionário" com a última pressão de cada pneu
+            const pressaoMap = {};
+            if (calibragensData) {
+                calibragensData.forEach(c => {
+                    if (!pressaoMap[c.pneu_id]) {
+                        pressaoMap[c.pneu_id] = c.pressao_psi;
+                    }
+                });
+            }
+
+            // 4. Junta os dados
+            todosPneus = pneusData.map(p => ({
+                ...p,
+                pressao_atual: pressaoMap[p.id] || null
+            }));
             
-            todosPneus = data;
             calcularKPIs();
             renderizarTabela(todosPneus);
         }
@@ -400,6 +425,13 @@
                         <span class="font-bold ${sulcoColor}">${sulcoAtual} mm</span> 
                         <span class="text-xs text-gray-500">/ ${p.sulco_inicial} mm</span>
                     </td>
+                     <!-- NOVA COLUNA DE PRESSÃO AQUI -->
+                    <td class="px-6 py-4">
+                        <span class="font-bold ${p.pressao_atual ? 'text-brand' : 'text-gray-400'}">
+                            ${p.pressao_atual ? p.pressao_atual + ' PSI' : 'S/ Info'}
+                        </span>
+                    </td>
+
                     <td class="px-6 py-4">
                         <span class="px-2 py-1 text-xs font-medium rounded-full ${badgeClass}">${statusTexto}</span>
                     </td>
@@ -659,6 +691,14 @@
                 // Atualiza a lista de pneus (se não tiver um modal aberto digitando)
                 if (document.getElementById('modal-pneu').classList.contains('hidden') && 
                     document.getElementById('modal-historico-pneu').classList.contains('hidden')) {
+                    carregarPneus();
+                }
+            })
+             // OUVINTE NOVO: Ouve as calibragens para atualizar a pressão na tela
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'calibragens' }, payload => {
+                if (document.getElementById('modal-pneu').classList.contains('hidden') && 
+                    document.getElementById('modal-historico-pneu').classList.contains('hidden')) {
+                    console.log('Nova pressão detectada!');
                     carregarPneus();
                 }
             })
