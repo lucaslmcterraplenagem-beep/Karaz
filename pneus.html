@@ -648,8 +648,21 @@
                 }
             });
         }
+                carregarPneus();
 
-        carregarPneus();
+        // ==========================================
+        // TEMPO REAL (REALTIME) - TELA DE PNEUS
+        // ==========================================
+        supabaseClient.channel('realtime-pneus')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'pneus' }, payload => {
+                console.log('Mudança detectada nos pneus!');
+                // Atualiza a lista de pneus (se não tiver um modal aberto digitando)
+                if (document.getElementById('modal-pneu').classList.contains('hidden') && 
+                    document.getElementById('modal-historico-pneu').classList.contains('hidden')) {
+                    carregarPneus();
+                }
+            })
+            .subscribe();
     </script>
 </body>
 </html>
