@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Aferição de Pneus | Karaz</title>
+        <!-- PWA META TAGS -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ea580c">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3063/3063822.png">
     
     <script>
         if (localStorage.theme === 'light') { document.documentElement.classList.remove('dark'); } 
@@ -434,6 +440,14 @@
                 btn.innerHTML = 'Salvar Aferição'; btn.disabled = false;
                 selecionarVeiculo(veiculoSelecionado.id);
             }
+                    // REGISTRAR SERVICE WORKER (PWA)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => console.log('PWA Pronto:', registration.scope))
+                    .catch(err => console.log('Erro no PWA:', err));
+            });
+        }
         }
     </script>
 </body>
