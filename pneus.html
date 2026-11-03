@@ -157,6 +157,7 @@
             </div>
             
             <form id="form-pneu" class="p-6">
+                 <input type="hidden" id="id_pneu_editando">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                     <div>
                         <label class="block text-sm font-medium mb-1">Nº de Fogo <span class="text-red-500">*</span></label>
@@ -436,6 +437,9 @@
                         <span class="px-2 py-1 text-xs font-medium rounded-full ${badgeClass}">${statusTexto}</span>
                     </td>
                     <td class="px-6 py-4 text-center flex items-center justify-center gap-3">
+                    <button onclick="editarPneu('${p.id}')" class="text-gray-400 hover:text-blue-500 transition-colors" title="Editar Pneu">
+                            <i data-lucide="edit" class="w-5 h-5"></i>
+                        </button>
                         <button onclick="abrirHistoricoPneu('${p.id}')" class="text-gray-400 hover:text-brand transition-colors" title="Ver Histórico Completo">
                             <i data-lucide="history" class="w-5 h-5"></i>
                         </button>
@@ -477,10 +481,42 @@
         const modal = document.getElementById('modal-pneu');
         const form = document.getElementById('form-pneu');
         
-        function abrirModal() { 
+               function abrirModal() { 
             document.getElementById('erro-modal').classList.add('hidden');
-            form.reset();
+            document.getElementById('form-pneu').reset(); 
+            
+            // Limpa o ID de edição (indica que é um NOVO cadastro)
+            document.getElementById('id_pneu_editando').value = '';
+            document.querySelector('#modal-pneu h3').innerText = 'Cadastrar Novo Pneu';
+            
+            // Trava o status para evitar edição incorreta na criação
+            document.getElementById('status').value = 'estoque';
+
             modal.classList.remove('hidden'); 
+        }
+
+        // NOVA FUNÇÃO: Abrir o modal preenchido para editar
+        function editarPneu(id) {
+            const pneu = todosPneus.find(p => p.id === id);
+            if (!pneu) return;
+
+            document.getElementById('erro-modal').classList.add('hidden');
+            
+            // Preenche os campos
+            document.getElementById('id_pneu_editando').value = pneu.id;
+            document.getElementById('numero_fogo').value = pneu.numero_fogo;
+            document.getElementById('marca').value = pneu.marca;
+            document.getElementById('modelo').value = pneu.modelo || '';
+            document.getElementById('medida').value = pneu.medida;
+            document.getElementById('dot').value = pneu.dot || '';
+            document.getElementById('sulco_inicial').value = pneu.sulco_inicial;
+            document.getElementById('valor_pago').value = pneu.valor_pago || '';
+            document.getElementById('observacao').value = pneu.observacao || '';
+            document.getElementById('status').value = pneu.status;
+
+            document.querySelector('#modal-pneu h3').innerText = 'Editar Pneu';
+
+            modal.classList.remove('hidden');
         }
         function fecharModal(id) { 
             if(typeof id === 'string') document.getElementById(id).classList.add('hidden');
@@ -498,38 +534,66 @@
 
             const session = await supabaseClient.auth.getSession();
             const userId = session.data.session.user.id;
+            const idEditando = document.getElementById('id_pneu_editando').value;
 
-            const novoPneu = {
+            const dadosPneu = {
                 numero_fogo: document.getElementById('numero_fogo').value.toUpperCase(),
                 marca: document.getElementById('marca').value,
                 modelo: document.getElementById('modelo').value,
                 medida: document.getElementById('medida').value,
                 dot: document.getElementById('dot').value,
-                sulco_inicial: parseFloat(document.getElementById('sulco_inicial').value),
-                sulco_atual: parseFloat(document.getElementById('sulco_inicial').value), // Inicia igual ao inicial
                 valor_pago: parseFloat(document.getElementById('valor_pago').value) || 0,
-                status: document.getElementById('status').value,
                 observacao: document.getElementById('observacao').value
             };
 
-            const { data, error } = await supabaseClient.from('pneus').insert([novoPneu]).select();
+            let result;
 
-            if (error) {
-                let msg = error.message;
-                if (msg.includes("pneus_numero_fogo_key")) msg = "Erro: Este Nº de Fogo já está cadastrado.";
+            if (idEditando) {
+                // --- É UMA EDIÇÃO (UPDATE) ---
+                dadosPneu.status = document.getElementById('status').value;
+                
+                // Atualiza o sulco inicial (cuidado: se já houver histórico, isso pode afetar cálculos de vida útil)
+                dadosPneu.sulco_inicial = parseFloat(document.getElementById('sulco_inicial').value);
+
+                result = await supabaseClient.from('pneus').update(dadosPneu).eq('id', idEditando);
+
+                if (!result.error) {
+                    // Registra no histórico do pneu
+                    await supabaseClient.from('historico_pneu').insert([{
+                        pneu_id: idEditando,
+                        tipo_evento: 'observacao', // Usando 'observacao' como padrão ou crie um 'edicao' no banco
+                        descricao: `Dados cadastrais do pneu alterados.`,
+                        usuario_id: userId
+                    }]);
+                }
+
+            } else {
+                // --- É UM CADASTRO NOVO (INSERT) ---
+                dadosPneu.sulco_inicial = parseFloat(document.getElementById('sulco_inicial').value);
+                dadosPneu.sulco_atual = parseFloat(document.getElementById('sulco_inicial').value);
+                dadosPneu.status = document.getElementById('status').value;
+
+                result = await supabaseClient.from('pneus').insert([dadosPneu]).select();
+
+                if (!result.error) {
+                    await supabaseClient.from('historico_pneu').insert([{
+                        pneu_id: result.data[0].id,
+                        tipo_evento: 'cadastro',
+                        descricao: `Pneu cadastrado no sistema com sulco inicial de ${dadosPneu.sulco_inicial}mm.`,
+                        usuario_id: userId
+                    }]);
+                }
+            }
+
+            if (result.error) {
+                let msg = result.error.message;
+                if (msg.includes("pneus_numero_fogo_key")) msg = "Erro: Este Nº de Fogo já está cadastrado em outro pneu.";
                 erroDiv.innerText = msg;
                 erroDiv.classList.remove('hidden');
                 btn.innerHTML = 'Salvar Pneu';
                 btn.disabled = false;
             } else {
-                await supabaseClient.from('historico_pneu').insert([{
-                    pneu_id: data[0].id,
-                    tipo_evento: 'cadastro',
-                    descricao: `Pneu cadastrado no sistema com sulco inicial de ${novoPneu.sulco_inicial}mm.`,
-                    usuario_id: userId
-                }]);
-
-                fecharModal();
+                fecharModal('modal-pneu');
                 carregarPneus();
                 btn.innerHTML = 'Salvar Pneu';
                 btn.disabled = false;
