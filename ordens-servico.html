@@ -21,6 +21,9 @@
     </script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- ADICIONADO: Biblioteca para gerar o PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body class="bg-gray-100 text-gray-800 dark:bg-darkbg dark:text-gray-100 font-sans h-screen flex overflow-hidden transition-colors duration-300 antialiased">
 
@@ -105,7 +108,7 @@
         </main>
     </div>
 
-    <!-- MODAL DE ABERTURA DE OS -->
+    <!-- MODAL DE ABERTURA DE OS (INTACTO) -->
     <div id="modal-os" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 backdrop-blur-md">
         <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-6xl border border-gray-200 dark:border-slate-700 overflow-hidden flex flex-col max-h-[95vh]">
             
@@ -118,16 +121,13 @@
             </div>
             
             <form id="form-os" class="flex-1 overflow-y-auto flex flex-col lg:flex-row">
-                
                 <div class="p-6 w-full lg:w-2/5 space-y-5 border-r border-gray-200 dark:border-slate-700 bg-white dark:bg-darkcard z-10 shadow-[5px_0_15px_-5px_rgba(0,0,0,0.1)]">
-                    
                     <div>
                         <label class="block text-sm font-bold mb-1 text-gray-700 dark:text-gray-300">1. Veículo <span class="text-red-500">*</span></label>
                         <select id="veiculo_id" required class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand font-medium">
                             <option value="">Selecione o veículo...</option>
                         </select>
                     </div>
-
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium mb-1">KM Atual <span class="text-red-500">*</span></label>
@@ -138,14 +138,12 @@
                             <input type="number" step="0.1" id="hora_atual" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
                         </div>
                     </div>
-
                     <div>
                        <label class="block text-sm font-bold mb-1 text-gray-700 dark:text-gray-300">2. Solicitante <span class="text-red-500">*</span></label>
                         <select id="solicitante_id" required class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
                             <option value="">Selecione o solicitante...</option>
                         </select>
                     </div>
-
                     <div class="border-t border-gray-200 dark:border-slate-700 pt-4">
                         <label class="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300">3. Execução do Serviço <span class="text-red-500">*</span></label>
                         <div class="flex gap-4 mb-3">
@@ -156,35 +154,28 @@
                                 <input type="radio" name="execucao_tipo" value="externa" onchange="toggleExecucao()" class="text-brand focus:ring-brand"> Externa (Fornecedor)
                             </label>
                         </div>
-                        
                         <div id="campo-interno">
                             <label class="block text-xs font-medium mb-1">Selecione o Colaborador / Executor</label>
                             <select id="executor" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
                                 <option value="">Selecione...</option>
                             </select>
                         </div>
-                        
                         <div id="campo-externo" class="hidden">
                             <label class="block text-xs font-medium mb-1">Selecione o Fornecedor</label>
                             <select id="fornecedor_id" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
                                 <option value="">Selecione o fornecedor...</option>
                             </select>
-                            <!-- REMOVIDO O CAMPO LOCAL DO SERVIÇO DAQUI -->
                         </div>
                     </div>
                 </div>
 
                 <div class="w-full lg:w-3/5 bg-gray-50 dark:bg-slate-900 p-6 flex flex-col relative overflow-y-auto">
-                    
                     <div id="aviso-escolha-veiculo" class="absolute inset-0 flex flex-col items-center justify-center text-gray-400">
                         <i data-lucide="truck" class="w-16 h-16 mb-4 opacity-50"></i>
                         <p>Selecione um veículo ao lado para carregar o mapa.</p>
                     </div>
-
                     <div id="area-mapa-servicos" class="hidden w-full h-full flex flex-col">
-                        
                         <h4 class="text-sm font-bold text-gray-600 dark:text-gray-300 mb-4 text-center">Clique no pneu para selecionar o que será feito</h4>
-                        
                         <div class="flex-1 flex items-center justify-center">
                             <div class="relative flex flex-col items-center">
                                 <div class="w-40 h-12 bg-slate-300 dark:bg-slate-700 rounded-t-xl border-4 border-b-0 border-slate-400 dark:border-slate-500 flex items-center justify-center z-10 relative shadow-sm mb-4">
@@ -195,13 +186,11 @@
                                 </div>
                             </div>
                         </div>
-
                         <div id="painel-servico-pneu" class="hidden mt-6 bg-white dark:bg-darkcard p-5 rounded-xl border-2 border-brand shadow-lg">
                             <div class="flex justify-between items-center mb-3 border-b border-gray-200 dark:border-slate-700 pb-2">
                                 <span class="font-bold text-brand text-lg" id="pneu-selecionado-nome">Pneu Selecionado</span>
                                 <span class="text-xs font-bold bg-gray-100 dark:bg-slate-800 px-2 py-1 rounded" id="pneu-selecionado-pos">Posição</span>
                             </div>
-                            
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-sm font-medium mb-1">O que fazer com este pneu? <span class="text-red-500">*</span></label>
@@ -214,13 +203,11 @@
                                         <option value="rodizio">Rodízio (Mover para outra posição)</option>
                                     </select>
                                 </div>
-                                
                                 <div id="div-custo" class="hidden">
                                     <label class="block text-sm font-medium mb-1 text-brand">Custo (R$)</label>
                                     <input type="number" step="0.01" id="custo" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
                                 </div>
                             </div>
-
                             <div id="campos-extras-servico" class="mt-4 hidden bg-gray-50 dark:bg-slate-800/50 p-4 rounded-lg border border-gray-200 dark:border-slate-700">
                                 <p class="text-sm font-medium mb-2" id="label-extra">Selecione o Novo Pneu:</p>
                                 <div class="flex gap-2">
@@ -236,6 +223,27 @@
             <div class="px-6 py-4 border-t border-gray-200 dark:border-slate-700 flex justify-end gap-3 bg-gray-50 dark:bg-slate-800/30 z-20">
                 <button type="button" onclick="fecharModal()" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-md transition-colors">Cancelar</button>
                 <button type="button" onclick="salvarOS()" id="btn-salvar" class="px-6 py-2 text-sm font-bold text-white bg-brand hover:bg-orange-700 rounded-md transition-colors">Criar OS</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- ADICIONADO: MODAL DE DETALHES DA OS E PDF  -->
+    <!-- ========================================== -->
+    <div id="modal-detalhes-os" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-2xl border border-gray-200 dark:border-slate-700 overflow-hidden flex flex-col max-h-[90vh]">
+            <!-- Cabeçalho do Modal -->
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-800/30">
+                <h3 class="text-lg font-bold text-brand flex items-center gap-2"><i data-lucide="file-text" class="w-5 h-5"></i> Detalhes da OS</h3>
+                <div class="flex gap-2">
+                    <button onclick="exportarPDFOS()" class="bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white px-3 py-1.5 rounded text-xs font-medium transition-colors flex items-center gap-1"><i data-lucide="download" class="w-4 h-4"></i> PDF</button>
+                    <button onclick="window.print()" class="bg-gray-500/10 text-gray-500 hover:bg-gray-500 hover:text-white px-3 py-1.5 rounded text-xs font-medium transition-colors flex items-center gap-1"><i data-lucide="printer" class="w-4 h-4"></i> Imprimir</button>
+                    <button onclick="document.getElementById('modal-detalhes-os').classList.add('hidden')" class="text-gray-400 hover:text-red-500 ml-2"><i data-lucide="x" class="w-6 h-6"></i></button>
+                </div>
+            </div>
+            <!-- Área que será exportada para PDF -->
+            <div id="area-impressao-os" class="p-6 overflow-y-auto bg-white text-gray-800">
+                <!-- Conteúdo dinâmico via JS -->
             </div>
         </div>
     </div>
@@ -283,7 +291,6 @@
 
         // --- CARREGAR DADOS ---
         async function carregarDados() {
-            // Veículos
             const { data: veiculos } = await supabaseClient.from('veiculos').select('*').order('placa');
             listaVeiculos = veiculos || [];
             const selectVeiculo = document.getElementById('veiculo_id');
@@ -292,15 +299,10 @@
                 selectVeiculo.innerHTML += `<option value="${v.id}" data-km="${v.km_atual}" data-horas="${v.horas_atual || 0}">${v.placa} - ${v.modelo}</option>`;
             });
 
-            // Solicitantes
             const { data: motoristas } = await supabaseClient.from('motoristas').select('*').order('nome');
             listaMotoristas = motoristas || [];
-            
-            // Popula Solicitante
             const selectSolicitante = document.getElementById('solicitante_id');
             selectSolicitante.innerHTML = '<option value="">Selecione o solicitante...</option>';
-            
-            // Popula Executor (Interno)
             const selectExecutor = document.getElementById('executor');
             selectExecutor.innerHTML = '<option value="">Selecione o executor...</option>';
 
@@ -309,7 +311,6 @@
                 selectExecutor.innerHTML += `<option value="${m.nome}">${m.nome}</option>`;
             });
 
-            // Fornecedores
             const { data: fornecedores } = await supabaseClient.from('fornecedores').select('*').order('nome');
             listaFornecedores = fornecedores || [];
             const selectFornecedor = document.getElementById('fornecedor_id');
@@ -318,11 +319,9 @@
                 selectFornecedor.innerHTML += `<option value="${f.id}">${f.nome}</option>`;
             });
 
-            // Estoques
             const { data: est } = await supabaseClient.from('pneus').select('*').eq('status', 'estoque');
             estoquePneus = est || [];
 
-            // Lógica ao mudar veículo
             selectVeiculo.onchange = (e) => {
                 const opt = e.target.options[e.target.selectedIndex];
                 if(opt.value) {
@@ -337,7 +336,6 @@
                 }
             };
 
-            // Verifica URL (Abertura via mapa)
             const veiculoIdParam = urlParams.get('veiculo_id');
             const pneuSaindoIdParam = urlParams.get('pneu_saindo_id');
             
@@ -345,7 +343,6 @@
                 abrirModal();
                 selectVeiculo.value = veiculoIdParam;
                 selectVeiculo.dispatchEvent(new Event('change'));
-                
                 setTimeout(async () => {
                     await prepararMapaOS(veiculoIdParam); 
                     const pneu = pneusDoVeiculoOS.find(p => p.id === pneuSaindoIdParam);
@@ -360,7 +357,7 @@
             await buscarOS();
         }
 
-        // --- LÓGICA DO MODAL ---
+        // --- LÓGICA DO MODAL CRIAR OS ---
         const modal = document.getElementById('modal-os');
         function abrirModal() { 
             document.getElementById('form-os').reset(); 
@@ -524,7 +521,7 @@
             const execTipo = document.querySelector('input[name="execucao_tipo"]:checked').value;
             let executorNome = '';
             let fornecedorId = null;
-            let local = 'Interno'; // Padrão agora é Interno
+            let local = 'Interno';
 
             if(execTipo === 'interna') {
                 executorNome = document.getElementById('executor').value || 'Mecânico Interno';
@@ -533,7 +530,7 @@
                 const f = listaFornecedores.find(x => x.id === fId);
                 executorNome = f ? f.nome : 'Fornecedor Externo';
                 fornecedorId = fId || null;
-                local = 'Oficina do Fornecedor'; // Hardcoded já que removemos o campo
+                local = 'Oficina do Fornecedor';
             }
 
             let pEntrando = null;
@@ -627,9 +624,13 @@
                 if (o.status === 'cancelada') { badgeClass = 'bg-red-500/10 text-red-500'; statusTexto = 'Cancelada'; }
 
                 const data = new Date(o.created_at).toLocaleDateString('pt-BR');
-                let botoes = '';
-                if (o.status === 'aberta') botoes = `<button onclick="mudarStatus('${o.id}', 'em_andamento')" class="text-yellow-500 border border-yellow-500/30 px-2 py-1 rounded text-xs">Iniciar</button>`;
-                else if (o.status === 'em_andamento') botoes = `<button onclick="concluirOS('${o.id}')" class="text-green-500 border border-green-500/30 px-2 py-1 rounded text-xs">Concluir</button>`;
+                
+                // --- ALTERAÇÃO AQUI: Adicionado o botão de Detalhes permanentemente ---
+                let botoes = `<button onclick="abrirDetalhesOS('${o.id}')" class="text-brand border border-brand/30 px-2 py-1 rounded text-xs mr-2 hover:bg-brand hover:text-white transition-colors" title="Ver Detalhes"><i data-lucide="eye" class="w-3 h-3 inline"></i> Detalhes</button>`;
+                
+                if (o.status === 'aberta') botoes += `<button onclick="mudarStatus('${o.id}', 'em_andamento')" class="text-yellow-500 border border-yellow-500/30 px-2 py-1 rounded text-xs hover:bg-yellow-500 hover:text-white transition-colors">Iniciar</button>`;
+                else if (o.status === 'em_andamento') botoes += `<button onclick="concluirOS('${o.id}')" class="text-green-500 border border-green-500/30 px-2 py-1 rounded text-xs hover:bg-green-500 hover:text-white transition-colors">Concluir</button>`;
+                // ---------------------------------------------------------------------
 
                 tabela.innerHTML += `
                     <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
@@ -641,6 +642,7 @@
                     </tr>
                 `;
             });
+            lucide.createIcons();
         }
 
         async function mudarStatus(id, novoStatus) {
@@ -661,6 +663,86 @@
 
             if (error) alert("Erro: " + error.message);
             else { alert("OS Concluída!"); buscarOS(); }
+        }
+
+        // ==========================================
+        // NOVO: LÓGICA DO MODAL DE DETALHES E PDF
+        // ==========================================
+        function abrirDetalhesOS(id) {
+            const os = todasOS.find(o => o.id === id);
+            if(!os) return;
+
+            const data = new Date(os.created_at).toLocaleString('pt-BR');
+            
+            // Formatação do custo
+            const custoFormatado = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(os.custo || 0);
+
+            document.getElementById('area-impressao-os').innerHTML = `
+                <div class="text-center mb-6 border-b border-gray-300 dark:border-slate-600 pb-4">
+                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Karaz <span class="text-brand">Sistema</span></h1>
+                    <p class="text-sm text-gray-500 uppercase tracking-widest mt-1">Relatório de Ordem de Serviço</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6 text-sm mb-6">
+                    <div class="space-y-2">
+                        <p><strong>OS Nº:</strong> <span class="uppercase">${os.os_numero || 'S/N'}</span></p>
+                        <p><strong>Data de Abertura:</strong> ${data}</p>
+                        <p><strong>Veículo:</strong> <span class="uppercase font-bold">${os.veiculos?.placa}</span> - ${os.veiculos?.modelo}</p>
+                    </div>
+                    <div class="space-y-2">
+                        <p><strong>Status:</strong> <span class="capitalize font-bold">${os.status.replace('_', ' ')}</span></p>
+                        <p><strong>Tipo de Serviço:</strong> <span class="capitalize">${os.tipo}</span></p>
+                        <p><strong>Custo Total:</strong> <span class="font-bold text-brand">${custoFormatado}</span></p>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 dark:bg-slate-800 p-4 rounded-lg border border-gray-200 dark:border-slate-700 text-sm space-y-3 mb-6">
+                    <div class="grid grid-cols-2 gap-4">
+                        <p><strong>KM Registrado:</strong> ${os.km_abertura} km</p>
+                        <p><strong>Horímetro:</strong> ${os.hora_atual || '0'} h</p>
+                        <p><strong>Executor:</strong> ${os.executor || 'Não informado'}</p>
+                        <p><strong>Local do Serviço:</strong> ${os.local_servico || 'Interno'}</p>
+                    </div>
+                    <div class="pt-3 border-t border-gray-200 dark:border-slate-700">
+                        <p class="mb-1"><strong>Descrição da Execução:</strong></p>
+                        <p>${os.descricao}</p>
+                    </div>
+                </div>
+                
+                <div class="mt-12 pt-6 border-t border-gray-300 dark:border-slate-600 flex justify-between text-xs text-gray-500">
+                    <div class="text-center">
+                        <div class="w-48 border-t border-gray-400 mt-8 mb-1"></div>
+                        <p>Assinatura do Mecânico / Fornecedor</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-48 border-t border-gray-400 mt-8 mb-1"></div>
+                        <p>Assinatura do Responsável</p>
+                    </div>
+                </div>
+            `;
+
+            // Garantir fundo branco para a impressão ficar correta no modo dark
+            document.getElementById('area-impressao-os').style.backgroundColor = 'white';
+            document.getElementById('area-impressao-os').style.color = '#1f2937'; // gray-800
+            // Remove classes dark do container de impressão
+            document.getElementById('area-impressao-os').classList.remove('dark:bg-darkcard', 'dark:text-gray-200');
+
+            document.getElementById('modal-detalhes-os').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function exportarPDFOS() {
+            const elemento = document.getElementById('area-impressao-os');
+            
+            const opt = {
+                margin:       10,
+                filename:     `OS_Karaz_${new Date().getTime()}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(elemento).save();
         }
 
         carregarDados();
