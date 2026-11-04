@@ -413,9 +413,9 @@
                 tr.className = "hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors";
                 
                 tr.innerHTML = `
-                    <td class="px-6 py-4 font-bold text-gray-900 dark:text-white uppercase">${p.numero_fogo}</td>
+                    <td class="px-6 py-4 font-bold text-gray-900 dark:text-white uppercase">${escapeHTML(p.numero_fogo)}</td>
                     <td class="px-6 py-4">
-                        <div class="font-medium">${p.marca}</div>
+                        <div class="font-medium">${escapeHTML(p.marca)}</div>
                         <div class="text-xs text-gray-500">${p.modelo || '-'}</div>
                     </td>
                     <td class="px-6 py-4">
@@ -446,7 +446,7 @@
                         <button onclick="adicionarObservacao('${p.id}')" class="text-gray-400 hover:text-purple-500 transition-colors" title="Adicionar Observação">
                             <i data-lucide="message-square" class="w-5 h-5"></i>
                         </button>
-                        <button onclick="excluirPneu('${p.id}', '${p.numero_fogo}')" class="text-gray-400 hover:text-red-600 transition-colors" title="Excluir Definitivamente">
+                        <button onclick="excluirPneu('${p.id}', '${escapeHTML(p.numero_fogo)}')" class="text-gray-400 hover:text-red-600 transition-colors" title="Excluir Definitivamente">
                             <i data-lucide="trash-2" class="w-5 h-5"></i>
                         </button>
                     </td>
@@ -682,7 +682,7 @@
                     <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
                         <td class="px-4 py-3 col-data text-xs text-gray-500">${dataFormatada}</td>
                         <td class="px-4 py-3 col-evento"><span class="px-2 py-1 rounded text-[10px] font-bold uppercase ${badgeEvento}">${textoEvento}</span></td>
-                        <td class="px-4 py-3 col-desc">${h.descricao}</td>
+                        <td class="px-4 py-3 col-desc">${escapeHTML(h.descricao)}</td>
                         <td class="px-4 py-3 col-executor text-xs">ID: ${h.usuario_id ? h.usuario_id.substring(0, 8) : 'Sistema'}</td>
                     </tr>
                 `;
