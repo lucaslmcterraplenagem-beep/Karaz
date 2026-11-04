@@ -300,17 +300,51 @@
                 processarDadosOS(dadosBrutos.os);
             }
         }
-
         function processarDadosOS(os) {
             let custoTotal = 0;
-            os.forEach(o => custoTotal += parseFloat(o.custo || 0));
+            
+            // Objeto para agrupar os KMs mínimos e máximos de cada veículo
+            const veiculosKM = {}; 
 
+            os.forEach(o => {
+                // Soma o custo
+                custoTotal += parseFloat(o.custo || 0);
+
+                // Lógica real de KM: pega o menor e o maior KM de cada veículo no período
+                if (o.veiculo_id && o.km_abertura) {
+                    const km = parseFloat(o.km_abertura);
+                    if (!veiculosKM[o.veiculo_id]) {
+                        veiculosKM[o.veiculo_id] = { min: km, max: km };
+                    } else {
+                        if (km < veiculosKM[o.veiculo_id].min) veiculosKM[o.veiculo_id].min = km;
+                        if (km > veiculosKM[o.veiculo_id].max) veiculosKM[o.veiculo_id].max = km;
+                    }
+                }
+            });
+
+            // Calcula a distância real rodada somando (KM Max - KM Min) de cada veículo
+            let totalKmRodado = 0;
+            for (const vId in veiculosKM) {
+                const distanciaVeiculo = veiculosKM[vId].max - veiculosKM[vId].min;
+                // Só soma se o veículo teve mais de uma OS (se a distância for maior que zero)
+                if (distanciaVeiculo > 0) {
+                    totalKmRodado += distanciaVeiculo;
+                }
+            }
+
+            // Atualiza os KPIs na tela
             document.getElementById('kpi-custo-total').innerText = formatarDinheiro(custoTotal);
             document.getElementById('kpi-os-total').innerText = os.length;
             
-            let totalKmRodado = 0;
-            os.forEach(o => { if(o.km_abertura) totalKmRodado += 1000; }); // Placeholder para cálculo de KM
-            document.getElementById('kpi-custo-km').innerText = totalKmRodado > 0 ? formatarDinheiro(custoTotal / totalKmRodado) : "R$ 0,00";
+            // Cálculo final do Custo por KM
+            if (totalKmRodado > 0) {
+                const custoPorKm = custoTotal / totalKmRodado;
+                document.getElementById('kpi-custo-km').innerText = formatarDinheiro(custoPorKm);
+            } else {
+                // Se não houver pelo menos 2 OS para o mesmo veículo no período, não inventa número!
+                document.getElementById('kpi-custo-km').innerText = "S/ Dados";
+                document.getElementById('kpi-custo-km').classList.add('text-gray-400');
+            }
 
             renderizarGraficos(os);
         }
