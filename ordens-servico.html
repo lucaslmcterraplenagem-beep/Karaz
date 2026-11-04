@@ -645,10 +645,18 @@
             lucide.createIcons();
         }
 
-        async function mudarStatus(id, novoStatus) {
-            await supabaseClient.from('ordens_servico').update({ status: novoStatus }).eq('id', id);
-            buscarOS();
+          async function mudarStatus(id, novoStatus) {
+            const { error } = await supabaseClient.rpc('mudar_status_os', { 
+                p_os_id: id, 
+                p_novo_status: novoStatus 
+            });
+            if (error) {
+                alert("Erro ao mudar status: " + error.message);
+            } else {
+                buscarOS();
+            }
         }
+
 
         async function concluirOS(id) {
             if(!confirm("Concluir esta OS? As movimentações de pneus serão aplicadas.")) return;
