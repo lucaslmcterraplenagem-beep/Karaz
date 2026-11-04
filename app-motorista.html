@@ -433,13 +433,15 @@
             let fotoUrl = null;
             const fileInput = document.getElementById('input-foto');
 
-            if (fileInput.files.length > 0) {
+                     if (fileInput.files.length > 0) {
                 const file = fileInput.files[0];
                 const fileName = `${Date.now()}_${pneuSelecionado.numeroFogo}.jpg`;
-                const { data: uploadData, error: uploadError } = await supabaseClient.storage.from('fotos-pneus').upload(fileName, file);
+                const { error: uploadError } = await supabaseClient.storage.from('fotos-pneus').upload(fileName, file);
                 if(!uploadError) {
-                    const { data: urlData } = supabaseClient.storage.from('fotos-pneus').getPublicUrl(fileName);
-                    fotoUrl = urlData.publicUrl;
+                    // AGORA SALVAMOS APENAS O NOME DO ARQUIVO
+                    fotoUrl = fileName; 
+                } else {
+                    alert("Aviso: A foto não pôde ser enviada, mas a aferição será salva.");
                 }
             }
 
