@@ -173,6 +173,7 @@
 
             <button onclick="salvarAfericaoDireto()" class="w-full mt-4 bg-brand hover:bg-orange-700 text-white font-bold py-4 rounded-xl shadow-lg transition-colors text-lg">
                 Salvar Aferição
+                id="btn-salvar-afericao"
             </button>
         </div>
     </div>
@@ -413,7 +414,7 @@
         }
 
         async function salvarAfericaoDireto() {
-            const btn = document.querySelector('#gaveta-afericao button:last-child');
+            const btn = document.getElementById('btn-salvar-afericao');
             const acao = document.getElementById('input-acao').value;
             const kmInput = document.getElementById('input-km').value;
             
@@ -462,6 +463,7 @@
                 btn.innerHTML = 'Salvar Aferição'; btn.disabled = false;
                 selecionarVeiculo(veiculoSelecionado.id);
             }
+        }
                     // REGISTRAR SERVICE WORKER (PWA)
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -470,7 +472,7 @@
                     .catch(err => console.log('Erro no PWA:', err));
             });
         }
-        }
+        
     </script>
 </body>
 </html>
