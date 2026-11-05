@@ -60,3 +60,32 @@ function showToast(mensagem, tipo = 'sucesso') {
         setTimeout(() => { toast.remove(); }, 300);
     }, 4000);
 }
+// --- O SEGREDO PARA NÃO MUDAR TUDO: SOBRESCREVENDO O ALERT NATIVO ---
+
+// Guarda o alert original do navegador (caso precise no futuro)
+window.alertOriginal = window.alert;
+
+// Substitui o alert padrão por uma função que usa o nosso Toast
+window.alert = function(mensagem) {
+    // Se a mensagem vier vazia ou for nula, não faz nada
+    if (!mensagem) return;
+    
+    const texto = String(mensagem).toLowerCase();
+    let tipo = 'sucesso'; // Padrão é verde
+
+    // Inteligência para detectar o tom da mensagem
+    if (texto.includes('erro') || 
+        texto.includes('falha') || 
+        texto.includes('não é possível') || 
+        texto.includes('negado') || 
+        texto.includes('incorreto') || 
+        texto.includes('preencha') ||
+        texto.includes('selecione')) {
+        tipo = 'erro'; // Vermelho
+    } else if (texto.includes('aviso') || texto.includes('atenção') || texto.includes('cuidado')) {
+        tipo = 'aviso'; // Amarelo
+    }
+
+    // Chama o nosso Toast global em vez do popup feio
+    showToast(mensagem, tipo);
+};
