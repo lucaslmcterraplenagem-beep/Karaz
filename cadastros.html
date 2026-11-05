@@ -21,6 +21,8 @@
     </script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- BIBLIOTECA DO EXCEL -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body class="bg-gray-100 text-gray-800 dark:bg-darkbg dark:text-gray-100 font-sans h-screen flex overflow-hidden transition-colors duration-300 antialiased">
 
@@ -70,7 +72,10 @@
             <div id="content-servicos" class="space-y-4">
                 <div class="flex justify-between items-center">
                     <p class="text-sm text-gray-500">Gerencie os tipos de OS disponíveis no sistema.</p>
-                    <button onclick="abrirModalServico()" class="bg-brand hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> Novo Serviço</button>
+                    <div class="flex gap-2">
+                        <button onclick="exportarExcelServicos()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors"><i data-lucide="download" class="w-4 h-4"></i> Exportar Excel</button>
+                        <button onclick="abrirModalServico()" class="bg-brand hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors"><i data-lucide="plus" class="w-4 h-4"></i> Novo Serviço</button>
+                    </div>
                 </div>
                 <div class="bg-white dark:bg-darkcard border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden">
                     <table class="w-full text-left border-collapse">
@@ -91,7 +96,10 @@
             <div id="content-motoristas" class="hidden space-y-4">
                 <div class="flex justify-between items-center">
                     <p class="text-sm text-gray-500">Gestão de colaboradores (Motoristas, Mecânicos e Administradores).</p>
-                    <button onclick="abrirModalMotorista()" class="bg-brand hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> Novo Colaborador</button>
+                    <div class="flex gap-2">
+                        <button onclick="exportarExcelColaboradores()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors"><i data-lucide="download" class="w-4 h-4"></i> Exportar Lista</button>
+                        <button onclick="abrirModalMotorista()" class="bg-brand hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors"><i data-lucide="plus" class="w-4 h-4"></i> Novo Colaborador</button>
+                    </div>
                 </div>
                 <div class="bg-white dark:bg-darkcard border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden">
                     <table class="w-full text-left border-collapse">
@@ -113,7 +121,10 @@
             <div id="content-fornecedores" class="hidden space-y-4">
                 <div class="flex justify-between items-center">
                     <p class="text-sm text-gray-500">Cadastro de fornecedores de pneus e peças.</p>
-                    <button onclick="abrirModalFornecedor()" class="bg-brand hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> Novo Fornecedor</button>
+                    <div class="flex gap-2">
+                        <button onclick="exportarExcelFornecedores()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors"><i data-lucide="download" class="w-4 h-4"></i> Exportar Lista</button>
+                        <button onclick="abrirModalFornecedor()" class="bg-brand hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors"><i data-lucide="plus" class="w-4 h-4"></i> Novo Fornecedor</button>
+                    </div>
                 </div>
                 <div class="bg-white dark:bg-darkcard border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden">
                     <table class="w-full text-left border-collapse">
@@ -122,6 +133,7 @@
                                 <th class="px-6 py-3 border-b border-gray-200 dark:border-slate-700">Nome</th>
                                 <th class="px-6 py-3 border-b border-gray-200 dark:border-slate-700">CNPJ</th>
                                 <th class="px-6 py-3 border-b border-gray-200 dark:border-slate-700">Contato</th>
+                                <th class="px-6 py-3 border-b border-gray-200 dark:border-slate-700 text-center">Ações</th>
                             </tr>
                         </thead>
                         <tbody id="tabela-fornecedores" class="text-sm divide-y divide-gray-200 dark:divide-slate-700"></tbody>
@@ -243,6 +255,122 @@
         </div>
     </div>
 
+    <!-- ========================================== -->
+    <!-- MODAL DE HISTÓRICO DO FORNECEDOR           -->
+    <!-- ========================================== -->
+    <div id="modal-historico-fornecedor" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-5xl border border-gray-200 dark:border-slate-700 overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-800/30">
+                <div>
+                    <h3 class="text-lg font-bold text-brand flex items-center gap-2"><i data-lucide="file-text" class="w-5 h-5"></i> Extrato do Fornecedor</h3>
+                    <p id="hist-fornecedor-nome" class="text-sm text-gray-500 font-bold">...</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="exportarHistoricoFornecedor()" class="bg-green-500/10 text-green-500 hover:bg-green-500 hover:text-white px-3 py-1.5 rounded text-xs font-medium transition-colors flex items-center gap-1"><i data-lucide="table" class="w-4 h-4"></i> Exportar Extrato</button>
+                    <button onclick="fecharModal('modal-historico-fornecedor')" class="text-gray-400 hover:text-red-500 ml-4"><i data-lucide="x" class="w-6 h-6"></i></button>
+                </div>
+            </div>
+            
+            <!-- Filtros de Data -->
+            <div class="p-4 border-b border-gray-200 dark:border-slate-700 bg-white dark:bg-darkcard flex flex-wrap gap-4 items-end">
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Data Inicial</label>
+                    <input type="date" id="filtro-forn-inicio" class="px-3 py-2 bg-gray-50 dark:bg-slate-800 border rounded-md text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Data Final</label>
+                    <input type="date" id="filtro-forn-fim" class="px-3 py-2 bg-gray-50 dark:bg-slate-800 border rounded-md text-sm">
+                </div>
+                <button onclick="filtrarHistoricoFornecedor()" class="bg-brand text-white px-4 py-2 rounded-md text-sm font-bold flex items-center gap-2"><i data-lucide="filter" class="w-4 h-4"></i> Filtrar</button>
+            </div>
+
+            <div class="p-4 bg-gray-50 dark:bg-darkbg flex gap-4 border-b border-gray-200 dark:border-slate-700">
+                <div class="bg-white dark:bg-darkcard p-3 rounded-lg border border-gray-200 dark:border-slate-700 flex-1">
+                    <p class="text-xs text-gray-500 uppercase font-bold">Total Gasto no Período</p>
+                    <p id="kpi-forn-custo" class="text-2xl font-bold text-red-500">R$ 0,00</p>
+                </div>
+                <div class="bg-white dark:bg-darkcard p-3 rounded-lg border border-gray-200 dark:border-slate-700 flex-1">
+                    <p class="text-xs text-gray-500 uppercase font-bold">Qtd de OSs</p>
+                    <p id="kpi-forn-qtd" class="text-2xl font-bold text-gray-900 dark:text-white">0</p>
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-auto p-6 bg-gray-50 dark:bg-darkbg">
+                <table class="w-full text-left border-collapse bg-white dark:bg-darkcard rounded-lg overflow-hidden shadow-sm" id="tabela-historico-fornecedor">
+                    <thead class="bg-gray-100 dark:bg-slate-800 text-xs uppercase text-gray-500 dark:text-gray-400">
+                        <tr>
+                            <th class="px-4 py-3">Data</th>
+                            <th class="px-4 py-3">Nº OS</th>
+                            <th class="px-4 py-3">Veículo</th>
+                            <th class="px-4 py-3">Serviço</th>
+                            <th class="px-4 py-3 text-right">Custo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-historico-fornecedor" class="text-sm divide-y divide-gray-200 dark:divide-slate-700"></tbody>
+                </table>
+                <div id="aviso-historico-forn-vazio" class="text-center text-gray-500 py-10 hidden">Nenhuma OS registrada para este fornecedor no período.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MODAL DE HISTÓRICO DO COLABORADOR          -->
+    <!-- ========================================== -->
+    <div id="modal-historico-colaborador" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-5xl border border-gray-200 dark:border-slate-700 overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-800/30">
+                <div>
+                    <h3 class="text-lg font-bold text-brand flex items-center gap-2"><i data-lucide="user" class="w-5 h-5"></i> Histórico do Colaborador</h3>
+                    <p id="hist-colaborador-nome" class="text-sm text-gray-500 font-bold">...</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="exportarHistoricoColaborador()" class="bg-green-500/10 text-green-500 hover:bg-green-500 hover:text-white px-3 py-1.5 rounded text-xs font-medium transition-colors flex items-center gap-1"><i data-lucide="table" class="w-4 h-4"></i> Exportar Histórico</button>
+                    <button onclick="fecharModal('modal-historico-colaborador')" class="text-gray-400 hover:text-red-500 ml-4"><i data-lucide="x" class="w-6 h-6"></i></button>
+                </div>
+            </div>
+            
+            <!-- Filtros de Data -->
+            <div class="p-4 border-b border-gray-200 dark:border-slate-700 bg-white dark:bg-darkcard flex flex-wrap gap-4 items-end">
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Data Inicial</label>
+                    <input type="date" id="filtro-colab-inicio" class="px-3 py-2 bg-gray-50 dark:bg-slate-800 border rounded-md text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1">Data Final</label>
+                    <input type="date" id="filtro-colab-fim" class="px-3 py-2 bg-gray-50 dark:bg-slate-800 border rounded-md text-sm">
+                </div>
+                <button onclick="filtrarHistoricoColaborador()" class="bg-brand text-white px-4 py-2 rounded-md text-sm font-bold flex items-center gap-2"><i data-lucide="filter" class="w-4 h-4"></i> Filtrar</button>
+            </div>
+
+            <div class="p-4 bg-gray-50 dark:bg-darkbg flex gap-4 border-b border-gray-200 dark:border-slate-700">
+                <div class="bg-white dark:bg-darkcard p-3 rounded-lg border border-gray-200 dark:border-slate-700 flex-1">
+                    <p class="text-xs text-gray-500 uppercase font-bold">Custo Gerado (Solicitações)</p>
+                    <p id="kpi-colab-custo" class="text-2xl font-bold text-red-500">R$ 0,00</p>
+                </div>
+                <div class="bg-white dark:bg-darkcard p-3 rounded-lg border border-gray-200 dark:border-slate-700 flex-1">
+                    <p class="text-xs text-gray-500 uppercase font-bold">Qtd de OSs Solicitadas</p>
+                    <p id="kpi-colab-qtd" class="text-2xl font-bold text-gray-900 dark:text-white">0</p>
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-auto p-6 bg-gray-50 dark:bg-darkbg">
+                <table class="w-full text-left border-collapse bg-white dark:bg-darkcard rounded-lg overflow-hidden shadow-sm" id="tabela-historico-colaborador">
+                    <thead class="bg-gray-100 dark:bg-slate-800 text-xs uppercase text-gray-500 dark:text-gray-400">
+                        <tr>
+                            <th class="px-4 py-3">Data</th>
+                            <th class="px-4 py-3">Nº OS</th>
+                            <th class="px-4 py-3">Veículo</th>
+                            <th class="px-4 py-3">Serviço</th>
+                            <th class="px-4 py-3 text-right">Custo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-historico-colaborador" class="text-sm divide-y divide-gray-200 dark:divide-slate-700"></tbody>
+                </table>
+                <div id="aviso-historico-colab-vazio" class="text-center text-gray-500 py-10 hidden">Nenhuma OS registrada para este colaborador no período.</div>
+            </div>
+        </div>
+    </div>
+
     <div id="toast" class="fixed top-6 right-6 z-50 transform transition-transform duration-300 translate-x-[150%]">
         <div class="bg-red-500 text-white px-6 py-4 rounded-lg shadow-2xl flex items-center gap-3 border border-red-400">
             <i data-lucide="alert-circle" class="w-6 h-6"></i>
@@ -254,7 +382,15 @@
     <script>
         lucide.createIcons();
         let listaMotoristasGlobal = []; 
+        let listaFornecedoresGlobal = [];
+        let listaServicosGlobal = [];
         
+        // Variáveis para guardar o histórico atual
+        let fornecedorSelecionado = null;
+        let historicoFornecedorGlobal = [];
+        let colaboradorSelecionado = null;
+        let historicoColaboradorGlobal = [];
+
         supabaseClient.auth.getSession().then(({ data: { session } }) => {
             if (!session) { window.location.href = "login.html"; } 
             else { document.getElementById('user-email').innerText = session.user.email; }
@@ -344,6 +480,7 @@
             const tabela = document.getElementById('tabela-servicos');
             tabela.innerHTML = '';
             if(!data) return;
+            listaServicosGlobal = data;
 
             data.forEach(s => {
                 let compNome = s.comportamento;
@@ -449,6 +586,7 @@
                         <td class="px-6 py-4">${m.cnh || '-'}</td>
                         <td class="px-6 py-4">${m.telefone || '-'}</td>
                         <td class="px-6 py-4 text-center flex items-center justify-center gap-3">
+                            <button onclick="abrirHistoricoColaborador('${m.id}', '${escapeHTML(m.nome)}')" class="text-gray-400 hover:text-purple-500 transition-colors" title="Ver Histórico"><i data-lucide="history" class="w-5 h-5"></i></button>
                             <button onclick="editarMotorista('${m.id}')" class="text-gray-400 hover:text-blue-500 transition-colors" title="Editar"><i data-lucide="edit" class="w-5 h-5"></i></button>
                             <button onclick="excluirMotorista('${m.user_id}', '${m.nome}')" class="text-gray-400 hover:text-red-500 transition-colors" title="Excluir"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
                         </td>
@@ -546,6 +684,7 @@
             const tabela = document.getElementById('tabela-fornecedores');
             tabela.innerHTML = '';
             if(!data) return;
+            listaFornecedoresGlobal = data;
 
             data.forEach(f => {
                 tabela.innerHTML += `
@@ -553,8 +692,12 @@
                         <td class="px-6 py-4 font-bold">${f.nome}</td>
                         <td class="px-6 py-4">${f.cnpj || '-'}</td>
                         <td class="px-6 py-4">${f.contato || '-'}</td>
+                        <td class="px-6 py-4 text-center flex items-center justify-center gap-3">
+                            <button onclick="abrirHistoricoFornecedor('${f.id}', '${escapeHTML(f.nome)}')" class="text-gray-400 hover:text-brand transition-colors" title="Ver Extrato Financeiro"><i data-lucide="line-chart" class="w-5 h-5"></i></button>
+                        </td>
                     </tr>`;
             });
+            lucide.createIcons();
         }
 
         document.getElementById('form-fornecedor').addEventListener('submit', async (e) => {
@@ -568,6 +711,234 @@
             if(error) mostrarErro("Erro: " + error.message);
             else { fecharModal('modal-fornecedor'); carregarFornecedores(); }
         });
+
+        // ==========================================
+        // --- LÓGICA DE HISTÓRICO E EXTRATOS ---
+        // ==========================================
+
+        // 1. FORNECEDORES
+        function abrirHistoricoFornecedor(id, nome) {
+            fornecedorSelecionado = { id, nome };
+            document.getElementById('hist-fornecedor-nome').innerText = nome;
+            
+            // Reseta os filtros
+            const hoje = new Date();
+            const primeiroDia = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+            document.getElementById('filtro-forn-inicio').valueAsDate = primeiroDia;
+            document.getElementById('filtro-forn-fim').valueAsDate = hoje;
+
+            abrirModal('modal-historico-fornecedor');
+            filtrarHistoricoFornecedor();
+        }
+
+        async function filtrarHistoricoFornecedor() {
+            const dtInicio = document.getElementById('filtro-forn-inicio').value;
+            const dtFim = document.getElementById('filtro-forn-fim').value;
+            const tbody = document.getElementById('tbody-historico-fornecedor');
+            const aviso = document.getElementById('aviso-historico-forn-vazio');
+            
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4">Buscando...</td></tr>';
+            aviso.classList.add('hidden');
+
+            let query = supabaseClient.from('ordens_servico')
+                .select(`*, veiculos(placa, modelo)`)
+                .eq('fornecedor_id', fornecedorSelecionado.id);
+
+            if (dtInicio) query = query.gte('created_at', `${dtInicio}T00:00:00`);
+            if (dtFim) query = query.lte('created_at', `${dtFim}T23:59:59`);
+
+            const { data, error } = await query.order('created_at', { ascending: false });
+
+            if (error) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-red-500">Erro ao buscar extrato.</td></tr>';
+                return;
+            }
+
+            historicoFornecedorGlobal = data || [];
+            tbody.innerHTML = '';
+
+            let custoTotal = 0;
+
+            if (historicoFornecedorGlobal.length === 0) {
+                tbody.innerHTML = '';
+                aviso.classList.remove('hidden');
+                document.getElementById('kpi-forn-custo').innerText = 'R$ 0,00';
+                document.getElementById('kpi-forn-qtd').innerText = '0';
+                return;
+            }
+
+            aviso.classList.add('hidden');
+
+            historicoFornecedorGlobal.forEach(os => {
+                const dataFormatada = new Date(os.created_at).toLocaleDateString('pt-BR');
+                const custo = parseFloat(os.custo || 0);
+                custoTotal += custo;
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
+                        <td class="px-4 py-3 text-xs text-gray-500">${dataFormatada}</td>
+                        <td class="px-4 py-3 font-bold uppercase">${os.os_numero || 'S/N'}</td>
+                        <td class="px-4 py-3">
+                            <div class="font-bold uppercase">${os.veiculos?.placa || '-'}</div>
+                            <div class="text-xs text-gray-500">${os.veiculos?.modelo || ''}</div>
+                        </td>
+                        <td class="px-4 py-3">
+                            <div class="font-medium capitalize">${os.tipo}</div>
+                            <div class="text-xs text-gray-500 truncate max-w-xs">${os.descricao}</div>
+                        </td>
+                        <td class="px-4 py-3 text-right font-bold text-red-500">R$ ${custo.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('kpi-forn-custo').innerText = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(custoTotal);
+            document.getElementById('kpi-forn-qtd').innerText = historicoFornecedorGlobal.length;
+        }
+
+        function exportarHistoricoFornecedor() {
+            if (!historicoFornecedorGlobal || historicoFornecedorGlobal.length === 0) return alert("Nada para exportar no período selecionado.");
+            
+            const dados = historicoFornecedorGlobal.map(os => ({
+                "Data": new Date(os.created_at).toLocaleDateString('pt-BR'),
+                "Nº OS": os.os_numero || 'S/N',
+                "Veículo": os.veiculos?.placa || '-',
+                "Serviço": os.tipo,
+                "Descrição": os.descricao,
+                "Custo (R$)": parseFloat(os.custo || 0).toFixed(2)
+            }));
+
+            const ws = XLSX.utils.json_to_sheet(dados);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Extrato Fornecedor");
+            XLSX.writeFile(wb, `Extrato_${fornecedorSelecionado.nome.replace(/\s+/g, '_')}.xlsx`);
+        }
+
+        // 2. COLABORADORES
+        function abrirHistoricoColaborador(id, nome) {
+            colaboradorSelecionado = { id, nome };
+            document.getElementById('hist-colaborador-nome').innerText = nome;
+            
+            // Reseta os filtros
+            const hoje = new Date();
+            const primeiroDia = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+            document.getElementById('filtro-colab-inicio').valueAsDate = primeiroDia;
+            document.getElementById('filtro-colab-fim').valueAsDate = hoje;
+
+            abrirModal('modal-historico-colaborador');
+            filtrarHistoricoColaborador();
+        }
+
+        async function filtrarHistoricoColaborador() {
+            const dtInicio = document.getElementById('filtro-colab-inicio').value;
+            const dtFim = document.getElementById('filtro-colab-fim').value;
+            const tbody = document.getElementById('tbody-historico-colaborador');
+            const aviso = document.getElementById('aviso-historico-colab-vazio');
+            
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4">Buscando...</td></tr>';
+            aviso.classList.add('hidden');
+
+            let query = supabaseClient.from('ordens_servico')
+                .select(`*, veiculos(placa, modelo)`)
+                .eq('solicitante_id', colaboradorSelecionado.id);
+
+            if (dtInicio) query = query.gte('created_at', `${dtInicio}T00:00:00`);
+            if (dtFim) query = query.lte('created_at', `${dtFim}T23:59:59`);
+
+            const { data, error } = await query.order('created_at', { ascending: false });
+
+            if (error) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-red-500">Erro ao buscar histórico.</td></tr>';
+                return;
+            }
+
+            historicoColaboradorGlobal = data || [];
+            tbody.innerHTML = '';
+
+            let custoTotal = 0;
+
+            if (historicoColaboradorGlobal.length === 0) {
+                tbody.innerHTML = '';
+                aviso.classList.remove('hidden');
+                document.getElementById('kpi-colab-custo').innerText = 'R$ 0,00';
+                document.getElementById('kpi-colab-qtd').innerText = '0';
+                return;
+            }
+
+            aviso.classList.add('hidden');
+
+            historicoColaboradorGlobal.forEach(os => {
+                const dataFormatada = new Date(os.created_at).toLocaleDateString('pt-BR');
+                const custo = parseFloat(os.custo || 0);
+                custoTotal += custo;
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
+                        <td class="px-4 py-3 text-xs text-gray-500">${dataFormatada}</td>
+                        <td class="px-4 py-3 font-bold uppercase">${os.os_numero || 'S/N'}</td>
+                        <td class="px-4 py-3">
+                            <div class="font-bold uppercase">${os.veiculos?.placa || '-'}</div>
+                            <div class="text-xs text-gray-500">${os.veiculos?.modelo || ''}</div>
+                        </td>
+                        <td class="px-4 py-3">
+                            <div class="font-medium capitalize">${os.tipo}</div>
+                            <div class="text-xs text-gray-500 truncate max-w-xs">${os.descricao}</div>
+                        </td>
+                        <td class="px-4 py-3 text-right font-bold text-red-500">R$ ${custo.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('kpi-colab-custo').innerText = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(custoTotal);
+            document.getElementById('kpi-colab-qtd').innerText = historicoColaboradorGlobal.length;
+        }
+
+        function exportarHistoricoColaborador() {
+            if (!historicoColaboradorGlobal || historicoColaboradorGlobal.length === 0) return alert("Nada para exportar no período selecionado.");
+            
+            const dados = historicoColaboradorGlobal.map(os => ({
+                "Data": new Date(os.created_at).toLocaleDateString('pt-BR'),
+                "Nº OS": os.os_numero || 'S/N',
+                "Veículo": os.veiculos?.placa || '-',
+                "Serviço": os.tipo,
+                "Descrição": os.descricao,
+                "Custo Gerado (R$)": parseFloat(os.custo || 0).toFixed(2)
+            }));
+
+            const ws = XLSX.utils.json_to_sheet(dados);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Historico Colaborador");
+            XLSX.writeFile(wb, `Historico_${colaboradorSelecionado.nome.replace(/\s+/g, '_')}.xlsx`);
+        }
+
+        // ==========================================
+        // --- EXPORTAÇÃO DE LISTAS BÁSICAS ---
+        // ==========================================
+        function exportarExcelServicos() {
+            if (!listaServicosGlobal || listaServicosGlobal.length === 0) return alert("Não há dados.");
+            const dados = listaServicosGlobal.map(s => ({ "Nome": s.nome, "Grupo": s.grupo, "Comportamento": s.comportamento, "Ativo": s.ativo ? 'Sim' : 'Não' }));
+            const ws = XLSX.utils.json_to_sheet(dados);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Servicos");
+            XLSX.writeFile(wb, `Lista_Servicos_Karaz.xlsx`);
+        }
+
+        function exportarExcelFornecedores() {
+            if (!listaFornecedoresGlobal || listaFornecedoresGlobal.length === 0) return alert("Não há dados.");
+            const dados = listaFornecedoresGlobal.map(f => ({ "Nome": f.nome, "CNPJ": f.cnpj || '-', "Contato": f.contato || '-' }));
+            const ws = XLSX.utils.json_to_sheet(dados);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Fornecedores");
+            XLSX.writeFile(wb, `Lista_Fornecedores_Karaz.xlsx`);
+        }
+
+        function exportarExcelColaboradores() {
+            if (!listaMotoristasGlobal || listaMotoristasGlobal.length === 0) return alert("Não há dados.");
+            const dados = listaMotoristasGlobal.map(m => ({ "Nome": m.nome, "Login/CPF": m.cnh || '-', "Telefone": m.telefone || '-' }));
+            const ws = XLSX.utils.json_to_sheet(dados);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Colaboradores");
+            XLSX.writeFile(wb, `Lista_Colaboradores_Karaz.xlsx`);
+        }
 
         // Inicialização
         carregarServicos();
