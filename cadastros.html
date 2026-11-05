@@ -579,16 +579,23 @@
                 if(roleNome === 'motorista') badgeRole = 'bg-green-500/10 text-green-500';
                 if(roleNome === 'operador') badgeRole = 'bg-orange-500/10 text-orange-500';
 
+                const rowClass = m.ativo === false ? "opacity-50" : "hover:bg-gray-50 dark:hover:bg-slate-800/50";
+                const badgeInativo = m.ativo === false ? '<span class="text-[10px] bg-gray-200 dark:bg-slate-700 px-1.5 py-0.5 rounded text-gray-500 ml-2">INATIVO</span>' : '';
+
                 tabela.innerHTML += `
-                    <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50">
-                        <td class="px-6 py-4 font-bold">${m.nome}</td>
+                    <tr class="${rowClass}">
+                        <td class="px-6 py-4 font-bold">${m.nome} ${badgeInativo}</td>
                         <td class="px-6 py-4"><span class="px-2 py-1 rounded text-xs font-bold ${badgeRole} uppercase">${roleNome}</span></td>
                         <td class="px-6 py-4">${m.cnh || '-'}</td>
                         <td class="px-6 py-4">${m.telefone || '-'}</td>
                         <td class="px-6 py-4 text-center flex items-center justify-center gap-3">
                             <button onclick="abrirHistoricoColaborador('${m.id}', '${escapeHTML(m.nome)}')" class="text-gray-400 hover:text-purple-500 transition-colors" title="Ver Histórico"><i data-lucide="history" class="w-5 h-5"></i></button>
                             <button onclick="editarMotorista('${m.id}')" class="text-gray-400 hover:text-blue-500 transition-colors" title="Editar"><i data-lucide="edit" class="w-5 h-5"></i></button>
-                            <button onclick="excluirMotorista('${m.user_id}', '${m.nome}')" class="text-gray-400 hover:text-red-500 transition-colors" title="Excluir"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                            
+                            <!-- BOTÃO POWER (ATIVAR/INATIVAR) -->
+                            <button onclick="toggleAtivoMotorista('${m.id}', ${m.ativo !== false})" class="text-gray-400 ${m.ativo !== false ? 'hover:text-red-500' : 'hover:text-green-500'} transition-colors" title="${m.ativo !== false ? 'Inativar' : 'Ativar'}">
+                                <i data-lucide="power" class="w-5 h-5"></i>
+                            </button>
                         </td>
                     </tr>`;
             });
@@ -615,18 +622,12 @@
             abrirModal('modal-motorista');
         }
 
-        async function excluirMotorista(userId, nome) {
-            if (!userId) {
-                mostrarErro("Este colaborador não tem um login vinculado (usuário antigo).");
-                return;
-            }
-
-            if(!confirm(`Tem certeza que deseja EXCLUIR o colaborador ${nome}? Esta ação não pode ser desfeita.`)) return;
-
-            const { error } = await supabaseClient.rpc('excluir_colaborador', { p_user_id: userId });
-            
+        // NOVA FUNÇÃO: Inativar/Ativar Colaborador
+        async function toggleAtivoMotorista(id, statusAtual) {
+            if(!confirm(`Deseja realmente ${statusAtual ? 'INATIVAR' : 'ATIVAR'} este colaborador?`)) return;
+            const { error } = await supabaseClient.from('motoristas').update({ ativo: !statusAtual }).eq('id', id);
             if (error) {
-                mostrarErro("Erro ao excluir: " + error.message);
+                mostrarErro("Erro: " + error.message);
             } else {
                 carregarMotoristas();
             }
@@ -687,17 +688,36 @@
             listaFornecedoresGlobal = data;
 
             data.forEach(f => {
+                const rowClass = f.ativo === false ? "opacity-50" : "hover:bg-gray-50 dark:hover:bg-slate-800/50";
+                const badgeInativo = f.ativo === false ? '<span class="text-[10px] bg-gray-200 dark:bg-slate-700 px-1.5 py-0.5 rounded text-gray-500 ml-2">INATIVO</span>' : '';
+
                 tabela.innerHTML += `
-                    <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50">
-                        <td class="px-6 py-4 font-bold">${f.nome}</td>
+                    <tr class="${rowClass}">
+                        <td class="px-6 py-4 font-bold">${f.nome} ${badgeInativo}</td>
                         <td class="px-6 py-4">${f.cnpj || '-'}</td>
                         <td class="px-6 py-4">${f.contato || '-'}</td>
                         <td class="px-6 py-4 text-center flex items-center justify-center gap-3">
                             <button onclick="abrirHistoricoFornecedor('${f.id}', '${escapeHTML(f.nome)}')" class="text-gray-400 hover:text-brand transition-colors" title="Ver Extrato Financeiro"><i data-lucide="line-chart" class="w-5 h-5"></i></button>
+                            
+                            <!-- BOTÃO POWER (ATIVAR/INATIVAR) -->
+                            <button onclick="toggleAtivoFornecedor('${f.id}', ${f.ativo !== false})" class="text-gray-400 ${f.ativo !== false ? 'hover:text-red-500' : 'hover:text-green-500'} transition-colors" title="${f.ativo !== false ? 'Inativar' : 'Ativar'}">
+                                <i data-lucide="power" class="w-5 h-5"></i>
+                            </button>
                         </td>
                     </tr>`;
             });
             lucide.createIcons();
+        }
+
+        // NOVA FUNÇÃO: Inativar/Ativar Fornecedor
+        async function toggleAtivoFornecedor(id, statusAtual) {
+            if(!confirm(`Deseja realmente ${statusAtual ? 'INATIVAR' : 'ATIVAR'} este fornecedor?`)) return;
+            const { error } = await supabaseClient.from('fornecedores').update({ ativo: !statusAtual }).eq('id', id);
+            if (error) {
+                mostrarErro("Erro: " + error.message);
+            } else {
+                carregarFornecedores();
+            }
         }
 
         document.getElementById('form-fornecedor').addEventListener('submit', async (e) => {
@@ -721,7 +741,6 @@
             fornecedorSelecionado = { id, nome };
             document.getElementById('hist-fornecedor-nome').innerText = nome;
             
-            // Reseta os filtros
             const hoje = new Date();
             const primeiroDia = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
             document.getElementById('filtro-forn-inicio').valueAsDate = primeiroDia;
@@ -818,7 +837,6 @@
             colaboradorSelecionado = { id, nome };
             document.getElementById('hist-colaborador-nome').innerText = nome;
             
-            // Reseta os filtros
             const hoje = new Date();
             const primeiroDia = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
             document.getElementById('filtro-colab-inicio').valueAsDate = primeiroDia;
