@@ -510,7 +510,6 @@
                         <a href="mapa-veiculo.html?id=${v.id}" class="text-gray-400 hover:text-brand transition-colors" title="Mapa"><i data-lucide="map" class="w-5 h-5"></i></a>
                         <button onclick="editarVeiculo('${v.id}')" class="text-gray-400 hover:text-blue-500 transition-colors" title="Editar"><i data-lucide="edit" class="w-5 h-5"></i></button>
                         <button onclick="toggleAtivoVeiculo('${v.id}', ${v.ativo})" class="text-gray-400 ${v.ativo ? 'hover:text-red-500' : 'hover:text-green-500'} transition-colors" title="${v.ativo ? 'Inativar' : 'Ativar'}"><i data-lucide="power" class="w-5 h-5"></i></button>
-                        <button onclick="excluirVeiculo('${v.id}', '${v.placa}')" class="text-gray-400 hover:text-red-600 transition-colors" title="Excluir Definitivamente"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
                         <button onclick="abrirHistorico('${v.id}')" class="text-gray-400 hover:text-orange-500 transition-colors" title="Histórico"><i data-lucide="history" class="w-5 h-5"></i></button>
                     </td>
                 `;
