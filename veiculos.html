@@ -15,7 +15,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- Removi a linha duplicada do xlsx que estava aqui -->
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -115,16 +115,10 @@
                     <input type="text" id="input-busca" placeholder="Buscar por placa ou modelo..." class="w-full pl-10 pr-4 py-2 bg-white dark:bg-darkcard border border-gray-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:border-brand transition-colors">
                 </div>
                 
-                <div class="flex gap-2 w-full sm:w-auto">
-                    <!-- NOVO BOTÃO DE IMPORTAR -->
-                    <button onclick="abrirModalImportar()" class="w-full sm:w-auto bg-gray-200 hover:bg-gray-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-gray-800 dark:text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
-                        <i data-lucide="upload" class="w-4 h-4"></i> Importar Excel
-                    </button>
-                    
-                    <button onclick="abrirModal()" class="w-full sm:w-auto bg-brand hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
-                        <i data-lucide="plus" class="w-4 h-4"></i> Novo Veículo
-                    </button>
-                </div>
+                <!-- BOTÃO DE IMPORTAR REMOVIDO DAQUI -->
+                <button onclick="abrirModal()" class="w-full sm:w-auto bg-brand hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
+                    <i data-lucide="plus" class="w-4 h-4"></i> Novo Veículo
+                </button>
             </div>
 
             <div class="bg-white dark:bg-darkcard border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden">
@@ -198,9 +192,17 @@
                             </select>
                         </div>
                     </div>
-                    <div class="pt-4 flex justify-end gap-3 border-t border-gray-200 dark:border-slate-700 mt-2">
-                        <button type="button" onclick="fecharModal()" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-md transition-colors">Cancelar</button>
-                        <button type="button" id="btn-proximo" onclick="irParaAba2()" class="px-4 py-2 text-sm font-medium text-white bg-brand hover:bg-orange-700 rounded-md transition-colors">Próximo Passo →</button>
+                    
+                    <!-- BOTÃO DE IMPORTAR MOVIDO PARA CÁ -->
+                    <div class="pt-4 flex justify-between items-center border-t border-gray-200 dark:border-slate-700 mt-2">
+                        <button type="button" onclick="abrirModalImportar()" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 hover:bg-gray-200 dark:bg-slate-700 dark:hover:bg-slate-600 rounded-md transition-colors flex items-center gap-2">
+                            <i data-lucide="upload" class="w-4 h-4"></i> Importar Excel
+                        </button>
+                        
+                        <div class="flex gap-3">
+                            <button type="button" onclick="fecharModal()" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-md transition-colors">Cancelar</button>
+                            <button type="button" id="btn-proximo" onclick="irParaAba2()" class="px-4 py-2 text-sm font-medium text-white bg-brand hover:bg-orange-700 rounded-md transition-colors">Próximo Passo →</button>
+                        </div>
                     </div>
                 </div>
 
@@ -294,6 +296,27 @@
         </div>
     </div>
 
+    <!-- MODAL DE IMPORTAÇÃO EXCEL -->
+    <div id="modal-importar" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-md border border-gray-200 dark:border-slate-700">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center">
+                <h3 class="text-lg font-semibold text-brand flex items-center gap-2"><i data-lucide="file-spreadsheet" class="w-5 h-5"></i> Importar Veículos</h3>
+                <button onclick="fecharModalImportar()" class="text-gray-400 hover:text-red-500"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <p class="text-sm text-gray-500">Selecione a planilha do Excel (.xlsx ou .csv). A primeira linha deve conter os cabeçalhos corretos.</p>
+                <input type="file" id="input-excel" accept=".xlsx, .xls, .csv" class="w-full p-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand/10 file:text-brand hover:file:bg-brand/20">
+                
+                <div id="import-status" class="hidden text-sm p-3 rounded-md"></div>
+
+                <div class="pt-4 flex justify-end gap-3 border-t border-gray-200 dark:border-slate-700">
+                    <button type="button" onclick="fecharModalImportar()" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-md transition-colors">Cancelar</button>
+                    <button type="button" id="btn-processar-excel" onclick="processarExcel()" class="px-4 py-2 text-sm font-medium text-white bg-brand hover:bg-orange-700 rounded-md transition-colors">Importar Dados</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="js/supabase-client.js"></script>
     <script>
         lucide.createIcons();
@@ -346,17 +369,16 @@
             const { data: veiculos } = await supabaseClient.from('veiculos').select('*').order('created_at', { ascending: false });
             todosVeiculos = veiculos || [];
             
-            // Busca os pneus (agora incluindo o 'id' para podermos cruzar com a calibragem)
             const { data: pneus } = await supabaseClient.from('pneus').select('id, veiculo_id, sulco_atual, sulco_inicial').eq('status', 'em_uso');
             todosPneus = pneus || [];
 
-            // NOVO: Busca todas as calibragens para saber a data da última de cada pneu
             const { data: calibragens } = await supabaseClient.from('calibragens').select('pneu_id, created_at');
-            window.todasCalibragens = calibragens || []; // Salva globalmente para usar no KPI
+            window.todasCalibragens = calibragens || []; 
 
             calcularKPIs();
             renderizarTabela();
         }
+
         function calcularKPIs() {
             let ativos = todosVeiculos.filter(v => v.ativo);
             document.getElementById('kpi-total-veiculos').innerText = ativos.length;
@@ -377,7 +399,6 @@
             let hoje = new Date();
             let semAfericao = 0;
             
-            // Mapeia a data da última calibragem de cada pneu
             const ultimaCalibragemPorPneu = {};
             if (window.todasCalibragens) {
                 window.todasCalibragens.forEach(c => {
@@ -388,17 +409,12 @@
             }
             
             ativos.forEach(v => {
-                // Começa considerando a data de criação do veículo
                 let dataMaisRecente = new Date(v.created_at); 
-                
-                // Pega todos os pneus deste veículo
                 const pneusDoVeiculo = todosPneus.filter(p => p.veiculo_id === v.id);
                 
-                // Verifica se algum desses pneus tem calibragem registrada
                 pneusDoVeiculo.forEach(p => {
                     if (ultimaCalibragemPorPneu[p.id]) {
                         let dataCalib = new Date(ultimaCalibragemPorPneu[p.id]);
-                        // Se a calibragem for mais nova que a data atual, atualiza a data de referência
                         if (dataCalib > dataMaisRecente) {
                             dataMaisRecente = dataCalib;
                         }
@@ -406,8 +422,6 @@
                 });
 
                 let diffDias = Math.floor((hoje - dataMaisRecente) / (1000 * 60 * 60 * 24));
-                
-                // Se passou do limite de dias, conta como "sem aferição"
                 if (diffDias > diasLimite) {
                     semAfericao++;
                 }
@@ -492,7 +506,7 @@
                         <a href="mapa-veiculo.html?id=${v.id}" class="text-gray-400 hover:text-brand transition-colors" title="Mapa"><i data-lucide="map" class="w-5 h-5"></i></a>
                         <button onclick="editarVeiculo('${v.id}')" class="text-gray-400 hover:text-blue-500 transition-colors" title="Editar"><i data-lucide="edit" class="w-5 h-5"></i></button>
                         <button onclick="toggleAtivoVeiculo('${v.id}', ${v.ativo})" class="text-gray-400 ${v.ativo ? 'hover:text-red-500' : 'hover:text-green-500'} transition-colors" title="${v.ativo ? 'Inativar' : 'Ativar'}"><i data-lucide="power" class="w-5 h-5"></i></button>
-                        <button onclick="excluirVeiculo('${v.id}', ${escapeHTML(v.placa)}')" class="text-gray-400 hover:text-red-600 transition-colors" title="Excluir Definitivamente"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                        <button onclick="excluirVeiculo('${v.id}', '${escapeHTML(v.placa)}')" class="text-gray-400 hover:text-red-600 transition-colors" title="Excluir Definitivamente"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
                         <button onclick="abrirHistorico('${v.id}')" class="text-gray-400 hover:text-orange-500 transition-colors" title="Histórico"><i data-lucide="history" class="w-5 h-5"></i></button>
                     </td>
                 `;
@@ -510,16 +524,14 @@
             else carregarDados();
         }
 
-        // --- FUNÇÃO DE EXCLUIR VEÍCULO ---
         async function excluirVeiculo(id, placa) {
             const msg = `⚠️ ATENÇÃO: EXCLUIR VEÍCULO DEFINITIVAMENTE ⚠️\n\nVocê está prestes a apagar o veículo de placa ${placa}.\n\n- Esta ação NÃO PODE SER DESFEITA.\n- O veículo e seu histórico de mapa serão removidos.\n- Se houver Ordens de Serviço abertas para ele, a exclusão será bloqueada por segurança.\n- A ação ficará gravada permanentemente na Auditoria do sistema.\n\nDeseja realmente continuar?`;
-            
             if(!window.confirm(msg)) return;
 
             const { error } = await supabaseClient.from('veiculos').delete().eq('id', id);
             
             if (error) {
-                if(error.code === '23503') { // Erro de chave estrangeira (tem OS vinculada)
+                if(error.code === '23503') {
                     alert("Erro: Não é possível excluir este veículo pois existem Ordens de Serviço vinculadas a ele. Exclua as OS primeiro ou inative o veículo.");
                 } else {
                     alert("Erro ao excluir: " + error.message);
@@ -779,7 +791,7 @@
 
             const { data, error } = await supabaseClient
                 .from('historico_veiculo')
-                .select('*') // Sem JOIN que quebra
+                .select('*') 
                 .eq('veiculo_id', veiculoId)
                 .order('created_at', { ascending: false });
 
@@ -796,7 +808,50 @@
                 return;
             }
 
-                   function exportarPDF() {
+            const session = await supabaseClient.auth.getSession();
+            const currentUserId = session.data.session?.user?.id;
+
+            tbody.innerHTML = '';
+            todosHistoricos.forEach(h => {
+                const dataFormatada = new Date(h.created_at).toLocaleString('pt-BR');
+                
+                let emailUsuario = 'Sistema';
+                if (h.usuario_id === currentUserId) {
+                    emailUsuario = session.data.session.user.email; 
+                } else if (h.usuario_id) {
+                    emailUsuario = 'Usuário ID: ' + h.usuario_id.substring(0, 5) + '...'; 
+                }
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
+                        <td class="px-4 py-3 col-data text-xs text-gray-500">${dataFormatada}</td>
+                        <td class="px-4 py-3 col-evento font-medium capitalize">${h.tipo_evento.replace('_', ' ')}</td>
+                        <td class="px-4 py-3 col-desc">${escapeHTML(h.descricao)}</td>
+                        <td class="px-4 py-3 col-km text-xs">${h.km_registro ? h.km_registro + ' km' : '-'}</td>
+                        <td class="px-4 py-3 col-horas text-xs">${veiculoHistoricoAtual.horas_atual} h</td>
+                        <td class="px-4 py-3 col-user text-xs">${emailUsuario}</td>
+                    </tr>
+                `;
+            });
+        } // <--- ESTA CHAVE ESTAVA FALTANDO, POR ISSO O ERRO
+
+        function fecharModalHistorico() { modalHist.classList.add('hidden'); }
+
+        function toggleColuna(classe, visivel) {
+            const elementos = document.querySelectorAll(`.${classe}`);
+            elementos.forEach(el => {
+                if (visivel) el.classList.remove('hidden');
+                else el.classList.add('hidden');
+            });
+        }
+
+        function exportarExcel() {
+            const tabela = document.getElementById('tabela-historico');
+            const wb = XLSX.utils.table_to_book(tabela, { sheet: "Historico" });
+            XLSX.writeFile(wb, `Historico_${veiculoHistoricoAtual.placa}.xlsx`);
+        }
+
+        function exportarPDF() {
             const elemento = document.getElementById('area-tabela-historico');
             const logo = document.getElementById('logo-pdf');
             logo.classList.remove('hidden');
@@ -946,27 +1001,5 @@
         carregarDados();
 
     </script>
-
-    <!-- MODAL DE IMPORTAÇÃO EXCEL (DEVE FICAR AQUI FORA DO SCRIPT) -->
-    <div id="modal-importar" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-md border border-gray-200 dark:border-slate-700">
-            <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center">
-                <h3 class="text-lg font-semibold text-brand flex items-center gap-2"><i data-lucide="file-spreadsheet" class="w-5 h-5"></i> Importar Veículos</h3>
-                <button onclick="fecharModalImportar()" class="text-gray-400 hover:text-red-500"><i data-lucide="x" class="w-5 h-5"></i></button>
-            </div>
-            <div class="p-6 space-y-4">
-                <p class="text-sm text-gray-500">Selecione a planilha do Excel (.xlsx ou .csv). A primeira linha deve conter os cabeçalhos corretos.</p>
-                <input type="file" id="input-excel" accept=".xlsx, .xls, .csv" class="w-full p-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand/10 file:text-brand hover:file:bg-brand/20">
-                
-                <div id="import-status" class="hidden text-sm p-3 rounded-md"></div>
-
-                <div class="pt-4 flex justify-end gap-3 border-t border-gray-200 dark:border-slate-700">
-                    <button type="button" onclick="fecharModalImportar()" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-md transition-colors">Cancelar</button>
-                    <button type="button" id="btn-processar-excel" onclick="processarExcel()" class="px-4 py-2 text-sm font-medium text-white bg-brand hover:bg-orange-700 rounded-md transition-colors">Importar Dados</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
 </body>
 </html>
