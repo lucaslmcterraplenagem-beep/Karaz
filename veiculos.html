@@ -15,6 +15,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -108,14 +109,22 @@
                 </div>
             </div>
 
-            <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+           <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
                 <div class="relative w-full sm:w-96">
                     <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-gray-400"></i>
                     <input type="text" id="input-busca" placeholder="Buscar por placa ou modelo..." class="w-full pl-10 pr-4 py-2 bg-white dark:bg-darkcard border border-gray-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:border-brand transition-colors">
                 </div>
-                <button onclick="abrirModal()" class="w-full sm:w-auto bg-brand hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
-                    <i data-lucide="plus" class="w-4 h-4"></i> Novo Veículo
-                </button>
+                
+                <div class="flex gap-2 w-full sm:w-auto">
+                    <!-- NOVO BOTÃO DE IMPORTAR -->
+                    <button onclick="abrirModalImportar()" class="w-full sm:w-auto bg-gray-200 hover:bg-gray-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-gray-800 dark:text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
+                        <i data-lucide="upload" class="w-4 h-4"></i> Importar Excel
+                    </button>
+                    
+                    <button onclick="abrirModal()" class="w-full sm:w-auto bg-brand hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
+                        <i data-lucide="plus" class="w-4 h-4"></i> Novo Veículo
+                    </button>
+                </div>
             </div>
 
             <div class="bg-white dark:bg-darkcard border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden">
@@ -861,6 +870,148 @@
         }
 
         carregarDados();
+            <!-- MODAL DE IMPORTAÇÃO EXCEL -->
+    <div id="modal-importar" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-md border border-gray-200 dark:border-slate-700">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center">
+                <h3 class="text-lg font-semibold text-brand flex items-center gap-2"><i data-lucide="file-spreadsheet" class="w-5 h-5"></i> Importar Veículos</h3>
+                <button onclick="fecharModalImportar()" class="text-gray-400 hover:text-red-500"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <p class="text-sm text-gray-500">Selecione a planilha do Excel (.xlsx ou .csv). A primeira linha deve conter os cabeçalhos corretos.</p>
+                <input type="file" id="input-excel" accept=".xlsx, .xls, .csv" class="w-full p-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand/10 file:text-brand hover:file:bg-brand/20">
+                
+                <div id="import-status" class="hidden text-sm p-3 rounded-md"></div>
+
+                <div class="pt-4 flex justify-end gap-3 border-t border-gray-200 dark:border-slate-700">
+                    <button type="button" onclick="fecharModalImportar()" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-md transition-colors">Cancelar</button>
+                    <button type="button" id="btn-processar-excel" onclick="processarExcel()" class="px-4 py-2 text-sm font-medium text-white bg-brand hover:bg-orange-700 rounded-md transition-colors">Importar Dados</button>
+                </div>
+            </div>
+        </div>
+    </div>
+                // --- LÓGICA DE IMPORTAÇÃO EXCEL ---
+        const modalImportar = document.getElementById('modal-importar');
+
+        function abrirModalImportar() {
+            document.getElementById('input-excel').value = '';
+            document.getElementById('import-status').classList.add('hidden');
+            modalImportar.classList.remove('hidden');
+        }
+
+        function fecharModalImportar() {
+            modalImportar.classList.add('hidden');
+        }
+
+        async function processarExcel() {
+            const fileInput = document.getElementById('input-excel');
+            const statusDiv = document.getElementById('import-status');
+            const btn = document.getElementById('btn-processar-excel');
+
+            if (fileInput.files.length === 0) {
+                alert("Por favor, selecione um arquivo Excel.");
+                return;
+            }
+
+            const file = fileInput.files[0];
+            btn.innerHTML = 'Processando...'; btn.disabled = true;
+            statusDiv.classList.remove('hidden', 'bg-red-500/10', 'text-red-500', 'bg-green-500/10', 'text-green-500');
+            statusDiv.classList.add('bg-blue-500/10', 'text-blue-500');
+            statusDiv.innerText = 'Lendo arquivo...';
+
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const primeiraAba = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[primeiraAba];
+                    
+                    // Converte a planilha para JSON
+                    const json = XLSX.utils.sheet_to_json(worksheet);
+                    
+                    if (json.length === 0) throw new Error("A planilha está vazia.");
+
+                    statusDiv.innerText = `Encontrados ${json.length} registros. Validando dados...`;
+
+                    // Preparar os dados para o Supabase (Mapeando colunas do Excel para o Banco)
+                    const veiculosParaInserir = [];
+                    let erros = 0;
+
+                    json.forEach(row => {
+                        // Aqui mapeamos os nomes das colunas (se no Excel for "Placa", vira "placa")
+                        // O ideal é que o Excel tenha os nomes exatos do banco para facilitar
+                        const placa = row['Placa'] || row['placa'];
+                        const modelo = row['Modelo'] || row['modelo'];
+                        const marca = row['Marca'] || row['marca'];
+                        const ano = row['Ano'] || row['ano'];
+                        
+                        // Configuração de eixos: se vier "2,4,4,2" na planilha
+                        const configStr = row['Configuracao'] || row['configuracao'] || row['Configuracao_Eixos'];
+                        let qtdEixos = 2;
+                        let qtdPneus = 4;
+                        
+                        if (configStr) {
+                            const arr = configStr.toString().split(',');
+                            qtdEixos = arr.length;
+                            qtdPneus = arr.reduce((acc, val) => acc + parseInt(val.trim()), 0);
+                        }
+
+                        if (placa && modelo && marca && ano) {
+                            veiculosParaInserir.push({
+                                placa: placa.toUpperCase().trim(),
+                                modelo: modelo,
+                                marca: marca,
+                                ano: parseInt(ano),
+                                tipo: row['Tipo'] || 'caminhao',
+                                ativo: true,
+                                km_atual: parseFloat(row['KM'] || row['km_atual']) || 0,
+                                horas_atual: parseFloat(row['Horas'] || row['horas_atual']) || 0,
+                                quantidade_eixos: qtdEixos,
+                                quantidade_pneus: qtdPneus,
+                                configuracao_eixos: configStr || '2,4',
+                                quantidade_estepes: parseInt(row['Estepes'] || 1)
+                            });
+                        } else {
+                            erros++;
+                        }
+                    });
+
+                    if (veiculosParaInserir.length === 0) {
+                        throw new Error("Nenhum veículo válido encontrado. Verifique os nomes das colunas.");
+                    }
+
+                    statusDiv.innerText = `Inserindo ${veiculosParaInserir.length} veículos no banco de dados...`;
+
+                    // Inserção em lote (batch) no Supabase
+                    const { data: insertData, error } = await supabaseClient.from('veiculos').insert(veiculosParaInserir);
+
+                    if (error) {
+                        if (error.code === '23505') { // Chave duplicada (placa)
+                            throw new Error("Uma ou mais placas já estão cadastradas no sistema.");
+                        }
+                        throw new Error(error.message);
+                    }
+
+                    statusDiv.classList.replace('bg-blue-500/10', 'bg-green-500/10');
+                    statusDiv.classList.replace('text-blue-500', 'text-green-500');
+                    statusDiv.innerText = `✅ Sucesso! ${veiculosParaInserir.length} veículos importados.`;
+                    
+                    setTimeout(() => {
+                        fecharModalImportar();
+                        carregarDados(); // Atualiza a tabela na tela
+                    }, 2000);
+
+                } catch (err) {
+                    statusDiv.classList.replace('bg-blue-500/10', 'bg-red-500/10');
+                    statusDiv.classList.replace('text-blue-500', 'text-red-500');
+                    statusDiv.innerText = "Erro: " + err.message;
+                } finally {
+                    btn.innerHTML = 'Importar Dados'; btn.disabled = false;
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
     </script>
 </body>
 </html>
