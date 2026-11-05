@@ -161,6 +161,15 @@
                     <div class="relative w-full h-72">
                         <canvas id="chart-motoristas"></canvas>
                     </div>
+
+                                    <!-- NOVO GRÁFICO: KM RODADO POR VEÍCULO -->
+                <div class="bg-white dark:bg-darkcard p-5 rounded-lg border border-gray-200 dark:border-slate-700 shadow-sm flex flex-col transition-colors">
+                    <h3 class="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">KM Rodado por Veículo</h3>
+                    <div class="relative w-full h-72 flex justify-center">
+                        <canvas id="chart-km-veiculos"></canvas>
+                    </div>
+                </div>
+                    
                 </div>
                 <div class="bg-white dark:bg-darkcard p-5 rounded-lg border border-gray-200 dark:border-slate-700 shadow-sm flex flex-col transition-colors">
                     <h3 class="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Saúde Atual dos Pneus</h3>
@@ -271,11 +280,13 @@
                 supabaseClient.from('motoristas').select('id, nome'),
                 supabaseClient.from('fornecedores').select('id, nome'),
                 supabaseClient.from('pneus').select('sulco_atual, sulco_inicial, status')
+                supabaseClient.from('veiculos').select('id, placa')
             ]);
 
             dadosBrutos.motoristas = resMot.data || [];
             dadosBrutos.fornecedores = resFor.data || [];
             dadosBrutos.pneus = resPneus.data || [];
+            dadosBrutos.veiculos = resVeic.data || [];
 
             const selectMot = document.getElementById('filtro-motoristas');
             dadosBrutos.motoristas.forEach(m => { selectMot.innerHTML += `<option value="${m.id}">${m.nome}</option>`; });
@@ -331,6 +342,22 @@
                     totalKmRodado += distanciaVeiculo;
                 }
             }
+                     // --- NOVO: CÁLCULO E RENDERIZAÇÃO DO GRÁFICO DE KM POR VEÍCULO ---
+            const labelsKmVeic = [];
+            const dataKmVeic = [];
+
+            for (const vId in veiculosKM) {
+                const distancia = veiculosKM[vId].max - veiculosKM[vId].min;
+                // Só mostra no gráfico se o veículo realmente rodou (teve 2 OS ou mais)
+                if (distancia > 0) {
+                    const veiculo = dadosBrutos.veiculos.find(v => v.id === vId);
+                    labelsKmVeic.push(veiculo ? veiculo.placa : 'Desconhecido');
+                    dataKmVeic.push(distancia);
+                }
+            }
+
+            renderizarGraficoKmVeiculos(labelsKmVeic, dataKmVeic);
+            // ----------------------------------------------------------------
 
             // Atualiza os KPIs na tela
             document.getElementById('kpi-custo-total').innerText = formatarDinheiro(custoTotal);
@@ -398,6 +425,39 @@
                 type: 'bar',
                 data: { labels: labelsFor.length ? labelsFor : ['Sem dados'], datasets: [{ data: dataFor.length ? dataFor : [0], backgroundColor: '#f59e0b', borderRadius: 4 }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: corTexto }, grid: { display: false } }, y: { ticks: { color: corTexto, callback: (v) => 'R$ ' + v }, grid: { color: corGrid } } } }
+            });
+        }
+                let chartKmVeiculos;
+        function renderizarGraficoKmVeiculos(labels, data) {
+            const isDark = document.documentElement.classList.contains('dark');
+            const corTexto = isDark ? '#94a3b8' : '#64748b';
+            const corGrid = isDark ? '#334155' : '#e2e8f0';
+
+            if (chartKmVeiculos) chartKmVeiculos.destroy();
+            
+            chartKmVeiculos = new Chart(document.getElementById('chart-km-veiculos'), {
+                type: 'bar',
+                data: {
+                    labels: labels.length ? labels : ['Sem dados no período'],
+                    datasets: [{
+                        label: 'KM Rodado',
+                        data: data.length ? data : [0],
+                        backgroundColor: '#10b981', // Verde (Emerald)
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { ticks: { color: corTexto }, grid: { display: false } },
+                        y: { 
+                            ticks: { color: corTexto, callback: (v) => v + ' km' }, 
+                            grid: { color: corGrid } 
+                        }
+                    }
+                }
             });
         }
 
