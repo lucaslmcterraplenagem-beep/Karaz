@@ -32,6 +32,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Biblioteca para gerar o PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- BIBLIOTECA DO EXCEL ADICIONADA AQUI -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body class="bg-gray-100 text-gray-800 dark:bg-darkbg dark:text-gray-100 font-sans h-screen flex overflow-hidden transition-colors duration-300 antialiased">
 
@@ -122,9 +124,17 @@
                         <option value="descarte">Descarte</option>
                     </select>
                 </div>
-                <button onclick="abrirModal()" class="w-full sm:w-auto bg-brand hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
-                    <i data-lucide="plus" class="w-4 h-4"></i> Novo Pneu
-                </button>
+                
+                <div class="flex gap-2 w-full sm:w-auto">
+                    <!-- NOVO BOTÃO DE EXPORTAR -->
+                    <button onclick="exportarExcelPneus()" class="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
+                        <i data-lucide="download" class="w-4 h-4"></i> Exportar Excel
+                    </button>
+
+                    <button onclick="abrirModal()" class="w-full sm:w-auto bg-brand hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
+                        <i data-lucide="plus" class="w-4 h-4"></i> Novo Pneu
+                    </button>
+                </div>
             </div>
 
             <!-- TABELA -->
@@ -213,9 +223,16 @@
 
                 <div id="erro-modal" class="hidden text-red-500 text-sm bg-red-500/10 p-3 rounded-md mb-4"></div>
 
-                <div class="pt-4 flex justify-end gap-3 border-t border-gray-200 dark:border-slate-700">
-                    <button type="button" onclick="fecharModal()" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-md transition-colors">Cancelar</button>
-                    <button type="submit" id="btn-salvar" class="px-4 py-2 text-sm font-medium text-white bg-brand hover:bg-orange-700 rounded-md transition-colors">Salvar Pneu</button>
+                <!-- BOTÃO DE IMPORTAR MOVIDO PARA CÁ (MODAL DE PNEU) -->
+                <div class="pt-4 flex flex-col sm:flex-row justify-between items-center border-t border-gray-200 dark:border-slate-700 gap-4">
+                    <button type="button" onclick="abrirModalImportarPneus()" class="w-full sm:w-auto px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 hover:bg-gray-200 dark:bg-slate-700 dark:hover:bg-slate-600 rounded-md transition-colors flex items-center justify-center gap-2">
+                        <i data-lucide="upload" class="w-4 h-4"></i> Importar Excel
+                    </button>
+                    
+                    <div class="flex gap-3 w-full sm:w-auto justify-end">
+                        <button type="button" onclick="fecharModal()" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-md transition-colors">Cancelar</button>
+                        <button type="submit" id="btn-salvar" class="px-4 py-2 text-sm font-medium text-white bg-brand hover:bg-orange-700 rounded-md transition-colors">Salvar Pneu</button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -288,6 +305,32 @@
         </div>
     </div>
 
+    <!-- MODAL DE IMPORTAÇÃO EXCEL (PNEUS) -->
+    <div id="modal-importar-pneus" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-md border border-gray-200 dark:border-slate-700">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center">
+                <h3 class="text-lg font-semibold text-brand flex items-center gap-2"><i data-lucide="file-spreadsheet" class="w-5 h-5"></i> Importar Pneus</h3>
+                <button onclick="fecharModalImportarPneus()" class="text-gray-400 hover:text-red-500"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <p class="text-sm text-gray-500">Selecione a planilha do Excel (.xlsx ou .csv). A primeira linha deve conter os cabeçalhos corretos.</p>
+                
+                <button onclick="baixarModeloExcelPneus()" class="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 shadow-md shadow-blue-500/30">
+                    <i data-lucide="download" class="w-4 h-4"></i> Baixar Planilha Modelo
+                </button>
+
+                <input type="file" id="input-excel-pneus" accept=".xlsx, .xls, .csv" class="w-full p-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand/10 file:text-brand hover:file:bg-brand/20">
+                
+                <div id="import-status-pneus" class="hidden text-sm p-3 rounded-md"></div>
+
+                <div class="pt-4 flex justify-end gap-3 border-t border-gray-200 dark:border-slate-700">
+                    <button type="button" onclick="fecharModalImportarPneus()" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-md transition-colors">Cancelar</button>
+                    <button type="button" id="btn-processar-excel-pneus" onclick="processarExcelPneus()" class="px-4 py-2 text-sm font-medium text-white bg-brand hover:bg-orange-700 rounded-md transition-colors">Importar Dados</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- SCRIPTS -->
     <script src="js/supabase-client.js"></script>
     <script>
@@ -328,7 +371,7 @@
             return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor || 0);
         };
 
-                async function carregarPneus() {
+        async function carregarPneus() {
             // 1. Busca os pneus
             const { data: pneusData, error: errorPneus } = await supabaseClient
                 .from('pneus')
@@ -481,7 +524,7 @@
         const modal = document.getElementById('modal-pneu');
         const form = document.getElementById('form-pneu');
         
-               function abrirModal() { 
+        function abrirModal() { 
             document.getElementById('erro-modal').classList.add('hidden');
             document.getElementById('form-pneu').reset(); 
             
@@ -495,7 +538,7 @@
             modal.classList.remove('hidden'); 
         }
 
-        // NOVA FUNÇÃO: Abrir o modal preenchido para editar
+        // FUNÇÃO: Abrir o modal preenchido para editar
         function editarPneu(id) {
             const pneu = todosPneus.find(p => p.id === id);
             if (!pneu) return;
@@ -665,9 +708,7 @@
                 return;
             }
 
-                    // ... dentro da função abrirHistoricoPneu(id) ...
-
-                       // Troque o data.forEach por este for...of
+            // Troque o data.forEach por este for...of
             for (const h of data) {
                 const dataFormatada = new Date(h.created_at).toLocaleString('pt-BR');
                 
@@ -761,7 +802,173 @@
                 }
             });
         }
-                carregarPneus();
+
+        // ==========================================
+        // --- LÓGICA DE EXPORTAÇÃO E IMPORTAÇÃO EXCEL (PNEUS) ---
+        // ==========================================
+        
+        // Função para baixar a lista completa de pneus
+        function exportarExcelPneus() {
+            if (!todosPneus || todosPneus.length === 0) {
+                return alert("Não há pneus cadastrados para exportar.");
+            }
+
+            const dadosFormatados = todosPneus.map(p => ({
+                "Nº de Fogo": p.numero_fogo,
+                "Marca": p.marca,
+                "Modelo": p.modelo || '-',
+                "Medida": p.medida,
+                "DOT": p.dot || '-',
+                "Sulco Atual (mm)": p.sulco_atual !== null ? p.sulco_atual : p.sulco_inicial,
+                "Sulco Inicial (mm)": p.sulco_inicial,
+                "Pressão Atual (PSI)": p.pressao_atual || 'S/ Info',
+                "Status": p.status.toUpperCase(),
+                "Valor Pago (R$)": p.valor_pago || 0,
+                "Observação": p.observacao || ''
+            }));
+
+            const ws = XLSX.utils.json_to_sheet(dadosFormatados);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Estoque de Pneus");
+
+            ws['!cols'] = [
+                { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, 
+                { wch: 10 }, { wch: 15 }, { wch: 15 }, { wch: 18 }, 
+                { wch: 12 }, { wch: 15 }, { wch: 35 }
+            ];
+
+            const dataHoje = new Date().toISOString().split('T')[0];
+            XLSX.writeFile(wb, `Relatorio_Pneus_Karaz_${dataHoje}.xlsx`);
+        }
+
+        // Função para baixar o modelo de importação
+        function baixarModeloExcelPneus() {
+            const cabecalhos = [
+                ["Numero_Fogo", "Marca", "Modelo", "Medida", "DOT", "Sulco_Inicial", "Valor_Pago"]
+            ];
+            const exemplo = [
+                ["P100", "MICHELIN", "X MULTI", "295/80 R22.5", "4523", 15.0, 2500.00]
+            ];
+            
+            const ws = XLSX.utils.aoa_to_sheet([...cabecalhos, ...exemplo]);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Modelo Pneus");
+            
+            ws['!cols'] = [
+                { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, 
+                { wch: 10 }, { wch: 15 }, { wch: 15 }
+            ];
+
+            XLSX.writeFile(wb, "Modelo_Importacao_Pneus_Karaz.xlsx");
+        }
+
+        function abrirModalImportarPneus() {
+            document.getElementById('input-excel-pneus').value = '';
+            document.getElementById('import-status-pneus').classList.add('hidden');
+            document.getElementById('modal-importar-pneus').classList.remove('hidden');
+        }
+
+        function fecharModalImportarPneus() {
+            document.getElementById('modal-importar-pneus').classList.add('hidden');
+        }
+
+        async function processarExcelPneus() {
+            const fileInput = document.getElementById('input-excel-pneus');
+            const statusDiv = document.getElementById('import-status-pneus');
+            const btn = document.getElementById('btn-processar-excel-pneus');
+
+            if (fileInput.files.length === 0) {
+                alert("Por favor, selecione um arquivo Excel.");
+                return;
+            }
+
+            const file = fileInput.files[0];
+            btn.innerHTML = 'Processando...'; btn.disabled = true;
+            statusDiv.classList.remove('hidden', 'bg-red-500/10', 'text-red-500', 'bg-green-500/10', 'text-green-500');
+            statusDiv.classList.add('bg-blue-500/10', 'text-blue-500');
+            statusDiv.innerText = 'Lendo arquivo...';
+
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const primeiraAba = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[primeiraAba];
+                    
+                    const json = XLSX.utils.sheet_to_json(worksheet);
+                    
+                    if (json.length === 0) throw new Error("A planilha está vazia.");
+
+                    statusDiv.innerText = `Encontrados ${json.length} registros. Validando dados...`;
+
+                    const pneusParaInserir = [];
+                    let erros = 0;
+
+                    json.forEach(row => {
+                        const numero_fogo = row['Numero_Fogo'] || row['numero_fogo'] || row['Nº de Fogo'];
+                        const marca = row['Marca'] || row['marca'];
+                        const modelo = row['Modelo'] || row['modelo'] || '';
+                        const medida = row['Medida'] || row['medida'];
+                        const dot = row['DOT'] || row['dot'] || '';
+                        const sulco_inicial = parseFloat(row['Sulco_Inicial'] || row['sulco_inicial']) || 0;
+                        const valor_pago = parseFloat(row['Valor_Pago'] || row['valor_pago']) || 0;
+
+                        if (numero_fogo && marca && medida) {
+                            pneusParaInserir.push({
+                                numero_fogo: numero_fogo.toUpperCase().trim(),
+                                marca: marca,
+                                modelo: modelo,
+                                medida: medida,
+                                dot: dot,
+                                sulco_inicial: sulco_inicial,
+                                sulco_atual: sulco_inicial, // Inicialmente é o mesmo
+                                valor_pago: valor_pago,
+                                status: 'estoque', // Importados sempre entram como estoque
+                                observacao: 'Importado via planilha Excel'
+                            });
+                        } else {
+                            erros++;
+                        }
+                    });
+
+                    if (pneusParaInserir.length === 0) {
+                        throw new Error("Nenhum pneu válido encontrado. Verifique os cabeçalhos.");
+                    }
+
+                    statusDiv.innerText = `Inserindo ${pneusParaInserir.length} pneus no banco...`;
+
+                    const { data: insertData, error } = await supabaseClient.from('pneus').insert(pneusParaInserir);
+
+                    if (error) {
+                        if (error.code === '23505') { // Chave duplicada (numero_fogo)
+                            throw new Error("Um ou mais Números de Fogo já estão cadastrados no sistema.");
+                        }
+                        throw new Error(error.message);
+                    }
+
+                    statusDiv.classList.replace('bg-blue-500/10', 'bg-green-500/10');
+                    statusDiv.classList.replace('text-blue-500', 'text-green-500');
+                    statusDiv.innerText = `✅ Sucesso! ${pneusParaInserir.length} pneus importados.`;
+                    
+                    setTimeout(() => {
+                        fecharModalImportarPneus();
+                        fecharModal('modal-pneu'); // Fecha o modal de novo pneu caso esteja aberto
+                        carregarPneus(); // Atualiza a tabela
+                    }, 2000);
+
+                } catch (err) {
+                    statusDiv.classList.replace('bg-blue-500/10', 'bg-red-500/10');
+                    statusDiv.classList.replace('text-blue-500', 'text-red-500');
+                    statusDiv.innerText = "Erro: " + err.message;
+                } finally {
+                    btn.innerHTML = 'Importar Dados'; btn.disabled = false;
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        carregarPneus();
 
         // ==========================================
         // TEMPO REAL (REALTIME) - TELA DE PNEUS
@@ -771,14 +978,16 @@
                 console.log('Mudança detectada nos pneus!');
                 // Atualiza a lista de pneus (se não tiver um modal aberto digitando)
                 if (document.getElementById('modal-pneu').classList.contains('hidden') && 
-                    document.getElementById('modal-historico-pneu').classList.contains('hidden')) {
+                    document.getElementById('modal-historico-pneu').classList.contains('hidden') &&
+                    document.getElementById('modal-importar-pneus').classList.contains('hidden')) {
                     carregarPneus();
                 }
             })
              // OUVINTE NOVO: Ouve as calibragens para atualizar a pressão na tela
             .on('postgres_changes', { event: '*', schema: 'public', table: 'calibragens' }, payload => {
                 if (document.getElementById('modal-pneu').classList.contains('hidden') && 
-                    document.getElementById('modal-historico-pneu').classList.contains('hidden')) {
+                    document.getElementById('modal-historico-pneu').classList.contains('hidden') &&
+                    document.getElementById('modal-importar-pneus').classList.contains('hidden')) {
                     console.log('Nova pressão detectada!');
                     carregarPneus();
                 }
