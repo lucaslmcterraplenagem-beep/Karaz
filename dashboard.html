@@ -279,7 +279,7 @@
             const [resMot, resFor, resPneus] = await Promise.all([
                 supabaseClient.from('motoristas').select('id, nome'),
                 supabaseClient.from('fornecedores').select('id, nome'),
-                supabaseClient.from('pneus').select('sulco_atual, sulco_inicial, status')
+                supabaseClient.from('pneus').select('sulco_atual, sulco_inicial, status'),
                 supabaseClient.from('veiculos').select('id, placa')
             ]);
 
