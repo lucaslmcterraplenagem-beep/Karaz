@@ -15,7 +15,6 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <!-- Removi a linha duplicada do xlsx que estava aqui -->
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -115,7 +114,6 @@
                     <input type="text" id="input-busca" placeholder="Buscar por placa ou modelo..." class="w-full pl-10 pr-4 py-2 bg-white dark:bg-darkcard border border-gray-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:border-brand transition-colors">
                 </div>
                 
-                <!-- BOTÃO DE IMPORTAR REMOVIDO DAQUI -->
                 <button onclick="abrirModal()" class="w-full sm:w-auto bg-brand hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
                     <i data-lucide="plus" class="w-4 h-4"></i> Novo Veículo
                 </button>
@@ -193,7 +191,7 @@
                         </div>
                     </div>
                     
-                    <!-- BOTÃO DE IMPORTAR MOVIDO PARA CÁ -->
+                    <!-- BOTÃO DE IMPORTAR DENTRO DO MODAL -->
                     <div class="pt-4 flex justify-between items-center border-t border-gray-200 dark:border-slate-700 mt-2">
                         <button type="button" onclick="abrirModalImportar()" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 hover:bg-gray-200 dark:bg-slate-700 dark:hover:bg-slate-600 rounded-md transition-colors flex items-center gap-2">
                             <i data-lucide="upload" class="w-4 h-4"></i> Importar Excel
@@ -305,6 +303,12 @@
             </div>
             <div class="p-6 space-y-4">
                 <p class="text-sm text-gray-500">Selecione a planilha do Excel (.xlsx ou .csv). A primeira linha deve conter os cabeçalhos corretos.</p>
+                
+                <!-- BOTÃO DO TEMPLATE ADICIONADO AQUI -->
+                <button onclick="baixarModeloExcel()" class="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 shadow-md shadow-blue-500/30">
+                    <i data-lucide="download" class="w-4 h-4"></i> Baixar Planilha Modelo
+                </button>
+
                 <input type="file" id="input-excel" accept=".xlsx, .xls, .csv" class="w-full p-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand/10 file:text-brand hover:file:bg-brand/20">
                 
                 <div id="import-status" class="hidden text-sm p-3 rounded-md"></div>
@@ -506,7 +510,7 @@
                         <a href="mapa-veiculo.html?id=${v.id}" class="text-gray-400 hover:text-brand transition-colors" title="Mapa"><i data-lucide="map" class="w-5 h-5"></i></a>
                         <button onclick="editarVeiculo('${v.id}')" class="text-gray-400 hover:text-blue-500 transition-colors" title="Editar"><i data-lucide="edit" class="w-5 h-5"></i></button>
                         <button onclick="toggleAtivoVeiculo('${v.id}', ${v.ativo})" class="text-gray-400 ${v.ativo ? 'hover:text-red-500' : 'hover:text-green-500'} transition-colors" title="${v.ativo ? 'Inativar' : 'Ativar'}"><i data-lucide="power" class="w-5 h-5"></i></button>
-                        <button onclick="excluirVeiculo('${v.id}', '${escapeHTML(v.placa)}')" class="text-gray-400 hover:text-red-600 transition-colors" title="Excluir Definitivamente"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                        <button onclick="excluirVeiculo('${v.id}', '${v.placa}')" class="text-gray-400 hover:text-red-600 transition-colors" title="Excluir Definitivamente"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
                         <button onclick="abrirHistorico('${v.id}')" class="text-gray-400 hover:text-orange-500 transition-colors" title="Histórico"><i data-lucide="history" class="w-5 h-5"></i></button>
                     </td>
                 `;
@@ -833,7 +837,7 @@
                     </tr>
                 `;
             });
-        } // <--- ESTA CHAVE ESTAVA FALTANDO, POR ISSO O ERRO
+        }
 
         function fecharModalHistorico() { modalHist.classList.add('hidden'); }
 
@@ -891,6 +895,26 @@
 
         function fecharModalImportar() {
             modalImportar.classList.add('hidden');
+        }
+
+        // NOVA FUNÇÃO: Baixar o Template de Importação
+        function baixarModeloExcel() {
+            const cabecalhos = [
+                ["Placa", "Modelo", "Marca", "Ano", "Tipo", "KM", "Horas", "Configuracao", "Estepes"]
+            ];
+            const exemplo = [
+                ["ABC1234", "CONSTELLATION", "VOLKSWAGEN", 2024, "caminhao", 150000, 10, "2,4,4,2", 1]
+            ];
+            const ws = XLSX.utils.aoa_to_sheet([...cabecalhos, ...exemplo]);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Modelo Veiculos");
+            
+            ws['!cols'] = [
+                { wch: 12 }, { wch: 20 }, { wch: 15 }, { wch: 8 }, 
+                { wch: 12 }, { wch: 10 }, { wch: 10 }, { wch: 15 }, { wch: 10 }
+            ];
+
+            XLSX.writeFile(wb, "Modelo_Importacao_Veiculos_Karaz.xlsx");
         }
 
         async function processarExcel() {
