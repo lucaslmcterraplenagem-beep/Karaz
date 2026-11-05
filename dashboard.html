@@ -276,7 +276,7 @@
             document.getElementById('filtro-data-inicio').valueAsDate = primeiroDia;
             document.getElementById('filtro-data-fim').valueAsDate = hoje;
 
-            const [resMot, resFor, resPneus] = await Promise.all([
+            const [resMot, resFor, resPneus, resVeic] = await Promise.all([
                 supabaseClient.from('motoristas').select('id, nome'),
                 supabaseClient.from('fornecedores').select('id, nome'),
                 supabaseClient.from('pneus').select('sulco_atual, sulco_inicial, status'),
