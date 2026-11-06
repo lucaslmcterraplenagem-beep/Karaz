@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Karaz Sistema</title>
-    
+       <title>Login | Karaz Sistema</title>
+    <!-- FAVICON -->
+    <link rel="icon" type="image/png" href="logo.png">
     <script>
         if (localStorage.theme === 'light') { document.documentElement.classList.remove('dark'); } 
         else { document.documentElement.classList.add('dark'); }
@@ -29,7 +30,11 @@
     <div class="bg-white dark:bg-darkcard p-8 rounded-xl shadow-2xl w-full max-w-md border border-gray-200 dark:border-slate-700">
         
         <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Karaz <span class="text-brand">Sistema</span></h1>
+                      <!-- Logo para Tema Claro -->
+            <img src="logo-light.png" alt="Karaz Sistema" class="h-12 mx-auto mb-2 object-contain dark:hidden">
+            <!-- Logo para Tema Escuro -->
+            <img src="logo-dark.png" alt="Karaz Sistema" class="h-12 mx-auto mb-2 object-contain hidden dark:block">
+            
             <p class="text-gray-500 dark:text-gray-400 text-sm mt-2">Gestão de Frota e Pneus</p>
         </div>
 
