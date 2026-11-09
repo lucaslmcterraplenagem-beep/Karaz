@@ -900,11 +900,11 @@
 
         // NOVA FUNÇÃO: Baixar o Template de Importação
         function baixarModeloExcel() {
-            const cabecalhos = [
-                ["Placa", "Modelo", "Marca", "Ano", "Tipo", "KM", "Horas", "Configuracao", "Estepes"]
-            ];
+                   const cabecalhos = [
+            ["Placa", "Prefixo", "Modelo", "Marca", "Ano", "Tipo", "KM", "Horas", "Configuracao", "Estepes"]
+        ];
             const exemplo = [
-                ["ABC1234", "CONSTELLATION", "VOLKSWAGEN", 2024, "caminhao", 150000, 10, "2,4,4,2", 1]
+                ["ABC1234", "CONSTELLATION", "VOLKSWAGEN", 2024, "caminhao", 150000, 10, "2,4,4", 1]
             ];
             const ws = XLSX.utils.aoa_to_sheet([...cabecalhos, ...exemplo]);
             const wb = XLSX.utils.book_new();
@@ -912,7 +912,7 @@
             
             ws['!cols'] = [
                 { wch: 12 }, { wch: 20 }, { wch: 15 }, { wch: 8 }, 
-                { wch: 12 }, { wch: 10 }, { wch: 10 }, { wch: 15 }, { wch: 10 }
+                { wch: 12 }, { wch: 10 }, { wch: 10 }, { wch: 15 }, { wch: 10 }, { wch: 10 }
             ];
 
             XLSX.writeFile(wb, "Modelo_Importacao_Veiculos_Karaz.xlsx");
@@ -953,6 +953,7 @@
 
                     json.forEach(row => {
                         const placa = row['Placa'] || row['placa'];
+                        const prefixo = row['Prefixo'] || row['prefixo'] || '';
                         const modelo = row['Modelo'] || row['modelo'];
                         const marca = row['Marca'] || row['marca'];
                         const ano = row['Ano'] || row['ano'];
@@ -970,6 +971,7 @@
                         if (placa && modelo && marca && ano) {
                             veiculosParaInserir.push({
                                 placa: placa.toUpperCase().trim(),
+                                prefixo: prefixo ? String(prefixo).trim() : null,
                                 modelo: modelo,
                                 marca: marca,
                                 ano: parseInt(ano),
