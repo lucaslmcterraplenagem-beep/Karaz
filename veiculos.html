@@ -899,26 +899,54 @@
         }
 
         // NOVA FUNÇÃO: Baixar o Template de Importação
-        function baixarModeloExcel() {
-                   const cabecalhos = [
-            ["Placa", "Prefixo", "Modelo", "Marca", "Ano", "Tipo", "KM", "Horas", "Configuracao", "Estepes"]
-        ];
-            const exemplo = [
-                ["ABC1234", "CONSTELLATION", "VOLKSWAGEN", 2024, "caminhao", 150000, 10, "2,4,4", 1]
+              function baixarModeloExcel() {
+            // Cabeçalhos exatos que o sistema lê
+            const cabecalhos = [
+                ["Placa", "Prefixo", "Chassi", "Modelo", "Marca", "Ano", "Tipo", "KM", "Horas", "Configuracao", "Estepes"]
             ];
-            const ws = XLSX.utils.aoa_to_sheet([...cabecalhos, ...exemplo]);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Modelo Veiculos");
             
-            ws['!cols'] = [
-                { wch: 12 }, { wch: 20 }, { wch: 15 }, { wch: 8 }, 
-                { wch: 12 }, { wch: 10 }, { wch: 10 }, { wch: 15 }, { wch: 10 }, { wch: 10 }
+            // Linha de exemplo para a pessoa ver como preenche
+            const exemplo = [
+                ["ABC123", "CB 10", "9BWZZZ377VT004251", "TESTE", "VOLKSWAGEN", 2024, "caminhao", 150000, 10, "2,4,4", 1]
             ];
+
+            // Criando a aba de Instruções (Para o usuário não ficar perdido)
+            const instrucoes = [
+                ["INSTRUÇÕES PARA PREENCHIMENTO DA PLANILHA"],
+                [""],
+                ["1. NÃO altere os nomes das colunas na primeira linha da aba 'Modelo Veiculos'."],
+                ["2. Preencha os dados a partir da linha 2 (apague a linha de exemplo TESTE)."],
+                ["3. Placa: OBRIGATÓRIO. Sem espaços (ex: ABC1234)."],
+                ["4. Prefixo: OPCIONAL. (ex: CB 104)."],
+                ["5. Chassi: OPCIONAL. (ex: 9BWZZZ...)."],
+                ["6. Modelo e Marca: OBRIGATÓRIOS."],
+                ["7. Ano: OBRIGATÓRIO. Apenas números (ex: 2024)."],
+                ["8. Tipo: OBRIGATÓRIO. Use: caminhao, carreta, utilitario ou maquina."],
+                ["9. KM e Horas: Apenas números. Se não tiver horas, coloque 0."],
+                ["10. Configuracao: OBRIGATÓRIO. Números pares separados por vírgula (ex: 2,4,4)."],
+                ["11. Estepes: Quantidade de estepes (ex: 1). Se não tiver, coloque 0."],
+                [""],
+                ["⚠️ O SISTEMA NÃO ACEITARÁ DUPLICIDADE DE PLACA OU CHASSI."]
+            ];
+
+            const ws = XLSX.utils.aoa_to_sheet([...cabecalhos, ...exemplo]);
+            const wsInstrucoes = XLSX.utils.aoa_to_sheet(instrucoes);
+            const wb = XLSX.utils.book_new();
+            
+            XLSX.utils.book_append_sheet(wb, ws, "Modelo Veiculos");
+            XLSX.utils.book_append_sheet(wb, wsInstrucoes, "Instruções");
+            
+            // Ajustar largura das colunas
+            ws['!cols'] = [
+                { wch: 12 }, { wch: 10 }, { wch: 25 }, { wch: 20 }, { wch: 15 }, { wch: 8 },
+                { wch: 12 }, { wch: 10 }, { wch: 10 }, { wch: 15 }, { wch: 10 }
+            ];
+            wsInstrucoes['!cols'] = [{ wch: 80 }];
 
             XLSX.writeFile(wb, "Modelo_Importacao_Veiculos_Karaz.xlsx");
         }
 
-        async function processarExcel() {
+                async function processarExcel() {
             const fileInput = document.getElementById('input-excel');
             const statusDiv = document.getElementById('import-status');
             const btn = document.getElementById('btn-processar-excel');
@@ -939,39 +967,44 @@
                 try {
                     const data = new Uint8Array(e.target.result);
                     const workbook = XLSX.read(data, { type: 'array' });
-                    const primeiraAba = workbook.SheetNames[0];
-                    const worksheet = workbook.Sheets[primeiraAba];
+                    const worksheet = workbook.Sheets[workbook.SheetNames[0]]; // Pega sempre a primeira aba
                     
                     const json = XLSX.utils.sheet_to_json(worksheet);
                     
-                    if (json.length === 0) throw new Error("A planilha está vazia.");
+                    if (json.length === 0) throw new Error("A planilha está vazia ou não possui o formato correto.");
 
                     statusDiv.innerText = `Encontrados ${json.length} registros. Validando dados...`;
 
                     const veiculosParaInserir = [];
-                    let erros = 0;
+                    const errosEncontrados = [];
+                    let linhaAtual = 2; // Linha 1 é o cabeçalho
 
                     json.forEach(row => {
                         const placa = row['Placa'] || row['placa'];
                         const prefixo = row['Prefixo'] || row['prefixo'] || '';
+                        const chassi = row['Chassi'] || row['chassi'] || null;
                         const modelo = row['Modelo'] || row['modelo'];
                         const marca = row['Marca'] || row['marca'];
                         const ano = row['Ano'] || row['ano'];
                         
-                        const configStr = row['Configuracao'] || row['configuracao'] || row['Configuracao_Eixos'];
-                        let qtdEixos = 2;
-                        let qtdPneus = 4;
-                        
-                        if (configStr) {
-                            const arr = configStr.toString().split(',');
-                            qtdEixos = arr.length;
-                            qtdPneus = arr.reduce((acc, val) => acc + parseInt(val.trim()), 0);
-                        }
+                        // Validação de campos obrigatórios
+                        if (!placa || !modelo || !marca || !ano) {
+                            errosEncontrados.push(`Linha ${linhaAtual}: Faltam dados obrigatórios (Placa, Modelo, Marca ou Ano).`);
+                        } else {
+                            const configStr = row['Configuracao'] || row['configuracao'] || row['Configuracao_Eixos'];
+                            let qtdEixos = 2;
+                            let qtdPneus = 4;
+                            
+                            if (configStr) {
+                                const arr = configStr.toString().split(',');
+                                qtdEixos = arr.length;
+                                qtdPneus = arr.reduce((acc, val) => acc + parseInt(val.trim()), 0);
+                            }
 
-                        if (placa && modelo && marca && ano) {
                             veiculosParaInserir.push({
                                 placa: placa.toUpperCase().trim(),
                                 prefixo: prefixo ? String(prefixo).trim() : null,
+                                chassi: chassi ? String(chassi).trim().toUpperCase() : null,
                                 modelo: modelo,
                                 marca: marca,
                                 ano: parseInt(ano),
@@ -984,13 +1017,18 @@
                                 configuracao_eixos: configStr || '2,4',
                                 quantidade_estepes: parseInt(row['Estepes'] || 1)
                             });
-                        } else {
-                            erros++;
                         }
+                        linhaAtual++;
                     });
 
+                    // Se houver qualquer linha com erro, barra a importação inteira para não bagunçar o banco
+                    if (errosEncontrados.length > 0) {
+                        const msgErro = "A planilha contém erros e não foi importada:\n\n" + errosEncontrados.join('\n') + "\n\nPor favor, corrija o Excel e tente novamente.";
+                        throw new Error(msgErro);
+                    }
+
                     if (veiculosParaInserir.length === 0) {
-                        throw new Error("Nenhum veículo válido encontrado. Verifique os nomes das colunas.");
+                        throw new Error("Nenhum veículo válido encontrado na planilha.");
                     }
 
                     statusDiv.innerText = `Inserindo ${veiculosParaInserir.length} veículos no banco de dados...`;
@@ -999,9 +1037,9 @@
 
                     if (error) {
                         if (error.code === '23505') { 
-                            throw new Error("Uma ou mais placas já estão cadastradas no sistema.");
+                            throw new Error("Erro de Duplicidade: Uma ou mais PLACAS ou CHASSIS já estão cadastrados no sistema.");
                         }
-                        throw new Error(error.message);
+                        throw new Error("Erro no banco de dados: " + error.message);
                     }
 
                     statusDiv.classList.replace('bg-blue-500/10', 'bg-green-500/10');
@@ -1016,7 +1054,7 @@
                 } catch (err) {
                     statusDiv.classList.replace('bg-blue-500/10', 'bg-red-500/10');
                     statusDiv.classList.replace('text-blue-500', 'text-red-500');
-                    statusDiv.innerText = "Erro: " + err.message;
+                    statusDiv.innerText = err.message; // Aqui mostra a mensagem em português sem código
                 } finally {
                     btn.innerHTML = 'Importar Dados'; btn.disabled = false;
                 }
