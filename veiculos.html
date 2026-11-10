@@ -133,7 +133,8 @@
                 </div>
                 
                 <div class="flex gap-2 w-full sm:w-auto">
-                    <button onclick="exportarVeiculosExcel()" class="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
+                    <!-- BOTÃO EXPORTAR SECUNDÁRIO -->
+                    <button onclick="exportarVeiculosExcel()" class="w-full sm:w-auto bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
                         <i data-lucide="download" class="w-4 h-4"></i> Exportar Lista
                     </button>
                     <button onclick="abrirModal()" class="w-full sm:w-auto bg-brand hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
@@ -287,10 +288,11 @@
                 <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" checked onchange="toggleColuna('col-horas', this.checked)" class="rounded text-brand focus:ring-brand"> Horas</label>
                 <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" checked onchange="toggleColuna('col-user', this.checked)" class="rounded text-brand focus:ring-brand"> Usuário</label>
                 
-                <!-- NOVAS COLUNAS -->
+                <!-- COLUNAS DO VEÍCULO -->
                 <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" checked onchange="toggleColuna('col-placa', this.checked)" class="rounded text-brand focus:ring-brand"> Placa</label>
                 <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" checked onchange="toggleColuna('col-prefixo', this.checked)" class="rounded text-brand focus:ring-brand"> Prefixo</label>
                 <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" checked onchange="toggleColuna('col-modelo', this.checked)" class="rounded text-brand focus:ring-brand"> Modelo</label>
+                <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" checked onchange="toggleColuna('col-ano', this.checked)" class="rounded text-brand focus:ring-brand"> Ano</label>
                 <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" checked onchange="toggleColuna('col-chassi', this.checked)" class="rounded text-brand focus:ring-brand"> Chassi</label>
             </div>
 
@@ -309,10 +311,11 @@
                             <th class="px-4 py-3 col-km">KM</th>
                             <th class="px-4 py-3 col-horas">Horas</th>
                             <th class="px-4 py-3 col-user">Usuário</th>
-                            <!-- NOVAS COLUNAS -->
+                            <!-- COLUNAS DO VEÍCULO -->
                             <th class="px-4 py-3 col-placa">Placa</th>
                             <th class="px-4 py-3 col-prefixo">Prefixo</th>
                             <th class="px-4 py-3 col-modelo">Modelo</th>
+                            <th class="px-4 py-3 col-ano">Ano</th>
                             <th class="px-4 py-3 col-chassi">Chassi</th>
                         </tr>
                     </thead>
@@ -333,7 +336,6 @@
             <div class="p-6 space-y-4">
                 <p class="text-sm text-gray-500">Selecione a planilha do Excel (.xlsx ou .csv). A primeira linha deve conter os cabeçalhos corretos.</p>
                 
-                <!-- BOTÃO DO TEMPLATE ADICIONADO AQUI -->
                 <button onclick="baixarModeloExcel()" class="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 shadow-md shadow-blue-500/30">
                     <i data-lucide="download" class="w-4 h-4"></i> Baixar Planilha Modelo
                 </button>
@@ -395,6 +397,21 @@
         </div>
     </div>
 
+    <!-- MODAL DE CONFIRMAÇÃO DE DESATIVAR/ATIVAR -->
+    <div id="modal-confirmar-acao" class="hidden fixed inset-0 bg-black/70 z-[200] flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-sm border border-gray-200 dark:border-slate-700 p-6 text-center">
+            <div id="icone-confirmar-acao" class="w-16 h-16 bg-red-100 dark:bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="power" class="w-8 h-8 text-red-500"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2" id="titulo-confirmar-acao">Desativar Veículo?</h3>
+            <p class="text-sm text-gray-500 mb-6" id="texto-confirmar-acao">O veículo não aparecerá nas listas ativas, mas seu histórico será mantido.</p>
+            <div class="flex gap-3 w-full">
+                <button onclick="fecharConfirmacao()" class="flex-1 py-2 bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 font-bold rounded-lg transition-colors">Cancelar</button>
+                <button onclick="executarAcaoVeiculo()" class="flex-1 py-2 bg-red-500 hover:bg-red-600 text-white font-bold rounded-lg shadow-lg shadow-red-500/30 transition-colors" id="btn-confirmar-acao">Sim, Desativar</button>
+            </div>
+        </div>
+    </div>
+
     <script src="js/supabase-client.js"></script>
     <script>
         lucide.createIcons();
@@ -404,6 +421,10 @@
         let veiculoEditandoId = null;
         let veiculoHistoricoAtual = null;
         let filtroAtivo = null;
+
+        // --- VARIÁVEIS PARA O MODAL DE CONFIRMAÇÃO ---
+        let veiculoAcaoId = null;
+        let veiculoAcaoStatus = null;
 
         // --- LÓGICA DE UI ---
         supabaseClient.auth.getSession().then(({ data: { session } }) => {
@@ -606,37 +627,42 @@
 
                 const tr = document.createElement('tr');
                 tr.className = rowClass;
+                
+                // REDUÇÃO DE ALTURA: py-4 -> py-3
+                // PLACA E PREFIXO LADO A LADO
                 tr.innerHTML = `
-                    <td class="px-4 py-4 w-36">
+                    <td class="px-4 py-3 w-36">
                         <div class="flex items-center gap-2">
                             <div class="w-2.5 h-2.5 rounded-full ${corBolinha} shadow-sm shrink-0"></div>
                             <span class="text-xs font-medium ${corTexto} whitespace-nowrap">${textoStatus}</span>
                         </div>
                     </td>
-                    <td class="px-6 py-4">
-                        <div class="flex items-center gap-2">
-                            <!-- PLACA MERCOSUL -->
-                            <div class="inline-flex flex-col border border-gray-300 dark:border-slate-600 rounded shadow-sm overflow-hidden shrink-0">
+                    <td class="px-6 py-3">
+                        <div class="flex items-center gap-3">
+                            <!-- PLACA MERCOSUL COM LARGURA FIXA -->
+                            <div class="inline-flex flex-col border border-gray-300 dark:border-slate-600 rounded shadow-sm overflow-hidden shrink-0 w-[90px]">
                                 <div class="bg-[#003399] text-white text-[7px] text-center font-bold py-0.5 px-1 tracking-widest leading-none">BRASIL</div>
-                                <div class="bg-white text-black text-center font-bold text-xs leading-none py-1 px-2 uppercase">${escapeHTML(v.placa)}</div>
+                                <div class="bg-white text-black text-center font-bold text-xs leading-none py-1 uppercase">${escapeHTML(v.placa)}</div>
                             </div>
-                            ${!v.ativo ? '<span class="text-[10px] bg-red-500 text-white px-1.5 py-0.5 rounded font-bold">INATIVO</span>' : ''}
+                            <div class="flex flex-col">
+                                <span class="text-xs text-gray-500 font-medium">${escapeHTML(v.prefixo || 'S/ Prefixo')}</span>
+                                ${!v.ativo ? '<span class="text-[9px] bg-red-500 text-white px-1.5 py-0.5 rounded font-bold w-max mt-1">INATIVO</span>' : ''}
+                            </div>
                         </div>
-                        <div class="text-xs text-gray-500 mt-1">${escapeHTML(v.prefixo || 'S/ Prefixo')}</div>
                     </td>
-                    <td class="px-6 py-4">
+                    <td class="px-6 py-3">
                         <div class="font-medium text-gray-800 dark:text-gray-200">${escapeHTML(v.modelo)}</div>
                         <div class="text-xs text-gray-500">${escapeHTML(v.marca)} - ${v.ano}</div>
                     </td>
-                    <td class="px-6 py-4">
+                    <td class="px-6 py-3">
                         <div class="text-sm">${v.quantidade_eixos} Eixos</div>
                         <div class="text-xs text-gray-500">Config: ${configVisual}</div>
                     </td>
-                    <td class="px-6 py-4">
+                    <td class="px-6 py-3">
                         <div class="text-sm">${v.km_atual} km</div>
                         <div class="text-xs text-gray-500">${v.horas_atual} h</div>
                     </td>
-                    <td class="px-6 py-4 text-center flex items-center justify-center gap-2 relative">
+                    <td class="px-6 py-3 text-center flex items-center justify-center gap-2 relative">
                         <!-- MAPA FORA DO MENU -->
                         <a href="mapa-veiculo.html?id=${v.id}" class="text-gray-400 hover:text-brand transition-colors p-1" title="Mapa de Pneus"><i data-lucide="map" class="w-5 h-5"></i></a>
                         
@@ -689,9 +715,51 @@
 
         document.getElementById('input-busca').addEventListener('input', renderizarTabela);
 
-        async function toggleAtivoVeiculo(id, statusAtual) {
-            if(!window.confirm(`Deseja realmente ${!statusAtual ? 'ATIVAR' : 'INATIVAR'} este veículo?`)) return;
-            const { error } = await supabaseClient.from('veiculos').update({ ativo: !statusAtual }).eq('id', id);
+        // --- LÓGICA DE CONFIRMAÇÃO CUSTOMIZADA ---
+        function toggleAtivoVeiculo(id, statusAtual) {
+            veiculoAcaoId = id;
+            veiculoAcaoStatus = statusAtual;
+
+            const titulo = document.getElementById('titulo-confirmar-acao');
+            const texto = document.getElementById('texto-confirmar-acao');
+            const btn = document.getElementById('btn-confirmar-acao');
+            const iconeDiv = document.getElementById('icone-confirmar-acao');
+            const icone = iconeDiv.querySelector('i');
+
+            if (statusAtual) {
+                titulo.innerText = "Desativar Veículo?";
+                texto.innerText = "O veículo não aparecerá nas listas ativas, mas seu histórico será mantido.";
+                btn.innerText = "Sim, Desativar";
+                btn.className = "flex-1 py-2 bg-red-500 hover:bg-red-600 text-white font-bold rounded-lg shadow-lg shadow-red-500/30 transition-colors";
+                iconeDiv.className = "w-16 h-16 bg-red-100 dark:bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4";
+                icone.setAttribute('class', 'w-8 h-8 text-red-500');
+                icone.setAttribute('data-lucide', 'power');
+            } else {
+                titulo.innerText = "Ativar Veículo?";
+                texto.innerText = "O veículo voltará a aparecer nas listas e poderá receber novas Ordens de Serviço.";
+                btn.innerText = "Sim, Ativar";
+                btn.className = "flex-1 py-2 bg-green-500 hover:bg-green-600 text-white font-bold rounded-lg shadow-lg shadow-green-500/30 transition-colors";
+                iconeDiv.className = "w-16 h-16 bg-green-100 dark:bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-4";
+                icone.setAttribute('class', 'w-8 h-8 text-green-500');
+                icone.setAttribute('data-lucide', 'check-circle');
+            }
+
+            document.getElementById('modal-confirmar-acao').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function fecharConfirmacao() {
+            document.getElementById('modal-confirmar-acao').classList.add('hidden');
+            veiculoAcaoId = null;
+            veiculoAcaoStatus = null;
+        }
+
+        async function executarAcaoVeiculo() {
+            if (!veiculoAcaoId) return;
+            const { error } = await supabaseClient.from('veiculos').update({ ativo: !veiculoAcaoStatus }).eq('id', veiculoAcaoId);
+            
+            fecharConfirmacao();
+            
             if (error) alert("Erro: " + error.message);
             else carregarDados();
         }
@@ -710,7 +778,7 @@
                 if (!matchTexto) return false;
                 if (filtroAtivo === 'total') return v.ativo;
                 if (!filtroAtivo) return true;
-                return true; // Para simplificar, exporta todos os que deram match textual (ou podemos replicar a lógica exata acima, mas isso já serve).
+                return true; 
             });
 
             const dados = veiculosFiltrados.map(v => ({
@@ -980,7 +1048,7 @@
             modalHist.classList.remove('hidden');
             const tbody = document.getElementById('tbody-historico');
             const aviso = document.getElementById('aviso-historico-vazio');
-            tbody.innerHTML = '<tr><td colspan="10" class="text-center py-4">Buscando...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="11" class="text-center py-4">Buscando...</td></tr>';
             aviso.classList.add('hidden');
 
             const { data, error } = await supabaseClient
@@ -990,7 +1058,7 @@
                 .order('created_at', { ascending: false });
 
             if (error) {
-                tbody.innerHTML = '<tr><td colspan="10" class="text-center py-4 text-red-500">Erro ao carregar histórico.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="11" class="text-center py-4 text-red-500">Erro ao carregar histórico.</td></tr>';
                 return;
             }
 
@@ -1029,6 +1097,7 @@
                         <td class="px-4 py-3 col-placa font-bold">${veiculoHistoricoAtual.placa}</td>
                         <td class="px-4 py-3 col-prefixo text-xs">${veiculoHistoricoAtual.prefixo || '-'}</td>
                         <td class="px-4 py-3 col-modelo text-xs">${veiculoHistoricoAtual.modelo}</td>
+                        <td class="px-4 py-3 col-ano text-xs">${veiculoHistoricoAtual.ano}</td>
                         <td class="px-4 py-3 col-chassi text-xs">${veiculoHistoricoAtual.chassi || '-'}</td>
                     </tr>
                 `;
