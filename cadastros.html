@@ -646,8 +646,9 @@
 
             const userId = document.getElementById('user_id_editando').value;
 
-            if (userId) {
+                       if (userId) {
                 const roleNova = document.getElementById('role_motorista').value;
+                const novaSenha = document.getElementById('senha_motorista').value; // Pega a senha do campo
                 
                 const { error: err1 } = await supabaseClient.from('motoristas').update({
                     nome: document.getElementById('nome_motorista').value,
@@ -656,6 +657,22 @@
 
                 const { error: err2 } = await supabaseClient.from('user_roles').update({ role: roleNova }).eq('user_id', userId);
 
+                // NOVO: Se o Admin digitou uma senha, chama a função para trocar
+                let err3 = null;
+                if (novaSenha && novaSenha.trim() !== '') {
+                    const resSenha = await supabaseClient.rpc('atualizar_senha_colaborador', {
+                        p_user_id: userId,
+                        p_nova_senha: novaSenha
+                    });
+                    err3 = resSenha.error;
+                }
+
+                if(err1 || err2 || err3) {
+                    mostrarErro("Erro ao atualizar colaborador ou senha.");
+                } else {
+                    fecharModal('modal-motorista');
+                    carregarMotoristas();
+                }
                 if(err1 || err2) {
                     mostrarErro("Erro ao atualizar colaborador.");
                 } else {
