@@ -1,4 +1,4 @@
-const CACHE_NAME = 'karaz-app-v1';
+const CACHE_NAME = 'karaz-app-v2';
 const urlsToCache = [
   './app-motorista.html',
   './js/supabase-client.js'
