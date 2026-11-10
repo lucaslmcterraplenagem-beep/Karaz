@@ -64,12 +64,11 @@
                 <button onclick="abrirConfigPC()" class="p-1.5 text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors">
                     <i data-lucide="settings" class="w-5 h-5"></i>
                 </button>
-                <div class="h-5 w-px bg-gray-300 dark:bg-slate-700"></div>
-                <div class="flex items-center gap-3">
-                    <div class="text-right hidden sm:block">
-                        <p id="user-email" class="text-sm font-medium text-gray-800 dark:text-gray-200">carregando...</p>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Administrador</p>
-                    </div>
+                               <div class="h-5 w-px bg-gray-300 dark:bg-slate-700"></div>
+                <div class="text-right hidden sm:block">
+                    <p id="user-email" class="text-sm font-medium text-gray-800 dark:text-gray-200">carregando...</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Administrador</p>
+                </div>
                     <button id="btn-logout" class="p-2 text-gray-400 hover:text-red-500 transition-colors"><i data-lucide="log-out" class="w-5 h-5"></i></button>
                 </div>
             </div>
@@ -262,9 +261,7 @@
             else { document.getElementById('user-email').innerText = session.user.email; }
         });
 
-        document.getElementById('btn-logout').addEventListener('click', async () => {
-            await supabaseClient.auth.signOut(); window.location.href = "login.html";
-        });
+     
 
         const sidebar = document.getElementById('sidebar');
         const menuTexts = document.querySelectorAll('.menu-text');
@@ -315,15 +312,20 @@
             window.location.href = "login.html";
         }
 
-        async function carregarVersaoPC() {
+            async function carregarVersaoPC() {
+            document.getElementById('pc-app-versao').innerText = "Buscando versão...";
             try {
                 const response = await fetch('https://api.github.com/repos/lucaslmcterraplenagem-beep/Karaz/commits/main');
+                if (!response.ok) throw new Error('Limite de API');
+                
                 const data = await response.json();
                 const versaoHash = data.sha.substring(0, 7);
                 const dataCommit = new Date(data.commit.author.date).toLocaleDateString('pt-BR');
                 document.getElementById('pc-app-versao').innerText = `Karaz Web v${versaoHash} (${dataCommit})`;
             } catch (error) {
-                document.getElementById('pc-app-versao').innerText = "Karaz Web (Versão Offline)";
+                // Se o GitHub bloquear, mostra a versão local em vez de "Offline"
+                const fallback = `v${new Date().getTime().toString().slice(-6)}`;
+                document.getElementById('pc-app-versao').innerText = `Karaz Web ${fallback} (Local)`;
             }
         }
 
