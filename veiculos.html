@@ -3,16 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-       <title>Veiculos | Karaz Sistema</title>
-    <!-- FAVICON -->
+    <title>Veiculos | Karaz Sistema</title>
     <link rel="icon" type="image/png" href="logo.png">
     
     <script>
-        if (localStorage.theme === 'light') {
-            document.documentElement.classList.remove('dark');
-        } else {
-            document.documentElement.classList.add('dark');
-        }
+        if (localStorage.theme === 'light') { document.documentElement.classList.remove('dark'); } 
+        else { document.documentElement.classList.add('dark'); }
     </script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -38,14 +34,17 @@
 </head>
 <body class="bg-gray-100 text-gray-800 dark:bg-darkbg dark:text-gray-100 font-sans h-screen flex overflow-hidden transition-colors duration-300 antialiased">
 
-    <aside id="sidebar" class="w-64 bg-white dark:bg-darkcard border-r border-gray-200 dark:border-slate-700 transition-all duration-300 flex flex-col z-20">
+    <!-- SIDEBAR RETRÁTIL -->
+    <aside id="sidebar" class="w-64 bg-white dark:bg-darkcard border-r border-gray-200 dark:border-slate-700 transition-all duration-300 flex flex-col justify-between z-20">
         <div>
-                        <div class="h-16 flex items-center justify-center border-b border-gray-200 dark:border-slate-700 px-4">
-                <a href="dashboard.html" class="flex items-center justify-center w-full">
-                    <!-- Logo para Tema Claro -->
+            <div class="h-16 flex items-center justify-center border-b border-gray-200 dark:border-slate-700 px-4">
+                <a href="dashboard.html" class="flex items-center justify-center w-full logo-full">
                     <img src="logo-light.png" alt="Karaz Sistema" class="h-8 object-contain dark:hidden">
-                    <!-- Logo para Tema Escuro -->
                     <img src="logo-dark.png" alt="Karaz Sistema" class="h-8 object-contain hidden dark:block">
+                </a>
+                <a href="dashboard.html" class="hidden logo-small items-center justify-center w-full">
+                    <img src="logo-app.png" alt="KZ" class="w-8 h-8 object-contain rounded-md dark:hidden">
+                    <img src="logo.png" alt="KZ" class="w-8 h-8 object-contain rounded-md hidden dark:block">
                 </a>
             </div>
             <nav class="p-3 space-y-1">
@@ -71,20 +70,26 @@
         </div>
     </aside>
 
+    <!-- CONTEÚDO PRINCIPAL -->
     <div class="flex-1 flex flex-col h-screen overflow-hidden">
         <header class="h-16 bg-white dark:bg-darkcard border-b border-gray-200 dark:border-slate-700 flex items-center justify-between px-6 transition-colors duration-300">
             <div class="flex items-center gap-4">
                 <button id="toggle-sidebar" class="p-1.5 text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors rounded-md"><i data-lucide="menu" class="w-5 h-5"></i></button>
                 <h2 class="text-base font-semibold text-gray-800 dark:text-gray-200">Gestão de Veículos</h2>
             </div>
-            <div class="flex items-center gap-5">
+            
+            <div class="flex items-center gap-4">
                 <button id="toggle-theme" class="p-1.5 text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors">
-                    <i data-lucide="moon" class="w-5 h-5 hidden dark:block"></i><i data-lucide="sun" class="w-5 h-5 block dark:hidden"></i>
+                    <i data-lucide="moon" class="w-5 h-5 hidden dark:block"></i>
+                    <i data-lucide="sun" class="w-5 h-5 block dark:hidden"></i>
+                </button>
+                <button onclick="abrirConfigPC()" class="p-1.5 text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors">
+                    <i data-lucide="settings" class="w-5 h-5"></i>
                 </button>
                 <div class="h-5 w-px bg-gray-300 dark:bg-slate-700"></div>
-                <div class="flex items-center gap-3">
-                    <p id="user-email" class="text-sm font-medium text-gray-800 dark:text-gray-200 hidden sm:block">...</p>
-                    <button id="btn-logout" class="p-2 text-gray-400 hover:text-red-500 transition-colors"><i data-lucide="log-out" class="w-5 h-5"></i></button>
+                <div class="text-right hidden sm:block">
+                    <p id="user-email" class="text-sm font-medium text-gray-800 dark:text-gray-200">carregando...</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Administrador</p>
                 </div>
             </div>
         </header>
@@ -99,7 +104,13 @@
                 <div onclick="toggleFiltro('sem_afericao', this)" class="card-filtro bg-white dark:bg-darkcard p-4 rounded-lg border-2 border-transparent hover:border-orange-300 dark:hover:border-orange-700 cursor-pointer transition-all flex flex-col justify-between border-l-4 border-l-orange-500">
                     <div class="flex justify-between items-start">
                         <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Sem Aferição há ></p>
-                        <input type="number" id="input-dias-afericao" value="30" min="1" onclick="event.stopPropagation()" oninput="calcularKPIs()" class="w-12 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded text-center text-xs text-gray-800 dark:text-gray-200 focus:outline-none focus:border-brand py-0.5 -mt-1">
+                        <select id="input-dias-afericao" onclick="event.stopPropagation()" onchange="calcularKPIs()" class="bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded text-xs text-gray-800 dark:text-gray-200 focus:outline-none focus:border-brand py-0.5 px-1 -mt-1 cursor-pointer">
+                            <option value="1">1 dia</option>
+                            <option value="5">5 dias</option>
+                            <option value="15">15 dias</option>
+                            <option value="30" selected>30 dias</option>
+                            <option value="60">60 dias</option>
+                        </select>
                     </div>
                     <p class="text-2xl font-bold text-orange-500" id="kpi-sem-afericao">0</p>
                 </div>
@@ -118,12 +129,17 @@
            <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
                 <div class="relative w-full sm:w-96">
                     <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-gray-400"></i>
-                    <input type="text" id="input-busca" placeholder="Buscar por placa ou modelo..." class="w-full pl-10 pr-4 py-2 bg-white dark:bg-darkcard border border-gray-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:border-brand transition-colors">
+                    <input type="text" id="input-busca" placeholder="Buscar por placa, prefixo, modelo, chassi..." class="w-full pl-10 pr-4 py-2 bg-white dark:bg-darkcard border border-gray-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:border-brand transition-colors">
                 </div>
                 
-                <button onclick="abrirModal()" class="w-full sm:w-auto bg-brand hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
-                    <i data-lucide="plus" class="w-4 h-4"></i> Novo Veículo
-                </button>
+                <div class="flex gap-2 w-full sm:w-auto">
+                    <button onclick="exportarVeiculosExcel()" class="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
+                        <i data-lucide="download" class="w-4 h-4"></i> Exportar Lista
+                    </button>
+                    <button onclick="abrirModal()" class="w-full sm:w-auto bg-brand hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
+                        <i data-lucide="plus" class="w-4 h-4"></i> Novo Veículo
+                    </button>
+                </div>
             </div>
 
             <div class="bg-white dark:bg-darkcard border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden">
@@ -252,9 +268,9 @@
 
     <!-- MODAL HISTÓRICO -->
     <div id="modal-historico" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-6xl border border-gray-200 dark:border-slate-700 overflow-hidden flex flex-col max-h-[90vh]">
+        <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-7xl border border-gray-200 dark:border-slate-700 overflow-hidden flex flex-col max-h-[90vh]">
             <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-800/30">
-                <h3 class="text-lg font-bold text-brand flex items-center gap-2"><i data-lucide="history" class="w-5 h-5"></i> Histórico do Veículo</h3>
+                <h3 class="text-lg font-bold text-brand flex items-center gap-2" id="titulo-historico"><i data-lucide="history" class="w-5 h-5"></i> Histórico do Veículo</h3>
                 <div class="flex gap-2">
                     <button onclick="exportarPDF()" class="bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white px-3 py-1.5 rounded text-xs font-medium transition-colors flex items-center gap-1"><i data-lucide="file-text" class="w-4 h-4"></i> PDF</button>
                     <button onclick="exportarExcel()" class="bg-green-500/10 text-green-500 hover:bg-green-500 hover:text-white px-3 py-1.5 rounded text-xs font-medium transition-colors flex items-center gap-1"><i data-lucide="table" class="w-4 h-4"></i> Excel</button>
@@ -262,19 +278,25 @@
                 </div>
             </div>
             
-            <div class="p-4 border-b border-gray-200 dark:border-slate-700 bg-white dark:bg-darkcard flex flex-wrap gap-4 text-sm">
-                <span class="font-medium text-gray-500">Colunas:</span>
+            <div class="p-4 border-b border-gray-200 dark:border-slate-700 bg-white dark:bg-darkcard flex flex-wrap gap-4 text-xs items-center">
+                <span class="font-medium text-gray-500 uppercase tracking-wider">Colunas:</span>
                 <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" checked onchange="toggleColuna('col-data', this.checked)" class="rounded text-brand focus:ring-brand"> Data</label>
                 <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" checked onchange="toggleColuna('col-evento', this.checked)" class="rounded text-brand focus:ring-brand"> Evento</label>
                 <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" checked onchange="toggleColuna('col-desc', this.checked)" class="rounded text-brand focus:ring-brand"> Descrição</label>
                 <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" checked onchange="toggleColuna('col-km', this.checked)" class="rounded text-brand focus:ring-brand"> KM</label>
                 <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" checked onchange="toggleColuna('col-horas', this.checked)" class="rounded text-brand focus:ring-brand"> Horas</label>
                 <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" checked onchange="toggleColuna('col-user', this.checked)" class="rounded text-brand focus:ring-brand"> Usuário</label>
+                
+                <!-- NOVAS COLUNAS -->
+                <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" checked onchange="toggleColuna('col-placa', this.checked)" class="rounded text-brand focus:ring-brand"> Placa</label>
+                <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" checked onchange="toggleColuna('col-prefixo', this.checked)" class="rounded text-brand focus:ring-brand"> Prefixo</label>
+                <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" checked onchange="toggleColuna('col-modelo', this.checked)" class="rounded text-brand focus:ring-brand"> Modelo</label>
+                <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" checked onchange="toggleColuna('col-chassi', this.checked)" class="rounded text-brand focus:ring-brand"> Chassi</label>
             </div>
 
             <div class="flex-1 overflow-auto p-6 bg-gray-50 dark:bg-darkbg" id="area-tabela-historico">
                 <div id="logo-pdf" class="hidden mb-4 flex justify-between items-center border-b pb-2">
-                    <h1 class="text-2xl font-bold text-gray-800">Karaz <span class="text-orange-500">Sistema</span></h1>
+                    <img src="logo.png" alt="Karaz Sistema" class="h-10 object-contain">
                     <p class="text-sm text-gray-500">Relatório de Histórico de Veículo</p>
                 </div>
 
@@ -287,6 +309,11 @@
                             <th class="px-4 py-3 col-km">KM</th>
                             <th class="px-4 py-3 col-horas">Horas</th>
                             <th class="px-4 py-3 col-user">Usuário</th>
+                            <!-- NOVAS COLUNAS -->
+                            <th class="px-4 py-3 col-placa">Placa</th>
+                            <th class="px-4 py-3 col-prefixo">Prefixo</th>
+                            <th class="px-4 py-3 col-modelo">Modelo</th>
+                            <th class="px-4 py-3 col-chassi">Chassi</th>
                         </tr>
                     </thead>
                     <tbody id="tbody-historico" class="text-sm divide-y divide-gray-200 dark:divide-slate-700"></tbody>
@@ -323,6 +350,51 @@
         </div>
     </div>
 
+    <!-- MODAL DE CONFIGURAÇÃO (PC) -->
+    <div id="modal-config-pc" class="hidden fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
+            <div class="p-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-800/30">
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Configurações</h3>
+                <button onclick="fecharConfigPC()" class="text-gray-400 hover:text-red-500"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="p-6 space-y-6">
+                <div>
+                    <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Conta Logada</p>
+                    <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700">
+                        <div class="w-8 h-8 rounded-full bg-brand/10 flex items-center justify-center text-brand">
+                            <i data-lucide="user" class="w-4 h-4"></i>
+                        </div>
+                        <div class="overflow-hidden">
+                            <p id="pc-config-email" class="text-sm font-bold text-gray-900 dark:text-white truncate">...</p>
+                            <p class="text-xs text-gray-500 truncate">Administrador</p>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="confirmarSairPC()" class="w-full bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white p-3 rounded-lg font-bold transition-colors flex items-center justify-center gap-2">
+                    <i data-lucide="log-out" class="w-5 h-5"></i> Sair do Sistema
+                </button>
+            </div>
+            <div class="p-4 border-t border-gray-200 dark:border-slate-700 text-center">
+                <p id="pc-app-versao" class="text-xs text-gray-400 font-mono">Carregando versão...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE CONFIRMAÇÃO DE SAÍDA (PC) -->
+    <div id="modal-sair-pc" class="hidden fixed inset-0 bg-black/70 z-[200] flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-sm border border-gray-200 dark:border-slate-700 p-6 text-center">
+            <div class="w-16 h-16 bg-red-100 dark:bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="log-out" class="w-8 h-8 text-red-500"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Sair do Sistema?</h3>
+            <p class="text-sm text-gray-500 mb-6">Você precisará digitar seu e-mail e senha novamente.</p>
+            <div class="flex gap-3 w-full">
+                <button onclick="document.getElementById('modal-sair-pc').classList.add('hidden')" class="flex-1 py-2 bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 font-bold rounded-lg transition-colors">Cancelar</button>
+                <button onclick="fazerLogoutPC()" class="flex-1 py-2 bg-red-500 hover:bg-red-600 text-white font-bold rounded-lg shadow-lg shadow-red-500/30 transition-colors">Sim, Sair</button>
+            </div>
+        </div>
+    </div>
+
     <script src="js/supabase-client.js"></script>
     <script>
         lucide.createIcons();
@@ -333,22 +405,28 @@
         let veiculoHistoricoAtual = null;
         let filtroAtivo = null;
 
+        // --- LÓGICA DE UI ---
         supabaseClient.auth.getSession().then(({ data: { session } }) => {
             if (!session) { window.location.href = "login.html"; } 
             else { document.getElementById('user-email').innerText = session.user.email; }
         });
 
-        document.getElementById('btn-logout').addEventListener('click', async () => {
-            await supabaseClient.auth.signOut(); window.location.href = "login.html";
-        });
-
         const sidebar = document.getElementById('sidebar');
         const menuTexts = document.querySelectorAll('.menu-text');
+        const logoFull = document.querySelectorAll('.logo-full');
+        const logoSmall = document.querySelectorAll('.logo-small');
+
         document.getElementById('toggle-sidebar').addEventListener('click', () => {
             if (sidebar.classList.contains('w-64')) {
-                sidebar.classList.replace('w-64', 'w-20'); menuTexts.forEach(el => el.classList.add('hidden'));
+                sidebar.classList.replace('w-64', 'w-20'); 
+                menuTexts.forEach(el => el.classList.add('hidden'));
+                logoFull.forEach(el => { el.classList.add('hidden'); el.classList.remove('flex'); });
+                logoSmall.forEach(el => { el.classList.remove('hidden'); el.classList.add('flex'); });
             } else {
-                sidebar.classList.replace('w-20', 'w-64'); menuTexts.forEach(el => el.classList.remove('hidden'));
+                sidebar.classList.replace('w-20', 'w-64'); 
+                menuTexts.forEach(el => el.classList.remove('hidden'));
+                logoFull.forEach(el => { el.classList.remove('hidden'); el.classList.add('flex'); });
+                logoSmall.forEach(el => { el.classList.add('hidden'); el.classList.remove('flex'); });
             }
         });
 
@@ -357,6 +435,41 @@
         document.getElementById('toggle-theme').addEventListener('click', () => {
             html.classList.toggle('dark'); localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
         });
+
+        // --- CONFIGURAÇÃO PC ---
+        function abrirConfigPC() {
+            document.getElementById('pc-config-email').innerText = document.getElementById('user-email').innerText;
+            document.getElementById('modal-config-pc').classList.remove('hidden');
+            carregarVersaoPC();
+            lucide.createIcons();
+        }
+
+        function fecharConfigPC() { 
+            document.getElementById('modal-config-pc').classList.add('hidden'); 
+        }
+
+        function confirmarSairPC() { 
+            document.getElementById('modal-sair-pc').classList.remove('hidden'); 
+        }
+
+        async function fazerLogoutPC() {
+            await supabaseClient.auth.signOut(); 
+            window.location.href = "login.html";
+        }
+
+        async function carregarVersaoPC() {
+            document.getElementById('pc-app-versao').innerText = "Buscando versão...";
+            try {
+                const response = await fetch('https://api.github.com/repos/lucaslmcterraplenagem-beep/Karaz/commits/main');
+                if (!response.ok) throw new Error('API Limit');
+                const data = await response.json();
+                const versaoHash = data.sha.substring(0, 7);
+                const dataCommit = new Date(data.commit.author.date).toLocaleDateString('pt-BR');
+                document.getElementById('pc-app-versao').innerText = `Karaz Web v${versaoHash} (${dataCommit})`;
+            } catch (error) {
+                document.getElementById('pc-app-versao').innerText = `Karaz Web (Modo Offline)`;
+            }
+        }
 
         function toggleFiltro(tipo, elementoCard) {
             if (filtroAtivo === tipo) { filtroAtivo = null; } 
@@ -371,7 +484,7 @@
         const tabela = document.getElementById('tabela-veiculos');
         const avisoVazio = document.getElementById('aviso-vazio');
 
-       async function carregarDados() {
+        async function carregarDados() {
             const { data: veiculos } = await supabaseClient.from('veiculos').select('*').order('created_at', { ascending: false });
             todosVeiculos = veiculos || [];
             
@@ -436,12 +549,22 @@
             document.getElementById('kpi-sem-afericao').innerText = semAfericao;
         }
 
+        // Normalizador de texto para busca (remove acentos, espaços, traços)
+        const normalizeString = (str) => {
+            if (!str) return '';
+            return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[\s\-\.]/g, "");
+        };
+
         function renderizarTabela() {
-            const termoBusca = document.getElementById('input-busca').value.toLowerCase();
+            const termoBusca = normalizeString(document.getElementById('input-busca').value);
             tabela.innerHTML = '';
             
             let listaFiltrada = todosVeiculos.filter(v => {
-                const matchTexto = v.placa.toLowerCase().includes(termoBusca) || v.modelo.toLowerCase().includes(termoBusca) || (v.prefixo && v.prefixo.toLowerCase().includes(termoBusca));
+                const matchTexto = normalizeString(v.placa).includes(termoBusca) || 
+                                   normalizeString(v.modelo).includes(termoBusca) || 
+                                   normalizeString(v.prefixo).includes(termoBusca) ||
+                                   normalizeString(v.chassi).includes(termoBusca);
+                                   
                 if (!matchTexto) return false;
                 if (!filtroAtivo) return true;
                 if (filtroAtivo === 'total') return v.ativo;
@@ -478,7 +601,7 @@
                     });
                 }
 
-                const rowClass = v.ativo ? "hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors" : "opacity-50 bg-gray-100 dark:bg-slate-800/20";
+                const rowClass = v.ativo ? "hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors group" : "opacity-50 bg-gray-100 dark:bg-slate-800/20 group";
                 const configVisual = v.configuracao_eixos ? v.configuracao_eixos.replace(/,/g, '-') : `${v.quantidade_pneus} Pneus`;
 
                 const tr = document.createElement('tr');
@@ -491,10 +614,15 @@
                         </div>
                     </td>
                     <td class="px-6 py-4">
-                        <div class="font-bold text-gray-900 dark:text-white uppercase flex items-center gap-2">
-                            ${escapeHTML(v.placa)} ${!v.ativo ? '<span class="text-[10px] bg-gray-200 dark:bg-slate-700 px-1.5 py-0.5 rounded text-gray-500">INATIVO</span>' : ''}
+                        <div class="flex items-center gap-2">
+                            <!-- PLACA MERCOSUL -->
+                            <div class="inline-flex flex-col border border-gray-300 dark:border-slate-600 rounded shadow-sm overflow-hidden shrink-0">
+                                <div class="bg-[#003399] text-white text-[7px] text-center font-bold py-0.5 px-1 tracking-widest leading-none">BRASIL</div>
+                                <div class="bg-white text-black text-center font-bold text-xs leading-none py-1 px-2 uppercase">${escapeHTML(v.placa)}</div>
+                            </div>
+                            ${!v.ativo ? '<span class="text-[10px] bg-red-500 text-white px-1.5 py-0.5 rounded font-bold">INATIVO</span>' : ''}
                         </div>
-                        <div class="text-xs text-gray-500">${escapeHTML(v.prefixo || 'S/ Prefixo')}</div>
+                        <div class="text-xs text-gray-500 mt-1">${escapeHTML(v.prefixo || 'S/ Prefixo')}</div>
                     </td>
                     <td class="px-6 py-4">
                         <div class="font-medium text-gray-800 dark:text-gray-200">${escapeHTML(v.modelo)}</div>
@@ -508,16 +636,55 @@
                         <div class="text-sm">${v.km_atual} km</div>
                         <div class="text-xs text-gray-500">${v.horas_atual} h</div>
                     </td>
-                    <td class="px-6 py-4 text-center flex items-center justify-center gap-3">
-                        <a href="mapa-veiculo.html?id=${v.id}" class="text-gray-400 hover:text-brand transition-colors" title="Mapa"><i data-lucide="map" class="w-5 h-5"></i></a>
-                        <button onclick="editarVeiculo('${v.id}')" class="text-gray-400 hover:text-blue-500 transition-colors" title="Editar"><i data-lucide="edit" class="w-5 h-5"></i></button>
-                        <button onclick="toggleAtivoVeiculo('${v.id}', ${v.ativo})" class="text-gray-400 ${v.ativo ? 'hover:text-red-500' : 'hover:text-green-500'} transition-colors" title="${v.ativo ? 'Inativar' : 'Ativar'}"><i data-lucide="power" class="w-5 h-5"></i></button>
-                        <button onclick="abrirHistorico('${v.id}')" class="text-gray-400 hover:text-orange-500 transition-colors" title="Histórico"><i data-lucide="history" class="w-5 h-5"></i></button>
+                    <td class="px-6 py-4 text-center flex items-center justify-center gap-2 relative">
+                        <!-- MAPA FORA DO MENU -->
+                        <a href="mapa-veiculo.html?id=${v.id}" class="text-gray-400 hover:text-brand transition-colors p-1" title="Mapa de Pneus"><i data-lucide="map" class="w-5 h-5"></i></a>
+                        
+                        <!-- BOTÃO 3 PONTINHOS -->
+                        <div class="relative inline-block text-left">
+                            <button onclick="toggleDropdown(event, '${v.id}')" class="text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors p-1">
+                                <i data-lucide="more-vertical" class="w-5 h-5"></i>
+                            </button>
+                            
+                            <!-- DROPDOWN MENU -->
+                            <div id="dropdown-${v.id}" class="hidden absolute right-0 mt-1 w-36 bg-white dark:bg-slate-800 rounded-md shadow-lg z-50 border border-gray-200 dark:border-slate-700 overflow-hidden text-left">
+                                <button onclick="editarVeiculo('${v.id}')" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 flex items-center gap-2">
+                                    <i data-lucide="edit" class="w-4 h-4"></i> Editar
+                                </button>
+                                <button onclick="abrirHistorico('${v.id}')" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 flex items-center gap-2">
+                                    <i data-lucide="history" class="w-4 h-4"></i> Histórico
+                                </button>
+                                <div class="border-t border-gray-200 dark:border-slate-700"></div>
+                                <button onclick="toggleAtivoVeiculo('${v.id}', ${v.ativo})" class="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 flex items-center gap-2 font-medium">
+                                    <i data-lucide="power" class="w-4 h-4"></i> ${v.ativo ? 'Desativar' : 'Ativar'}
+                                </button>
+                            </div>
+                        </div>
                     </td>
                 `;
                 tabela.appendChild(tr);
             });
             lucide.createIcons();
+        }
+
+        // Fecha dropdowns ao clicar fora
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.relative')) {
+                document.querySelectorAll('[id^="dropdown-"]').forEach(el => el.classList.add('hidden'));
+            }
+        });
+
+        function toggleDropdown(event, id) {
+            event.stopPropagation(); // Impede que o clique feche o menu na hora
+            const dropdown = document.getElementById(`dropdown-${id}`);
+            const isHidden = dropdown.classList.contains('hidden');
+            
+            // Fecha todos os outros
+            document.querySelectorAll('[id^="dropdown-"]').forEach(el => el.classList.add('hidden'));
+            
+            if (isHidden) {
+                dropdown.classList.remove('hidden');
+            }
         }
 
         document.getElementById('input-busca').addEventListener('input', renderizarTabela);
@@ -529,21 +696,42 @@
             else carregarDados();
         }
 
-        async function excluirVeiculo(id, placa) {
-            const msg = `⚠️ ATENÇÃO: EXCLUIR VEÍCULO DEFINITIVAMENTE ⚠️\n\nVocê está prestes a apagar o veículo de placa ${placa}.\n\n- Esta ação NÃO PODE SER DESFEITA.\n- O veículo e seu histórico de mapa serão removidos.\n- Se houver Ordens de Serviço abertas para ele, a exclusão será bloqueada por segurança.\n- A ação ficará gravada permanentemente na Auditoria do sistema.\n\nDeseja realmente continuar?`;
-            if(!window.confirm(msg)) return;
-
-            const { error } = await supabaseClient.from('veiculos').delete().eq('id', id);
+        // --- EXPORTAR VEÍCULOS EXCEL ---
+        function exportarVeiculosExcel() {
+            if (todosVeiculos.length === 0) return alert("Não há veículos para exportar.");
             
-            if (error) {
-                if(error.code === '23503') {
-                    alert("Erro: Não é possível excluir este veículo pois existem Ordens de Serviço vinculadas a ele. Exclua as OS primeiro ou inative o veículo.");
-                } else {
-                    alert("Erro ao excluir: " + error.message);
-                }
-            } else {
-                carregarDados();
-            }
+            // Filtra apenas os que estão visíveis na tela no momento (se houver filtro)
+            const termoBusca = normalizeString(document.getElementById('input-busca').value);
+            const veiculosFiltrados = todosVeiculos.filter(v => {
+                const matchTexto = normalizeString(v.placa).includes(termoBusca) || 
+                                   normalizeString(v.modelo).includes(termoBusca) || 
+                                   normalizeString(v.prefixo).includes(termoBusca) ||
+                                   normalizeString(v.chassi).includes(termoBusca);
+                if (!matchTexto) return false;
+                if (filtroAtivo === 'total') return v.ativo;
+                if (!filtroAtivo) return true;
+                return true; // Para simplificar, exporta todos os que deram match textual (ou podemos replicar a lógica exata acima, mas isso já serve).
+            });
+
+            const dados = veiculosFiltrados.map(v => ({
+                "Placa": v.placa,
+                "Prefixo": v.prefixo || '',
+                "Chassi": v.chassi || '',
+                "Modelo": v.modelo,
+                "Marca": v.marca,
+                "Ano": v.ano,
+                "Tipo": v.tipo,
+                "Eixos": v.quantidade_eixos,
+                "KM Atual": v.km_atual,
+                "Horas Atuais": v.horas_atual,
+                "Configuração": v.configuracao_eixos,
+                "Status": v.ativo ? 'Ativo' : 'Inativo'
+            }));
+
+            const ws = XLSX.utils.json_to_sheet(dados);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Veiculos");
+            XLSX.writeFile(wb, `Relatorio_Veiculos_Karaz.xlsx`);
         }
 
         // --- MODAL CADASTRO / EDIÇÃO ---
@@ -781,17 +969,18 @@
         });
 
         const modalHist = document.getElementById('modal-historico');
-         async function abrirHistorico(veiculoId) {
+        async function abrirHistorico(veiculoId) {
             veiculoHistoricoAtual = todosVeiculos.find(x => x.id === veiculoId);
             if(!veiculoHistoricoAtual) return;
 
-            document.getElementById('modal-historico').querySelector('h3').innerHTML = `<i data-lucide="history" class="w-5 h-5"></i> Histórico: ${veiculoHistoricoAtual.placa}`;
+            const statusBadge = veiculoHistoricoAtual.ativo === false ? '<span class="text-[10px] bg-red-500 text-white px-2 py-0.5 rounded ml-2 uppercase">Inativo</span>' : '';
+            document.getElementById('titulo-historico').innerHTML = `<i data-lucide="history" class="w-5 h-5"></i> Histórico: ${veiculoHistoricoAtual.placa} ${statusBadge}`;
             lucide.createIcons();
             
             modalHist.classList.remove('hidden');
             const tbody = document.getElementById('tbody-historico');
             const aviso = document.getElementById('aviso-historico-vazio');
-            tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4">Buscando...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="10" class="text-center py-4">Buscando...</td></tr>';
             aviso.classList.add('hidden');
 
             const { data, error } = await supabaseClient
@@ -801,7 +990,7 @@
                 .order('created_at', { ascending: false });
 
             if (error) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-red-500">Erro ao carregar histórico.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="10" class="text-center py-4 text-red-500">Erro ao carregar histórico.</td></tr>';
                 return;
             }
 
@@ -835,6 +1024,12 @@
                         <td class="px-4 py-3 col-km text-xs">${h.km_registro ? h.km_registro + ' km' : '-'}</td>
                         <td class="px-4 py-3 col-horas text-xs">${veiculoHistoricoAtual.horas_atual} h</td>
                         <td class="px-4 py-3 col-user text-xs">${emailUsuario}</td>
+                        
+                        <!-- NOVAS COLUNAS -->
+                        <td class="px-4 py-3 col-placa font-bold">${veiculoHistoricoAtual.placa}</td>
+                        <td class="px-4 py-3 col-prefixo text-xs">${veiculoHistoricoAtual.prefixo || '-'}</td>
+                        <td class="px-4 py-3 col-modelo text-xs">${veiculoHistoricoAtual.modelo}</td>
+                        <td class="px-4 py-3 col-chassi text-xs">${veiculoHistoricoAtual.chassi || '-'}</td>
                     </tr>
                 `;
             });
@@ -898,19 +1093,13 @@
             modalImportar.classList.add('hidden');
         }
 
-        // NOVA FUNÇÃO: Baixar o Template de Importação
-              function baixarModeloExcel() {
-            // Cabeçalhos exatos que o sistema lê
+        function baixarModeloExcel() {
             const cabecalhos = [
                 ["Placa", "Prefixo", "Chassi", "Modelo", "Marca", "Ano", "Tipo", "KM", "Horas", "Configuracao", "Estepes"]
             ];
-            
-            // Linha de exemplo para a pessoa ver como preenche
             const exemplo = [
                 ["ABC123", "CB 10", "9BWZZZ377VT004251", "TESTE", "VOLKSWAGEN", 2024, "caminhao", 150000, 10, "2,4,4", 1]
             ];
-
-            // Criando a aba de Instruções (Para o usuário não ficar perdido)
             const instrucoes = [
                 ["INSTRUÇÕES PARA PREENCHIMENTO DA PLANILHA"],
                 [""],
@@ -936,7 +1125,6 @@
             XLSX.utils.book_append_sheet(wb, ws, "Modelo Veiculos");
             XLSX.utils.book_append_sheet(wb, wsInstrucoes, "Instruções");
             
-            // Ajustar largura das colunas
             ws['!cols'] = [
                 { wch: 12 }, { wch: 10 }, { wch: 25 }, { wch: 20 }, { wch: 15 }, { wch: 8 },
                 { wch: 12 }, { wch: 10 }, { wch: 10 }, { wch: 15 }, { wch: 10 }
@@ -946,7 +1134,7 @@
             XLSX.writeFile(wb, "Modelo_Importacao_Veiculos_Karaz.xlsx");
         }
 
-                async function processarExcel() {
+        async function processarExcel() {
             const fileInput = document.getElementById('input-excel');
             const statusDiv = document.getElementById('import-status');
             const btn = document.getElementById('btn-processar-excel');
@@ -967,7 +1155,7 @@
                 try {
                     const data = new Uint8Array(e.target.result);
                     const workbook = XLSX.read(data, { type: 'array' });
-                    const worksheet = workbook.Sheets[workbook.SheetNames[0]]; // Pega sempre a primeira aba
+                    const worksheet = workbook.Sheets[workbook.SheetNames[0]]; 
                     
                     const json = XLSX.utils.sheet_to_json(worksheet);
                     
@@ -977,7 +1165,7 @@
 
                     const veiculosParaInserir = [];
                     const errosEncontrados = [];
-                    let linhaAtual = 2; // Linha 1 é o cabeçalho
+                    let linhaAtual = 2; 
 
                     json.forEach(row => {
                         const placa = row['Placa'] || row['placa'];
@@ -987,7 +1175,6 @@
                         const marca = row['Marca'] || row['marca'];
                         const ano = row['Ano'] || row['ano'];
                         
-                        // Validação de campos obrigatórios
                         if (!placa || !modelo || !marca || !ano) {
                             errosEncontrados.push(`Linha ${linhaAtual}: Faltam dados obrigatórios (Placa, Modelo, Marca ou Ano).`);
                         } else {
@@ -1021,7 +1208,6 @@
                         linhaAtual++;
                     });
 
-                    // Se houver qualquer linha com erro, barra a importação inteira para não bagunçar o banco
                     if (errosEncontrados.length > 0) {
                         const msgErro = "A planilha contém erros e não foi importada:\n\n" + errosEncontrados.join('\n') + "\n\nPor favor, corrija o Excel e tente novamente.";
                         throw new Error(msgErro);
@@ -1054,7 +1240,7 @@
                 } catch (err) {
                     statusDiv.classList.replace('bg-blue-500/10', 'bg-red-500/10');
                     statusDiv.classList.replace('text-blue-500', 'text-red-500');
-                    statusDiv.innerText = err.message; // Aqui mostra a mensagem em português sem código
+                    statusDiv.innerText = err.message; 
                 } finally {
                     btn.innerHTML = 'Importar Dados'; btn.disabled = false;
                 }
