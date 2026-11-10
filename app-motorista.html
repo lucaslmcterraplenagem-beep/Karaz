@@ -4,14 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Aferição de Pneus | Karaz</title>
-        <!-- PWA META TAGS -->
+    
+    <!-- PWA META TAGS -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#ea580c">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes"> <!-- TAG ADICIONADA -->
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="logo-app.png">
     <link rel="icon" type="image/png" href="logo.png">
+
     <script>
         if (localStorage.theme === 'light') { document.documentElement.classList.remove('dark'); } 
         else { document.documentElement.classList.add('dark'); }
@@ -35,7 +37,7 @@
     <div id="tela-login" class="absolute inset-0 z-50 bg-gray-100 dark:bg-darkbg flex flex-col items-center justify-center p-6">
         <div class="w-full max-w-sm">
             <div class="text-center mb-8">
-                               <img src="logo.png" alt="Logo Karaz" class="w-24 h-24 mx-auto mb-4 object-contain rounded-3xl shadow-xl shadow-brand/20">
+                <img src="logo.png" alt="Logo Karaz" class="w-24 h-24 mx-auto mb-4 object-contain rounded-3xl shadow-xl shadow-brand/20">
                 <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Aferição de Pneus</h1>
                 <p class="text-gray-500 mt-1">Acesso do Motorista</p>
             </div>
@@ -55,21 +57,71 @@
         </div>
     </div>
 
-    <!-- CABEÇALHO FIXO -->
-    <header class="bg-white dark:bg-darkcard border-b border-gray-200 dark:border-slate-700 p-4 flex justify-between items-center shrink-0 z-20">
-        <div class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded-full bg-brand flex items-center justify-center">
-                <i data-lucide="disc" class="w-5 h-5 text-white"></i>
-            </div>
+    <!-- CABEÇALHO ATUALIZADO -->
+    <header class="bg-white dark:bg-darkcard border-b border-gray-200 dark:border-slate-700 p-4 flex justify-between items-center shrink-0 z-20 relative">
+        <div class="flex items-center gap-3">
+            <!-- Logo Nova -->
+            <img src="logo.png" alt="Karaz" class="h-10 w-auto object-contain">
             <div>
-                <h1 class="text-lg font-bold text-gray-900 dark:text-white leading-tight">Aferição de Pneus</h1>
+                <h1 class="text-base font-bold text-gray-900 dark:text-white leading-tight">Aferição de Pneus</h1>
                 <p id="nome-motorista-header" class="text-xs text-gray-500">...</p>
             </div>
         </div>
-        <button onclick="fazerLogout()" class="text-gray-500 hover:text-red-500 p-2" title="Sair do App">
-            <i data-lucide="log-out" class="w-6 h-6"></i>
+        
+        <!-- Botão de Configuração (Só aparece na tela inicial) -->
+        <button id="btn-config" onclick="abrirMenuConfig()" class="text-gray-500 hover:text-brand p-2 transition-colors">
+            <i data-lucide="settings" class="w-6 h-6"></i>
         </button>
     </header>
+
+    <!-- MENU DE CONFIGURAÇÕES (OVERLAY) -->
+    <div id="menu-config" class="hidden fixed inset-0 bg-black/60 z-[100] backdrop-blur-sm transition-opacity" onclick="fecharMenuConfig()"></div>
+    <div id="painel-config" class="fixed top-0 right-0 h-full w-72 bg-white dark:bg-darkcard shadow-2xl z-[101] transform translate-x-full transition-transform duration-300 flex flex-col">
+        <div class="p-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-800/30">
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white">Configurações</h3>
+            <button onclick="fecharMenuConfig()" class="text-gray-400 hover:text-red-500"><i data-lucide="x" class="w-6 h-6"></i></button>
+        </div>
+        
+        <div class="p-6 flex-1 flex flex-col gap-6">
+            <!-- Informações da Conta -->
+            <div>
+                <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Conta Logada</p>
+                <div class="bg-gray-50 dark:bg-slate-800 p-3 rounded-lg border border-gray-200 dark:border-slate-700 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-brand/10 flex items-center justify-center text-brand">
+                        <i data-lucide="user" class="w-5 h-5"></i>
+                    </div>
+                    <div class="overflow-hidden">
+                        <p id="config-nome" class="text-sm font-bold text-gray-900 dark:text-white truncate">...</p>
+                        <p id="config-email" class="text-xs text-gray-500 truncate">...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tema -->
+            <div>
+                <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Aparência</p>
+                <button onclick="toggleTema()" class="w-full flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg hover:border-brand transition-colors">
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Mudar Tema (Claro/Escuro)</span>
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="sun" class="w-4 h-4 text-yellow-500 dark:hidden"></i>
+                        <i data-lucide="moon" class="w-4 h-4 text-blue-400 hidden dark:block"></i>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Sair -->
+            <div class="mt-auto">
+                <button onclick="confirmarSair()" class="w-full bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white p-3 rounded-lg font-bold transition-colors flex items-center justify-center gap-2">
+                    <i data-lucide="log-out" class="w-5 h-5"></i> Sair do App
+                </button>
+            </div>
+        </div>
+
+        <!-- Versão do App -->
+        <div class="p-4 border-t border-gray-200 dark:border-slate-700 text-center">
+            <p class="text-xs text-gray-400 font-mono">Karaz App v1.0.1</p>
+        </div>
+    </div>
 
     <!-- ÁREA DE CONTEÚDO ROLÁVEL -->
     <main class="flex-1 overflow-y-auto p-4 pb-24 relative">
@@ -105,27 +157,23 @@
 
             <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">Selecione o Pneu</h3>
             
-           
-                            <div class="relative bg-slate-100 dark:bg-slate-900 rounded-3xl p-4 pt-8 pb-8 flex flex-col items-center w-full max-w-sm mx-auto shadow-inner border border-gray-200 dark:border-slate-700">
+            <div class="relative bg-slate-100 dark:bg-slate-900 rounded-3xl p-4 pt-8 pb-8 flex flex-col items-center w-full max-w-sm mx-auto shadow-inner border border-gray-200 dark:border-slate-700">
                 <!-- Cabine (Frente) -->
                 <div class="w-40 h-12 bg-slate-300 dark:bg-slate-700 rounded-t-xl border-4 border-b-0 border-slate-400 dark:border-slate-500 flex items-center justify-center mb-8 relative z-10 shadow-sm">
                     <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Frente</span>
                 </div>
 
-                <!-- Container dos Eixos (A linha vertical fica aqui dentro) -->
+                <!-- Container dos Eixos -->
                 <div class="relative w-full flex flex-col items-center pb-6 z-0">
-                    <!-- Linha central vertical (Chassi) -->
                     <div class="absolute top-0 bottom-0 left-1/2 w-3 bg-slate-400 dark:bg-slate-500 -translate-x-1/2 z-0 rounded-b-xl"></div>
-                    
-                    <!-- Os eixos vão ser injetados aqui via JS -->
                     <div id="lista-pneus" class="w-full flex flex-col gap-8 relative z-10"></div>
                 </div>
 
-                <!-- Container dos Estepes (Fica separado embaixo) -->
+                <!-- Container dos Estepes -->
                 <div id="container-estepes" class="w-full mt-4 pt-6 border-t-2 border-slate-300 dark:border-slate-700 border-dashed flex flex-col items-center relative z-10 hidden">
-                    <!-- Estepes injetados via JS -->
                 </div>
             </div>
+        </div>
     </main>
 
     <!-- GAVETA DE AFERIÇÃO (BOTTOM SHEET) -->
@@ -152,13 +200,11 @@
                 </select>
             </div>
 
-            <!-- KM (Agora com asterisco dinâmico) -->
             <div>
                 <label class="block text-sm font-medium mb-1">KM ou Horas Atual <span id="obrigatorio-km" class="text-red-500">*</span></label>
                 <input type="number" id="input-km" placeholder="Ex: 150000" class="w-full p-3 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg focus:border-brand text-base">
             </div>
 
-            <!-- Campos de Pressão e Sulco -->
             <div class="grid grid-cols-2 gap-3" id="campos-tecnicos">
                 <div id="div-pressao">
                     <label class="block text-sm font-medium mb-1 text-brand">Pressão (PSI)</label>
@@ -167,7 +213,6 @@
                 <div id="div-sulco">
                     <label class="block text-sm font-medium mb-1">Sulco (mm)</label>
                     <input type="number" step="0.1" id="input-sulco" placeholder="Ex: 12.5" class="w-full p-3 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg focus:border-brand text-base">
-                    <!-- Aviso sobre o medidor de sulco -->
                     <p class="text-[10px] text-gray-500 mt-1 leading-tight">*Medição realizada com paquímetro específico.</p>
                 </div>
             </div>
@@ -182,9 +227,8 @@
                 <input type="file" id="input-foto" accept="image/*" capture="environment" class="w-full p-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand/10 file:text-brand hover:file:bg-brand/20">
             </div>
 
-            <button onclick="salvarAfericaoDireto()" class="w-full mt-4 bg-brand hover:bg-orange-700 text-white font-bold py-4 rounded-xl shadow-lg transition-colors text-lg">
+            <button onclick="salvarAfericaoDireto()" id="btn-salvar-afericao" class="w-full mt-4 bg-brand hover:bg-orange-700 text-white font-bold py-4 rounded-xl shadow-lg transition-colors text-lg">
                 Salvar Aferição
-                id="btn-salvar-afericao"
             </button>
         </div>
     </div>
@@ -196,6 +240,7 @@
         let veiculos = [];
         let veiculoSelecionado = null;
         let pneuSelecionado = null;
+        let dadosMotoristaLogado = null;
 
         // --- LÓGICA DE LOGIN ---
         supabaseClient.auth.getSession().then(async ({ data: { session } }) => {
@@ -204,7 +249,12 @@
 
         async function iniciarApp(session) {
             const { data: motorista } = await supabaseClient.from('motoristas').select('nome').eq('user_id', session.user.id).single();
-            document.getElementById('nome-motorista-header').innerText = motorista ? motorista.nome : session.user.email;
+            dadosMotoristaLogado = { nome: motorista ? motorista.nome : session.user.email, email: session.user.email };
+            
+            document.getElementById('nome-motorista-header').innerText = dadosMotoristaLogado.nome;
+            document.getElementById('config-nome').innerText = dadosMotoristaLogado.nome;
+            document.getElementById('config-email').innerText = dadosMotoristaLogado.email;
+            
             document.getElementById('tela-login').classList.add('hidden');
             document.getElementById('tela-veiculos').classList.remove('hidden');
             carregarVeiculos();
@@ -232,7 +282,38 @@
             }
         });
 
-        async function fazerLogout() { await supabaseClient.auth.signOut(); window.location.reload(); }
+        // --- MENU DE CONFIGURAÇÕES ---
+        function abrirMenuConfig() {
+            document.getElementById('menu-config').classList.remove('hidden');
+            document.getElementById('painel-config').classList.remove('translate-x-full');
+        }
+
+        function fecharMenuConfig() {
+            document.getElementById('painel-config').classList.add('translate-x-full');
+            setTimeout(() => { document.getElementById('menu-config').classList.add('hidden'); }, 300);
+        }
+
+        function toggleTema() {
+            const html = document.documentElement;
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.theme = 'light';
+            } else {
+                html.classList.add('dark');
+                localStorage.theme = 'dark';
+            }
+        }
+
+        function confirmarSair() {
+            if (confirm("Tem certeza que deseja sair do aplicativo?")) {
+                fazerLogout();
+            }
+        }
+
+        async function fazerLogout() { 
+            await supabaseClient.auth.signOut(); 
+            window.location.reload(); 
+        }
 
         // --- LÓGICA DE VEÍCULOS ---
         async function carregarVeiculos() {
@@ -274,6 +355,9 @@
             veiculoSelecionado = veiculos.find(v => v.id === id);
             if(!veiculoSelecionado) return;
 
+            // ESCONDE O BOTÃO DE CONFIGURAÇÃO AO ENTRAR NO MAPA
+            document.getElementById('btn-config').classList.add('hidden');
+
             document.getElementById('tela-veiculos').classList.add('hidden');
             document.getElementById('tela-pneus').classList.remove('hidden');
 
@@ -287,7 +371,7 @@
             renderizarListaPneus(pneus || []);
         }
 
-                    function renderizarListaPneus(pneus) {
+        function renderizarListaPneus(pneus) {
             const container = document.getElementById('lista-pneus');
             const containerEstepes = document.getElementById('container-estepes');
             container.innerHTML = '';
@@ -302,7 +386,6 @@
                 let eixoDiv = document.createElement('div');
                 eixoDiv.className = "relative flex justify-between items-center w-full px-2";
                 
-                // Barra horizontal do eixo
                 eixoDiv.innerHTML = `<div class="absolute top-1/2 left-0 w-full h-3 bg-slate-400 dark:bg-slate-500 -translate-y-1/2 rounded-full z-0"></div>`;
 
                 let pneusPorLado = qtd / 2;
@@ -364,7 +447,7 @@
                 `;
             } else {
                 return `
-                    <div class="bg-gray-100 dark:bg-slate-800 border-2 border-dashed border-gray-300 dark:border-slate-600 text-gray-400 p-2 rounded-full flex items-center justify-center w-10 h-20">
+                    <div class="bg-gray-100 dark:bg-slate-800 border-2 border-dashed border-gray-300 dark:border-slate-600 text-gray-400 p-2 rounded-full flex items-center justify-center w-12 h-20">
                         <i data-lucide="minus" class="w-5 h-5"></i>
                     </div>
                 `;
@@ -375,6 +458,9 @@
             document.getElementById('tela-pneus').classList.add('hidden');
             document.getElementById('tela-veiculos').classList.remove('hidden');
             veiculoSelecionado = null;
+
+            // MOSTRA O BOTÃO DE CONFIGURAÇÃO NOVAMENTE AO VOLTAR PARA O INÍCIO
+            document.getElementById('btn-config').classList.remove('hidden');
         }
 
         // --- GAVETA E AFERIÇÃO ---
@@ -388,7 +474,7 @@
             document.getElementById('input-foto').value = '';
             document.getElementById('input-acao').value = 'calibragem';
             
-            ajustarCamposAcao(); // Reseta os campos visíveis
+            ajustarCamposAcao();
 
             document.getElementById('overlay-gaveta').classList.remove('hidden');
             document.getElementById('gaveta-afericao').classList.remove('translate-y-full');
@@ -402,8 +488,8 @@
             const obrigatorioKm = document.getElementById('obrigatorio-km');
 
             if (acao === 'observacao') {
-                camposTecnicos.classList.add('hidden'); // Esconde pressão e sulco
-                obrigatorioKm.classList.add('hidden'); // Tira o asterisco do KM
+                camposTecnicos.classList.add('hidden'); 
+                obrigatorioKm.classList.add('hidden'); 
             } else if (acao === 'sulco') {
                 camposTecnicos.classList.remove('hidden');
                 divPressao.classList.add('hidden');
@@ -427,7 +513,6 @@
             const acao = document.getElementById('input-acao').value;
             const kmInput = document.getElementById('input-km').value;
             
-            // Validação condicional do KM
             if(acao !== 'observacao' && !kmInput) {
                 return alert("Por favor, preencha o KM/Horas atual.");
             }
@@ -442,12 +527,11 @@
             let fotoUrl = null;
             const fileInput = document.getElementById('input-foto');
 
-                     if (fileInput.files.length > 0) {
+            if (fileInput.files.length > 0) {
                 const file = fileInput.files[0];
                 const fileName = `${Date.now()}_${pneuSelecionado.numeroFogo}.jpg`;
                 const { error: uploadError } = await supabaseClient.storage.from('fotos-pneus').upload(fileName, file);
                 if(!uploadError) {
-                    // AGORA SALVAMOS APENAS O NOME DO ARQUIVO
                     fotoUrl = fileName; 
                 } else {
                     alert("Aviso: A foto não pôde ser enviada, mas a aferição será salva.");
@@ -479,7 +563,6 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js').then(registration => {
-                    // Verifica se tem atualização a cada 1 minuto
                     setInterval(() => { registration.update(); }, 60000);
 
                     registration.onupdatefound = () => {
@@ -487,7 +570,6 @@
                         installingWorker.onstatechange = () => {
                             if (installingWorker.state === 'installed') {
                                 if (navigator.serviceWorker.controller) {
-                                    // Se já tinha uma versão rodando, avisa o usuário e recarrega
                                     console.log('Nova versão disponível. Atualizando...');
                                     window.location.reload();
                                 }
@@ -497,7 +579,6 @@
                 }).catch(err => console.log('Erro no PWA:', err));
             });
         }
-        
     </script>
 </body>
 </html>
