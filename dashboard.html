@@ -331,11 +331,88 @@
             renderizarGraficoPneus(dadosBrutos.pneus);
             await aplicarFiltros();
         }
+ let colaboradoresSelecionados = [];
+                // --- LÓGICA DO MODAL DE COLABORADORES ---
+        function abrirModalColaboradores() {
+            document.getElementById('busca-colaborador-modal').value = '';
+            renderizarListaColaboradores(dadosBrutos.motoristas);
+            document.getElementById('modal-colaboradores').classList.remove('hidden');
+            lucide.createIcons();
+        }
 
+        function fecharModalColaboradores() {
+            document.getElementById('modal-colaboradores').classList.add('hidden');
+        }
+
+        function filtrarListaColaboradores() {
+            const termo = document.getElementById('busca-colaborador-modal').value.toLowerCase();
+            const filtrados = dadosBrutos.motoristas.filter(m => 
+                m.nome.toLowerCase().includes(termo) || 
+                (m.cnh && m.cnh.includes(termo))
+            );
+            renderizarListaColaboradores(filtrados);
+        }
+
+        function renderizarListaColaboradores(lista) {
+            const container = document.getElementById('lista-colaboradores-checkbox');
+            container.innerHTML = '';
+
+            if (lista.length === 0) {
+                container.innerHTML = '<p class="text-center text-gray-500 text-sm py-4">Nenhum colaborador encontrado.</p>';
+                return;
+            }
+
+            lista.forEach(m => {
+                const isChecked = colaboradoresSelecionados.includes(m.id);
+                container.innerHTML += `
+                    <label class="flex items-center gap-3 p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg cursor-pointer transition-colors">
+                        <input type="checkbox" value="${m.id}" ${isChecked ? 'checked' : ''} onchange="toggleSelecaoColaborador('${m.id}', this.checked)" class="w-4 h-4 text-brand rounded focus:ring-brand border-gray-300 dark:border-slate-600 dark:bg-slate-800">
+                        <div class="flex flex-col">
+                            <span class="text-sm font-medium text-gray-900 dark:text-white">${escapeHTML(m.nome)}</span>
+                            <span class="text-xs text-gray-500">${m.cnh || 'S/ CPF'}</span>
+                        </div>
+                    </label>
+                `;
+            });
+        }
+
+        function toggleSelecaoColaborador(id, isChecked) {
+            if (isChecked) {
+                if (!colaboradoresSelecionados.includes(id)) colaboradoresSelecionados.push(id);
+            } else {
+                colaboradoresSelecionados = colaboradoresSelecionados.filter(item => item !== id);
+            }
+        }
+
+        function limparSelecaoColaboradores() {
+            colaboradoresSelecionados = [];
+            renderizarListaColaboradores(dadosBrutos.motoristas); // Atualiza visual dos checkboxes
+        }
+
+        function aplicarSelecaoColaboradores() {
+            fecharModalColaboradores();
+            
+            // Atualiza o texto do botão
+            const btnTexto = document.getElementById('btn-texto-colaboradores');
+            if (colaboradoresSelecionados.length === 0) {
+                btnTexto.innerText = "Todos os Colaboradores";
+                btnTexto.classList.replace('text-brand', 'text-gray-500');
+            } else if (colaboradoresSelecionados.length === 1) {
+                const m = dadosBrutos.motoristas.find(x => x.id === colaboradoresSelecionados[0]);
+                btnTexto.innerText = m ? m.nome : "1 Selecionado";
+                btnTexto.classList.replace('text-gray-500', 'text-brand');
+            } else {
+                btnTexto.innerText = `${colaboradoresSelecionados.length} Colaboradores`;
+                btnTexto.classList.replace('text-gray-500', 'text-brand');
+            }
+
+            // Roda a query novamente com o filtro
+            aplicarFiltros();
+        }
         async function aplicarFiltros() {
             const dataInicio = document.getElementById('filtro-data-inicio').value;
             const dataFim = document.getElementById('filtro-data-fim').value;
-            const motoristasSelecionados = Array.from(document.getElementById('filtro-motoristas').selectedOptions).map(opt => opt.value);
+            const motoristasSelecionados = colaboradoresSelecionados;
 
             let query = supabaseClient.from('ordens_servico').select('*');
             if (dataInicio) query = query.gte('created_at', `${dataInicio}T00:00:00`);
