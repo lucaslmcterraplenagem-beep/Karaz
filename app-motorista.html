@@ -27,6 +27,21 @@
             darkMode: 'class',
             theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] }, colors: { brand: '#ea580c', darkbg: '#0f172a', darkcard: '#1e293b' } } }
         }
+            <!-- MODAL DE CONFIRMAÇÃO DE SAÍDA -->
+    <div id="modal-sair" class="hidden fixed inset-0 bg-black/70 z-[200] flex items-center justify-center p-6 backdrop-blur-sm transition-opacity">
+        <div class="bg-white dark:bg-darkcard rounded-2xl shadow-2xl w-full max-w-sm border border-gray-200 dark:border-slate-700 p-6 text-center transform scale-95 transition-transform duration-300" id="modal-sair-content">
+            <div class="w-16 h-16 bg-red-100 dark:bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="log-out" class="w-8 h-8 text-red-500"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Sair do App?</h3>
+            <p class="text-sm text-gray-500 mb-6">Você precisará digitar seu CPF e senha novamente para entrar.</p>
+            
+            <div class="flex gap-3 w-full">
+                <button onclick="fecharModalSair()" class="flex-1 py-3 bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 font-bold rounded-xl transition-colors">Cancelar</button>
+                <button onclick="fazerLogout()" class="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl shadow-lg shadow-red-500/30 transition-colors">Sim, Sair</button>
+            </div>
+        </div>
+    </div>
     </script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -304,10 +319,26 @@
             }
         }
 
-        function confirmarSair() {
-            if (confirm("Tem certeza que deseja sair do aplicativo?")) {
-                fazerLogout();
-            }
+                function confirmarSair() {
+            document.getElementById('modal-sair').classList.remove('hidden');
+            // Pequena animação para o modal crescer na tela
+            setTimeout(() => {
+                document.getElementById('modal-sair-content').classList.remove('scale-95');
+                document.getElementById('modal-sair-content').classList.add('scale-100');
+            }, 10);
+        }
+
+        function fecharModalSair() {
+            document.getElementById('modal-sair-content').classList.remove('scale-100');
+            document.getElementById('modal-sair-content').classList.add('scale-95');
+            setTimeout(() => {
+                document.getElementById('modal-sair').classList.add('hidden');
+            }, 200);
+        }
+
+        async function fazerLogout() { 
+            await supabaseClient.auth.signOut(); 
+            window.location.reload(); 
         }
 
         async function fazerLogout() { 
