@@ -35,19 +35,28 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Função que decide para onde o usuário vai
-function redirecionarPorRole(session) {
+// Função que decide para onde o usuário vai (AGORA BUSCA NO BANCO DE DADOS)
+async function redirecionarPorRole(session) {
     try {
-        const payload = JSON.parse(atob(session.access_token.split('.')[1]));
-        const role = payload.user_role;
+        // Busca a permissão real na tabela user_roles
+        const { data, error } = await supabaseClient
+            .from('user_roles')
+            .select('role')
+            .eq('user_id', session.user.id)
+            .single();
 
-        if (role === 'motorista') {
+        if (error || !data) {
+            // Se não achar a permissão, joga pro dashboard por segurança
+            window.location.href = "dashboard.html";
+            return;
+        }
+
+        if (data.role === 'motorista') {
             window.location.href = "app-motorista.html";
         } else {
             window.location.href = "dashboard.html";
         }
     } catch (e) {
-        // Se der erro ao ler o token, joga pro dashboard (seguro)
         window.location.href = "dashboard.html";
     }
 }
