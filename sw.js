@@ -1,8 +1,8 @@
-// Configurações do seu repositório
-const GITHUB_OWNER = 'lucasmcterraplenagem-beep';
+// Configurações do seu repositório (AGORA COM O NOME CORRETO!)
+const GITHUB_OWNER = 'lucaslmcterraplenagem-beep'; 
 const GITHUB_REPO = 'Karaz';
 
-let CACHE_NAME = 'karaz-app-v1'; // Valor inicial de segurança
+let CACHE_NAME = 'karaz-app-v1'; 
 const urlsToCache = [
   './app-motorista.html',
   './js/supabase-client.js',
@@ -10,15 +10,26 @@ const urlsToCache = [
   './logo-app.png'
 ];
 
-// Instalação: Busca a versão mais recente no GitHub para usar como nome do Cache
 self.addEventListener('install', (event) => {
   event.waitUntil(
     fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/commits/main`)
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) throw new Error("API Offline");
+        return response.json();
+      })
       .then(data => {
-        // Pega os 7 primeiros caracteres do hash do commit (ex: "a1b2c3d")
-        const shortSha = data.sha.substring(0, 7);
-        CACHE_NAME = `karaz-app-${shortSha}`; // Ex: karaz-app-a1b2c3d
+        // Se o GitHub retornar o SHA corretamente, usa ele
+        if (data && data.sha) {
+            const shortSha = data.sha.substring(0, 7);
+            CACHE_NAME = `karaz-app-${shortSha}`;
+        } else {
+            CACHE_NAME = `karaz-app-${Date.now()}`;
+        }
+        return caches.open(CACHE_NAME);
+      })
+      .catch(() => {
+        // Se a API do GitHub falhar (limite de requisições, etc), usa a data atual como versão
+        CACHE_NAME = `karaz-app-${Date.now()}`;
         return caches.open(CACHE_NAME);
       })
       .then(cache => cache.addAll(urlsToCache))
@@ -26,14 +37,13 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Ativação: Limpa os caches antigos e assume o controle
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
           if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName); // Apaga versões antigas
+            return caches.delete(cacheName);
           }
         })
       );
