@@ -1,5 +1,8 @@
-// Mudamos a versão para v4 para forçar o celular a baixar tudo do zero
-const CACHE_NAME = 'karaz-app-v4';
+// Configurações do seu repositório
+const GITHUB_OWNER = 'lucasmcterraplenagem-beep';
+const GITHUB_REPO = 'Karaz';
+
+let CACHE_NAME = 'karaz-app-v1'; // Valor inicial de segurança
 const urlsToCache = [
   './app-motorista.html',
   './js/supabase-client.js',
@@ -7,30 +10,34 @@ const urlsToCache = [
   './logo-app.png'
 ];
 
+// Instalação: Busca a versão mais recente no GitHub para usar como nome do Cache
 self.addEventListener('install', (event) => {
-  // Força o novo Service Worker a assumir o controle imediatamente
-  self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(urlsToCache))
+    fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/commits/main`)
+      .then(response => response.json())
+      .then(data => {
+        // Pega os 7 primeiros caracteres do hash do commit (ex: "a1b2c3d")
+        const shortSha = data.sha.substring(0, 7);
+        CACHE_NAME = `karaz-app-${shortSha}`; // Ex: karaz-app-a1b2c3d
+        return caches.open(CACHE_NAME);
+      })
+      .then(cache => cache.addAll(urlsToCache))
+      .then(() => self.skipWaiting())
   );
 });
 
+// Ativação: Limpa os caches antigos e assume o controle
 self.addEventListener('activate', (event) => {
-  // Remove os caches antigos (v1, v2, v3...)
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
           if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName);
+            return caches.delete(cacheName); // Apaga versões antigas
           }
         })
       );
-    }).then(() => {
-      // Faz o novo Service Worker controlar todas as abas abertas
-      return self.clients.claim();
-    })
+    }).then(() => self.clients.claim())
   );
 });
 
