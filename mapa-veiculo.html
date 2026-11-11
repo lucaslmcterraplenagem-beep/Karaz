@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-       <title>Mapa do Veiculo | Karaz</title>
-    <!-- FAVICON -->
+    <title>Mapa do Veículo | Karaz</title>
     <link rel="icon" type="image/png" href="logo.png">
+    
     <script>
         if (localStorage.theme === 'light') { document.documentElement.classList.remove('dark'); } 
         else { document.documentElement.classList.add('dark'); }
@@ -25,13 +25,12 @@
 </head>
 <body class="bg-gray-100 text-gray-800 dark:bg-darkbg dark:text-gray-100 font-sans h-screen flex overflow-hidden transition-colors duration-300 antialiased">
 
-    <aside class="w-64 bg-white dark:bg-darkcard border-r border-gray-200 dark:border-slate-700 transition-all duration-300 flex flex-col z-20">
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="w-64 bg-white dark:bg-darkcard border-r border-gray-200 dark:border-slate-700 transition-all duration-300 flex flex-col z-20">
         <div>
-                       <div class="h-16 flex items-center justify-center border-b border-gray-200 dark:border-slate-700 px-4">
+            <div class="h-16 flex items-center justify-center border-b border-gray-200 dark:border-slate-700 px-4">
                 <a href="dashboard.html" class="flex items-center justify-center w-full">
-                    <!-- Logo para Tema Claro -->
                     <img src="logo-light.png" alt="Karaz Sistema" class="h-8 object-contain dark:hidden">
-                    <!-- Logo para Tema Escuro -->
                     <img src="logo-dark.png" alt="Karaz Sistema" class="h-8 object-contain hidden dark:block">
                 </a>
             </div>
@@ -48,7 +47,6 @@
                 <a href="ordens-servico.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
                     <i data-lucide="wrench" class="w-5 h-5"></i><span class="menu-text text-sm">Ordens de Serviço</span>
                 </a>
-                                <!-- Menu Ativo -->
                 <a href="cadastros.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
                     <i data-lucide="database" class="w-5 h-5"></i><span class="menu-text text-sm">Cadastros Gerais</span>
                 </a>
@@ -59,13 +57,20 @@
         </div>
     </aside>
 
-    <div class="flex-1 flex flex-col h-screen overflow-hidden">
+    <!-- CONTEÚDO PRINCIPAL -->
+    <div class="flex-1 flex flex-col h-screen overflow-hidden transition-all duration-300" id="main-content">
+        
         <header class="h-16 bg-white dark:bg-darkcard border-b border-gray-200 dark:border-slate-700 flex items-center justify-between px-6 transition-colors duration-300">
             <div class="flex items-center gap-4">
+                <button onclick="toggleSidebar()" class="p-1.5 text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors rounded-md"><i data-lucide="menu" class="w-5 h-5"></i></button>
                 <a href="veiculos.html" class="p-1.5 text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors rounded-md bg-gray-100 dark:bg-slate-800"><i data-lucide="arrow-left" class="w-5 h-5"></i></a>
                 <h2 class="text-base font-semibold text-gray-800 dark:text-gray-200">Mapa de Pneus</h2>
             </div>
+            
             <div class="flex items-center gap-5">
+                <!-- CONFIGURAÇÃO MOVIDA PARA CÁ -->
+                <span id="info-config" class="text-sm font-medium text-gray-500 dark:text-gray-400 mr-2 hidden sm:block">Carregando config...</span>
+                
                 <button id="toggle-theme" class="p-1.5 text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors">
                     <i data-lucide="moon" class="w-5 h-5 hidden dark:block"></i><i data-lucide="sun" class="w-5 h-5 block dark:hidden"></i>
                 </button>
@@ -79,9 +84,10 @@
         <main class="flex-1 overflow-y-auto p-6 bg-gray-50 dark:bg-darkbg">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
                 
+                <!-- ÁREA DO MAPA (2 COLUNAS) -->
                 <div class="lg:col-span-2 bg-white dark:bg-darkcard rounded-xl border border-gray-200 dark:border-slate-700 p-6 flex flex-col items-center justify-start relative overflow-hidden pt-12">
                     
-                                       <div class="absolute top-6 left-6 flex items-start gap-4">
+                    <div class="absolute top-6 left-6 flex items-start gap-4">
                         <!-- Placa Mercosul -->
                         <div class="inline-flex flex-col border-2 border-gray-900 dark:border-white rounded-md overflow-hidden w-28 shadow-sm mt-1">
                             <div class="bg-[#003399] text-white text-[9px] text-center font-bold py-0.5 tracking-widest">BRASIL</div>
@@ -98,18 +104,18 @@
                         </div>
                     </div>
 
-                    <!-- NOVO CHASSI ESTILO "T" DA IMAGEM -->
-                    <div class="relative mt-24 mb-10 flex flex-col items-center">
+                    <!-- CHASSI ESTILIZADO -->
+                    <div class="relative mt-24 mb-10 flex flex-col items-center w-full max-w-lg">
                         
                         <!-- Cabine (Frente) -->
-                        <div class="w-48 h-14 bg-slate-200 dark:bg-slate-700 rounded-t-xl border-4 border-b-0 border-slate-400 dark:border-slate-500 flex items-center justify-center z-10 relative shadow-sm">
-                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Frente</span>
+                        <div class="w-56 h-16 bg-slate-200 dark:bg-slate-700 rounded-t-2xl border-4 border-b-0 border-slate-400 dark:border-slate-500 flex items-center justify-center z-10 relative shadow-md">
+                            <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Frente</span>
                         </div>
 
                         <!-- Container dos Eixos -->
-                        <div id="eixos-container" class="relative w-full flex flex-col items-center gap-12 pt-4 pb-12 z-0">
+                        <div id="eixos-container" class="relative w-full flex flex-col items-center gap-14 pt-4 pb-12 z-0 mt-4">
                             <!-- Linha central vertical (Chassi) -->
-                            <div class="absolute top-0 bottom-0 left-1/2 w-4 bg-slate-400 dark:bg-slate-500 -translate-x-1/2 z-0 rounded-b-xl"></div>
+                            <div class="absolute top-0 bottom-0 left-1/2 w-6 bg-slate-300 dark:bg-slate-600 border-x-2 border-slate-400 dark:border-slate-500 -translate-x-1/2 z-0"></div>
                             <!-- Eixos entram aqui via JS -->
                         </div>
                     </div>
@@ -122,31 +128,52 @@
                     </div>
                 </div>
 
+                <!-- PAINEL LATERAL (1 COLUNA) -->
                 <div class="flex flex-col gap-4">
+                    
+                    <!-- DADOS DO VEÍCULO -->
                     <div class="bg-white dark:bg-darkcard p-5 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm">
                         <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 border-b border-gray-200 dark:border-slate-700 pb-2">Dados do Veículo</h4>
-                        <div class="space-y-3">
-                            <div class="flex justify-between items-center">
-                                <span class="text-sm text-gray-500">KM Atual</span>
-                                <span id="info-km" class="font-bold text-gray-900 dark:text-white text-lg">0</span>
+                        
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <p class="text-xs text-gray-500 mb-1">KM Atual</p>
+                                <p id="info-km" class="font-bold text-gray-900 dark:text-white text-lg">0</p>
                             </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-sm text-gray-500">Horímetro</span>
-                                <span id="info-horas" class="font-bold text-gray-900 dark:text-white text-lg">0 h</span>
+                            <div>
+                                <p class="text-xs text-gray-500 mb-1">Horímetro</p>
+                                <p id="info-horas" class="font-bold text-gray-900 dark:text-white text-lg">0 h</p>
                             </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-sm text-gray-500">Eixos / Pneus</span>
-                                <span id="info-config" class="font-medium text-gray-800 dark:text-gray-300">0 / 0</span>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100 dark:border-slate-800">
+                            <div>
+                                <p class="text-xs text-gray-500 mb-1">Pneus Instalados</p>
+                                <p id="kpi-pneus-instalados" class="font-bold text-gray-900 dark:text-white text-lg">0 / 0</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500 mb-1">Investimento</p>
+                                <p id="kpi-investimento" class="font-bold text-gray-900 dark:text-white text-lg">R$ 0,00</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500 mb-1">Atenção</p>
+                                <p id="kpi-atencao" class="font-bold text-yellow-500 text-lg">0</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500 mb-1">Críticos</p>
+                                <p id="kpi-criticos" class="font-bold text-red-500 text-lg">0</p>
                             </div>
                         </div>
                     </div>
 
-                    <div id="painel-pneu" class="bg-white dark:bg-darkcard p-5 rounded-xl border-2 border-brand shadow-lg transition-all duration-300 opacity-50 pointer-events-none">
+                    <!-- PNEU SELECIONADO -->
+                    <div id="painel-pneu" class="bg-white dark:bg-darkcard p-5 rounded-xl border-2 border-brand shadow-lg transition-all duration-300 opacity-50 pointer-events-none flex-1 flex flex-col">
                         <div class="flex justify-between items-start mb-4 border-b border-gray-200 dark:border-slate-700 pb-2">
                             <h4 class="text-sm font-bold text-brand uppercase tracking-wider">Pneu Selecionado</h4>
-                            <i data-lucide="disc" class="w-5 h-5 text-brand"></i>
+                            <span id="badge-status-pneu" class="text-[10px] font-bold bg-green-500/10 text-green-500 px-2 py-0.5 rounded hidden">EM USO</span>
                         </div>
-                        <div id="conteudo-pneu" class="space-y-3 text-sm">
+                        
+                        <div id="conteudo-pneu" class="space-y-3 text-sm flex-1 flex flex-col justify-center">
                             <p class="text-gray-500 text-center py-4">Clique em um pneu no mapa para ver os detalhes.</p>
                         </div>
                     </div>
@@ -170,9 +197,7 @@
         </div>
     </div>
 
-    <!-- ============================================== -->
-    <!-- NOVO: GAVETA DE AFERIÇÃO RÁPIDA (ADM)          -->
-    <!-- ============================================== -->
+    <!-- GAVETA DE AFERIÇÃO RÁPIDA -->
     <div id="overlay-gaveta" class="hidden fixed inset-0 bg-black/60 z-40 backdrop-blur-sm transition-opacity" onclick="fecharGaveta()"></div>
     
     <div id="gaveta-afericao" class="fixed bottom-0 left-0 right-0 md:left-auto md:right-0 md:top-0 md:h-full md:w-[420px] bg-white dark:bg-darkcard rounded-t-2xl md:rounded-none md:rounded-l-2xl shadow-2xl border-t md:border-t-0 md:border-l border-gray-200 dark:border-slate-700 z-50 transform translate-y-full md:translate-y-0 md:translate-x-full transition-transform duration-300 flex flex-col max-h-[90vh] md:max-h-full">
@@ -230,7 +255,6 @@
             </button>
         </div>
     </div>
-    <!-- ============================================== -->
 
     <script src="js/supabase-client.js"></script>
     <script>
@@ -251,6 +275,17 @@
             html.classList.toggle('dark'); localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
         });
 
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar.classList.contains('w-64')) {
+                sidebar.classList.replace('w-64', 'w-0');
+                sidebar.classList.add('overflow-hidden', 'border-none');
+            } else {
+                sidebar.classList.replace('w-0', 'w-64');
+                sidebar.classList.remove('overflow-hidden', 'border-none');
+            }
+        }
+
         const urlParams = new URLSearchParams(window.location.search);
         const veiculoId = urlParams.get('id');
         let veiculoAtual = null;
@@ -258,6 +293,7 @@
         let pneuSlotSelecionado = null;
         let pneuSelecionadoInfo = null;
 
+        // OTIMIZAÇÃO: Buscar dados em lote para não travar a tela
         async function carregarMapa() {
             if (!veiculoId) return window.location.href = "veiculos.html";
 
@@ -270,30 +306,100 @@
             document.getElementById('marca-visual').innerText = veiculo.marca;
             document.getElementById('info-km').innerText = new Intl.NumberFormat('pt-BR').format(veiculo.km_atual) + ' km';
             document.getElementById('info-horas').innerText = veiculo.horas_atual + ' h';
+            
             let configStr = veiculo.configuracao_eixos ? veiculo.configuracao_eixos.replace(/,/g, '-') : `${veiculo.quantidade_pneus} Pneus`;
             document.getElementById('info-config').innerText = `${veiculo.quantidade_eixos} Eixos / ${veiculo.quantidade_pneus} Pneus (${configStr})`;
-             if(veiculo.prefixo) {
+            
+            if(veiculo.prefixo) {
                 document.getElementById('prefixo-visual').innerText = veiculo.prefixo;
                 document.getElementById('prefixo-visual').classList.remove('hidden');
             }
 
+            // OTIMIZAÇÃO: Busca pneus
             const { data: pneus } = await supabaseClient.from('pneus').select('*').eq('veiculo_id', veiculoId);
-            
-            if (pneus) {
-                for (let p of pneus) {
-                    const { data: calib } = await supabaseClient.from('calibragens').select('pressao_psi, created_at').eq('pneu_id', p.id).order('created_at', { ascending: false }).limit(1);
-                    if (calib && calib.length > 0) {
-                        p.pressao_atual = calib[0].pressao_psi;
-                        p.ultima_afericao = calib[0].created_at;
-                    } else {
-                        p.pressao_atual = 0;
-                        p.ultima_afericao = null;
-                    }
-                }
-            }
             pneusDoVeiculo = pneus || [];
 
+            if (pneusDoVeiculo.length > 0) {
+                const pneuIds = pneusDoVeiculo.map(p => p.id);
+                
+                // OTIMIZAÇÃO: Busca todas as calibragens de uma vez e mapeia a mais recente
+                const { data: calibragens } = await supabaseClient.from('calibragens')
+                    .select('pneu_id, pressao_psi, created_at')
+                    .in('pneu_id', pneuIds)
+                    .order('created_at', { ascending: false });
+
+                const calibMap = {};
+                if (calibragens) {
+                    calibragens.forEach(c => {
+                        if (!calibMap[c.pneu_id]) calibMap[c.pneu_id] = c; // Pega a mais recente (já ordenado)
+                    });
+                }
+
+                // OTIMIZAÇÃO E DADOS REAIS: Busca todo o histórico para contar recapagens e calcular KM real
+                const { data: historicos } = await supabaseClient.from('historico_pneu')
+                    .select('pneu_id, tipo_evento, km_registro')
+                    .in('pneu_id', pneuIds);
+
+                const recapsMap = {};
+                const kmMap = {};
+
+                if (historicos) {
+                    historicos.forEach(h => {
+                        // Conta recapagens
+                        if (h.tipo_evento === 'reforma') {
+                            recapsMap[h.pneu_id] = (recapsMap[h.pneu_id] || 0) + 1;
+                        }
+                        // Calcula KM real (diferença entre o maior e menor KM registrado no histórico)
+                        if (h.km_registro) {
+                            const km = parseFloat(h.km_registro);
+                            if (!kmMap[h.pneu_id]) {
+                                kmMap[h.pneu_id] = { min: km, max: km };
+                            } else {
+                                if (km < kmMap[h.pneu_id].min) kmMap[h.pneu_id].min = km;
+                                if (km > kmMap[h.pneu_id].max) kmMap[h.pneu_id].max = km;
+                            }
+                        }
+                    });
+                }
+
+                // Junta os dados
+                pneusDoVeiculo.forEach(p => {
+                    const calib = calibMap[p.id];
+                    p.pressao_atual = calib ? calib.pressao_psi : 0;
+                    p.ultima_afericao = calib ? calib.created_at : null;
+                    p.qtd_recapagens = recapsMap[p.id] || 0;
+                    
+                    // Se tiver pelo menos dois registros de KM, calcula a diferença real
+                    if (kmMap[p.id] && kmMap[p.id].max > kmMap[p.id].min) {
+                        p.km_rodado = kmMap[p.id].max - kmMap[p.id].min;
+                    } else {
+                        p.km_rodado = null; // Sem dados suficientes
+                    }
+                });
+            }
+
+            calcularKPIsVeiculo();
             renderizarChassi();
+        }
+
+        function calcularKPIsVeiculo() {
+            const instalados = pneusDoVeiculo.length;
+            const totalEsperado = veiculoAtual.quantidade_pneus || 0;
+            let investimento = 0;
+            let atencao = 0;
+            let criticos = 0;
+
+            pneusDoVeiculo.forEach(p => {
+                investimento += (p.valor_pago || 0);
+                let sulco = p.sulco_atual !== null ? p.sulco_atual : p.sulco_inicial;
+                if (sulco <= 3) criticos++;
+                else if (sulco <= 5) atencao++;
+            });
+
+            document.getElementById('kpi-pneus-instalados').innerHTML = `${instalados} <span class="text-sm text-gray-400 font-normal">/ ${totalEsperado}</span>`;
+            document.getElementById('kpi-investimento').innerText = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(investimento);
+            document.getElementById('kpi-atencao').innerText = atencao;
+            document.getElementById('kpi-criticos').innerText = criticos;
         }
 
         function renderizarChassi() {
@@ -313,18 +419,21 @@
                 let qtd = parseInt(qtdStr);
                 
                 const eixoDiv = document.createElement('div');
-                // O eixo é a barra horizontal
                 eixoDiv.className = "relative flex justify-between items-center w-full px-2 z-10";
-                eixoDiv.innerHTML = `<div class="absolute top-1/2 left-0 w-full h-4 bg-slate-400 dark:bg-slate-500 -translate-y-1/2 rounded-full z-0"></div>`;
-
-                let htmlPneus = '';
-                let pneusPorLado = qtd / 2;
                 
-                let ladoEsquerdoHtml = '<div class="flex gap-2">';
-                let ladoDireitoHtml = '<div class="flex gap-2">';
+                // Label do Eixo
+                const labelEixo = document.createElement('div');
+                labelEixo.className = "absolute right-full mr-4 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-400 uppercase";
+                labelEixo.innerText = `${indexEixo + 1}º Eixo`;
+
+                // Barra do Eixo
+                const barraEixo = `<div class="absolute top-1/2 left-0 w-full h-4 bg-slate-400 dark:bg-slate-500 -translate-y-1/2 rounded-full z-0"></div>`;
+
+                let ladoEsquerdoHtml = '<div class="flex gap-3">';
+                let ladoDireitoHtml = '<div class="flex gap-3">';
+                let pneusPorLado = qtd / 2;
 
                 for (let i = 1; i <= pneusPorLado; i++) {
-                    // O design de pílula (rounded-full) e tamanho w-12 h-20
                     const posEsq = `E${indexEixo+1}-E${i}`; 
                     const pneuEsq = pneusDoVeiculo.find(p => p.posicao === posEsq);
                     ladoEsquerdoHtml += gerarPneuHTML(pneuEsq, posEsq);
@@ -337,7 +446,7 @@
                 ladoEsquerdoHtml += '</div>';
                 ladoDireitoHtml += '</div>';
 
-                eixoDiv.innerHTML += `${ladoEsquerdoHtml}<div class="w-12"></div>${ladoDireitoHtml}`;
+                eixoDiv.innerHTML = labelEixo.outerHTML + barraEixo + `${ladoEsquerdoHtml}<div class="w-12"></div>${ladoDireitoHtml}`;
                 container.appendChild(eixoDiv);
             });
 
@@ -351,7 +460,7 @@
                     const pneuAqui = pneusDoVeiculo.find(p => p.posicao === posicao);
                     htmlEstepes += gerarPneuHTML(pneuAqui, posicao, true);
                 }
-                               estepeDiv.innerHTML = `
+                estepeDiv.innerHTML = `
                     <p class="text-[10px] text-center text-slate-500 mb-3 font-bold uppercase tracking-widest">Estepes</p>
                     <div class="grid grid-cols-4 sm:grid-cols-6 gap-3 justify-center max-w-sm mx-auto">
                         ${htmlEstepes}
@@ -371,66 +480,95 @@
                 
                 let ringClass = pneuSelecionadoInfo && pneuSelecionadoInfo.id === pneu.id ? 'ring-4 ring-brand scale-110 z-30' : 'hover:scale-105 z-20';
 
-                // Formato de pílula igual ao seu desenho
+                // Cor da pressão (indicador)
+                let pressaoColor = 'bg-gray-300'; // Sem registro
+                if (pneu.pressao_atual > 0) pressaoColor = 'bg-green-400'; // Tem registro
+                if (pneu.pressao_atual > 0 && pneu.pressao_atual < 80) pressaoColor = 'bg-red-500'; // Muito baixa (alerta)
+
                 return `
-                    <div onclick="selecionarPneu('${pneu.id}')" class="relative w-12 h-20 rounded-full border-2 shadow-md cursor-pointer transition-transform ${cor} ${ringClass} flex flex-col items-center justify-center py-1">
-                        <span class="text-[9px] font-bold leading-none">${pneu.numero_fogo}</span>
-                        <span class="text-[8px] font-medium leading-none opacity-80 mt-1">${pneu.pressao_atual > 0 ? pneu.pressao_atual : 'S/P'}</span>
+                    <div onclick="selecionarPneu('${pneu.id}')" class="relative w-14 h-22 rounded-full border-2 shadow-md cursor-pointer transition-transform ${cor} ${ringClass} flex flex-col items-center justify-center py-1">
+                        <!-- Indicador de Pressão -->
+                        <div class="absolute top-1 right-1 w-2 h-2 rounded-full ${pressaoColor} border border-white/50" title="Status de Pressão"></div>
+                        
+                        <span class="text-[10px] font-bold leading-none mt-2">${pneu.numero_fogo}</span>
                         <span class="text-[9px] font-bold leading-none bg-black/20 px-1 rounded mt-1">${sulco}mm</span>
                     </div>
                 `;
             } else {
                 return `
-                    <div onclick="abrirModalInstalar('${posicao}')" class="relative z-10 w-12 h-20 rounded-full border-2 border-dashed border-gray-400 dark:border-gray-500 bg-gray-200/50 dark:bg-slate-800/50 shadow-inner cursor-pointer hover:bg-brand/10 hover:border-brand transition-colors flex items-center justify-center group">
-                        <i data-lucide="plus" class="w-5 h-5 text-gray-400 group-hover:text-brand"></i>
+                    <div onclick="abrirModalInstalar('${posicao}')" class="relative z-10 w-14 h-22 rounded-full border-2 border-dashed border-gray-400 dark:border-gray-500 bg-gray-200/50 dark:bg-slate-800/50 shadow-inner cursor-pointer hover:bg-brand/10 hover:border-brand transition-colors flex items-center justify-center group overflow-hidden">
+                        <i data-lucide="plus" class="w-6 h-6 text-gray-400 group-hover:text-brand transition-colors"></i>
+                        <span class="absolute inset-0 bg-brand flex items-center justify-center text-white text-[10px] font-bold uppercase opacity-0 group-hover:opacity-100 transition-opacity">Montar</span>
                     </div>
                 `;
             }
         }
 
-       function selecionarPneu(id) {
+        function selecionarPneu(id) {
             pneuSelecionadoInfo = pneusDoVeiculo.find(p => p.id === id);
             
             const painel = document.getElementById('painel-pneu');
             const conteudo = document.getElementById('conteudo-pneu');
+            const badge = document.getElementById('badge-status-pneu');
             
             painel.classList.remove('opacity-50', 'pointer-events-none');
             painel.classList.add('border-brand');
+            badge.classList.remove('hidden');
 
             let dataFormatada = 'Não aferido';
             if (pneuSelecionadoInfo.ultima_afericao) {
                 dataFormatada = new Date(pneuSelecionadoInfo.ultima_afericao).toLocaleString('pt-BR');
             }
 
+            let pressaoColor = 'text-gray-400';
+            if (pneuSelecionadoInfo.pressao_atual > 0) pressaoColor = 'text-green-500';
+            if (pneuSelecionadoInfo.pressao_atual > 0 && pneuSelecionadoInfo.pressao_atual < 80) pressaoColor = 'text-red-500';
+
+            // DADOS REAIS: Pega o KM calculado no carregamento ou mostra 'Sem dados'
+            let kmRodadoTexto = pneuSelecionadoInfo.km_rodado !== null ? new Intl.NumberFormat('pt-BR').format(pneuSelecionadoInfo.km_rodado) + ' km' : 'Sem dados';
+            
             conteudo.innerHTML = `
-                <div class="flex justify-between items-center mb-2">
-                    <span class="text-gray-500">Nº de Fogo</span>
-                    <span class="font-bold text-lg text-gray-900 dark:text-white uppercase">${pneuSelecionadoInfo.numero_fogo}</span>
+                <div class="flex items-center gap-4 mb-4 pb-4 border-b border-gray-100 dark:border-slate-800">
+                    <div class="w-12 h-12 bg-gray-200 dark:bg-slate-700 rounded-full flex items-center justify-center">
+                        <i data-lucide="disc" class="w-6 h-6 text-gray-500"></i>
+                    </div>
+                    <div>
+                        <h5 class="font-bold text-lg text-gray-900 dark:text-white uppercase leading-none">${pneuSelecionadoInfo.numero_fogo}</h5>
+                        <p class="text-xs text-gray-500 mt-1">${pneuSelecionadoInfo.marca} ${pneuSelecionadoInfo.medida}</p>
+                        <p class="text-xs text-gray-400">Posição: ${pneuSelecionadoInfo.posicao}</p>
+                    </div>
                 </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-gray-500">Posição</span>
-                    <span class="font-medium bg-gray-100 dark:bg-slate-800 px-2 py-0.5 rounded">${pneuSelecionadoInfo.posicao}</span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-gray-500">Sulco Atual</span>
-                    <span class="font-bold">${pneuSelecionadoInfo.sulco_atual} mm</span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-gray-500">Pressão Atual</span>
-                    <span class="font-bold text-brand">${pneuSelecionadoInfo.pressao_atual > 0 ? pneuSelecionadoInfo.pressao_atual + ' PSI' : 'Sem registro'}</span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-gray-500">Última Aferição</span>
-                    <span class="text-xs">${dataFormatada}</span>
+
+                <div class="grid grid-cols-2 gap-y-3 gap-x-2 text-sm">
+                    <div>
+                        <p class="text-gray-500 text-xs">Sulco Atual</p>
+                        <p class="font-bold text-gray-900 dark:text-white">${pneuSelecionadoInfo.sulco_atual} mm</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-xs">Pressão Atual</p>
+                        <p class="font-bold ${pressaoColor}">${pneuSelecionadoInfo.pressao_atual > 0 ? pneuSelecionadoInfo.pressao_atual + ' PSI' : 'Sem registro'}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-xs">Recapagens</p>
+                        <p class="font-bold text-gray-900 dark:text-white">${pneuSelecionadoInfo.qtd_recapagens}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-xs">KM Rodados</p>
+                        <p class="font-bold text-gray-900 dark:text-white">${kmRodadoTexto}</p>
+                    </div>
                 </div>
                 
-                <div class="pt-4 mt-2 border-t border-gray-200 dark:border-slate-700 space-y-2">
-                    <button onclick="abrirOS('${pneuSelecionadoInfo.id}', '${pneuSelecionadoInfo.posicao}')" class="w-full bg-brand hover:bg-orange-700 text-white py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2">
-                        <i data-lucide="wrench" class="w-4 h-4"></i> Abrir OS
-                    </button>
-                    <!-- BOTÃO ALTERADO PARA ABRIR A GAVETA -->
+                <div class="flex justify-between items-center mt-3 pt-3 border-t border-gray-100 dark:border-slate-800">
+                    <span class="text-gray-500 text-xs">Última Aferição</span>
+                    <span class="text-xs font-medium">${dataFormatada}</span>
+                </div>
+                
+                <div class="mt-auto pt-4 space-y-2">
                     <button onclick="abrirGavetaAfericao('${pneuSelecionadoInfo.id}', '${pneuSelecionadoInfo.numero_fogo}', '${pneuSelecionadoInfo.posicao}')" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2 shadow-md shadow-blue-500/30">
-                        <i data-lucide="gauge" class="w-4 h-4"></i> Aferir / Calibrar Agora
+                        <i data-lucide="gauge" class="w-4 h-4"></i> Aferir / Calibrar
+                    </button>
+                    <button onclick="abrirOS('${pneuSelecionadoInfo.id}', '${pneuSelecionadoInfo.posicao}')" class="w-full bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2">
+                        <i data-lucide="wrench" class="w-4 h-4"></i> Abrir Ordem de Serviço
                     </button>
                 </div>
             `;
@@ -439,7 +577,6 @@
         }
 
         function abrirOS(pneuId, posicao) {
-            // MUDANÇA AQUI: Passa o ID do veículo, do pneu e a posição para a tela de OS
             window.location.href = `ordens-servico.html?veiculo_id=${veiculoId}&pneu_saindo_id=${pneuId}&posicao=${posicao}&acao=abrir`;
         }
 
@@ -454,7 +591,7 @@
             
             lista.innerHTML = '';
             if (!estoque || estoque.length === 0) {
-                lista.innerHTML = '<p class="text-sm text-red-500 text-center py-4">Nenhum pneu disponível no estoque. Cadastre um novo primeiro.</p>';
+                lista.innerHTML = '<p class="text-sm text-red-500 text-center py-4">Nenhum pneu disponível no estoque.</p>';
                 return;
             }
 
@@ -476,11 +613,10 @@
 
         function fecharModal() { document.getElementById('modal-instalar').classList.add('hidden'); }
 
-               async function instalarPneu(pneuId, numeroFogo) {
+        async function instalarPneu(pneuId, numeroFogo) {
             const session = await supabaseClient.auth.getSession();
             const userId = session.data.session.user.id;
 
-            // 1. Atualiza o banco (NUVEM)
             const { error } = await supabaseClient.from('pneus').update({
                 status: 'em_uso',
                 veiculo_id: veiculoId,
@@ -489,10 +625,10 @@
 
             if (error) { alert("Erro ao instalar pneu: " + error.message); return; }
 
-            // 2. Grava históricos (NUVEM)
             await supabaseClient.from('historico_pneu').insert([{
                 pneu_id: pneuId, tipo_evento: 'instalacao',
                 descricao: `Pneu instalado no veículo ${veiculoAtual.placa} na posição ${pneuSlotSelecionado}.`,
+                km_registro: veiculoAtual.km_atual, // Registra o KM exato da instalação
                 usuario_id: userId
             }]);
 
@@ -502,27 +638,11 @@
                 usuario_id: userId
             }]);
 
-            // 3. A MÁGICA DA VELOCIDADE AQUI:
-            // Em vez de recarregar a página inteira, nós apenas atualizamos a memória local e desenhamos de novo.
-            // Buscamos o pneu que acabou de ser instalado
-            const { data: pneuNovo } = await supabaseClient.from('pneus').select('*').eq('id', pneuId).single();
-            
-            if (pneuNovo) {
-                // Atualiza o array que está na memória do navegador
-                pneusDoVeiculo.push(pneuNovo);
-                // Redesenha o chassi na hora (milissegundos)
-                renderizarChassi();
-            }
-
             fecharModal();
-            pneuSelecionadoInfo = null;
-            document.getElementById('painel-pneu').classList.add('opacity-50', 'pointer-events-none');
-            document.getElementById('conteudo-pneu').innerHTML = '<p class="text-gray-500 text-center py-4">Clique em um pneu no mapa para ver os detalhes.</p>';
+            carregarMapa(); 
         }
 
-        // ==========================================
-        // NOVO: LÓGICA DE AFERIÇÃO RÁPIDA (ADM)
-        // ==========================================
+        // LÓGICA DE AFERIÇÃO RÁPIDA
         function abrirGavetaAfericao(pneuId, numeroFogo, posicao) {
             document.getElementById('gaveta-pneu-info').innerText = `Pneu: ${numeroFogo} | Posição: ${posicao}`;
             document.getElementById('input-km').value = veiculoAtual.km_atual || '';
@@ -532,19 +652,15 @@
             document.getElementById('input-foto').value = '';
             document.getElementById('input-acao').value = 'calibragem';
             
-            // Atualiza a referência global
             pneuSelecionadoInfo = pneusDoVeiculo.find(p => p.id === pneuId);
-            
             ajustarCamposAcao();
 
             document.getElementById('overlay-gaveta').classList.remove('hidden');
-            // Remove a classe que joga para baixo no mobile e para direita no desktop
             document.getElementById('gaveta-afericao').classList.remove('translate-y-full', 'md:translate-x-full');
         }
 
         function fecharGaveta() {
             document.getElementById('overlay-gaveta').classList.add('hidden');
-            // Devolve a classe de esconder (dependendo da tela)
             document.getElementById('gaveta-afericao').classList.add('translate-y-full', 'md:translate-x-full');
         }
 
@@ -598,7 +714,6 @@
                 }
             }
 
-            // USA A MESMA RPC DO APP DO MOTORISTA!
             const { error } = await supabaseClient.rpc('registrar_afericao_app', {
                 p_veiculo_id: veiculoId,
                 p_pneu_id: pneuSelecionadoInfo.id,
@@ -617,29 +732,26 @@
                 alert("✅ Aferição registrada com sucesso!");
                 fecharGaveta();
                 btn.innerHTML = 'Salvar Aferição'; btn.disabled = false;
-                carregarMapa(); // Recarrega o mapa para atualizar o visual dos pneus na tela
+                carregarMapa(); 
             }
         }
-        // ==========================================
-        // TEMPO REAL (REALTIME) - MAPA VEÍCULO
-        // ==========================================
+
+        // REALTIME
         const channel = supabaseClient.channel('realtime-mapa')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'calibragens' }, payload => {
-                // Se o ADM não estiver com nenhum modal aberto, atualiza o mapa na hora
                 if (document.getElementById('gaveta-afericao').classList.contains('md:translate-x-full') && 
                     document.getElementById('modal-instalar').classList.contains('hidden')) {
-                    console.log('Novidade no banco! Atualizando mapa...');
                     carregarMapa(); 
                 }
             })
             .on('postgres_changes', { event: '*', schema: 'public', table: 'pneus' }, payload => {
-                 // Escuta também se um pneu for instalado/removido
                  if (document.getElementById('gaveta-afericao').classList.contains('md:translate-x-full') && 
                     document.getElementById('modal-instalar').classList.contains('hidden')) {
                     carregarMapa(); 
                 }
             })
             .subscribe();
+            
         carregarMapa();
     </script>
 </body>
