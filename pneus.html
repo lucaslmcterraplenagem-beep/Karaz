@@ -134,21 +134,21 @@
                     </select>
                 </div>
                 
-                <div class="flex gap-2 w-full sm:w-auto">
+                <div class="flex flex-wrap gap-2 w-full sm:w-auto justify-end">
                     <!-- BOTÃO EXPORTAR SECUNDÁRIO -->
-                    <button onclick="exportarExcelPneus()" class="w-full sm:w-auto bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
+                    <button onclick="exportarExcelPneus()" class="whitespace-nowrap w-full sm:w-auto bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
                         <i data-lucide="download" class="w-4 h-4"></i> Exportar Lista
                     </button>
                     <!-- BOTÃO NOVO PNEU PRIMÁRIO -->
-                    <button onclick="abrirModal()" class="w-full sm:w-auto bg-brand hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
+                    <button onclick="abrirModal()" class="whitespace-nowrap w-full sm:w-auto bg-brand hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
                         <i data-lucide="plus" class="w-4 h-4"></i> Novo Pneu
                     </button>
                 </div>
             </div>
 
             <!-- TABELA -->
-            <div class="bg-white dark:bg-darkcard border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden">
-                <table class="w-full text-left border-collapse">
+            <div class="bg-white dark:bg-darkcard border border-gray-200 dark:border-slate-700 rounded-lg overflow-x-auto">
+                <table class="w-full text-left border-collapse min-w-[800px]">
                     <thead>
                         <tr class="bg-gray-50 dark:bg-slate-800/50 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider">
                             <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Nº de Fogo</th>
@@ -293,6 +293,22 @@
                 </div>
             </div>
 
+            <!-- NOVAS INFORMAÇÕES DO PNEU -->
+            <div class="px-6 py-4 bg-gray-100 dark:bg-slate-800/50 flex flex-wrap gap-6 text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-slate-700">
+                <div>
+                    <p class="font-bold text-xs uppercase text-gray-500">Localização Atual</p>
+                    <p class="font-medium" id="pdf-info-local">-</p>
+                </div>
+                <div>
+                    <p class="font-bold text-xs uppercase text-gray-500">Recapagens</p>
+                    <p class="font-medium" id="pdf-info-recaps">-</p>
+                </div>
+                <div>
+                    <p class="font-bold text-xs uppercase text-gray-500">Custo de Aquisição</p>
+                    <p class="font-medium" id="pdf-info-custo">-</p>
+                </div>
+            </div>
+
             <div class="px-6 py-3 border-b border-gray-200 dark:border-slate-700 bg-white dark:bg-darkcard flex flex-wrap gap-4 text-xs items-center">
                 <span class="font-bold text-gray-500 uppercase tracking-wider">Colunas Visíveis:</span>
                 <label class="flex items-center gap-1 cursor-pointer hover:text-brand transition-colors"><input type="checkbox" checked onchange="toggleColunaHist('col-data', this.checked)" class="rounded text-brand focus:ring-brand"> Data</label>
@@ -326,11 +342,11 @@
                         </div>
                         <div>
                             <p class="font-bold text-xs uppercase text-gray-500">Localização Atual</p>
-                            <p class="font-medium" id="pdf-info-local">-</p>
+                            <p class="font-medium" id="pdf-info-local-print">-</p>
                         </div>
                         <div>
                             <p class="font-bold text-xs uppercase text-gray-500">Custo Total (Manutenção)</p>
-                            <p class="font-medium text-red-500" id="pdf-info-custo">-</p>
+                            <p class="font-medium text-red-500" id="pdf-info-custo-print">-</p>
                         </div>
                     </div>
                 </div>
@@ -494,7 +510,7 @@
 
         // --- LÓGICA DE DADOS ---
         let todosPneus = [];
-        let listaMotoristasMap = {}; // Para traduzir IDs de usuário para nomes
+        let listaMotoristasMap = {}; 
         let filtroKPIAtivo = null;
         const tabela = document.getElementById('tabela-pneus');
         const avisoVazio = document.getElementById('aviso-vazio');
@@ -504,14 +520,12 @@
         };
 
         async function carregarPneus() {
-            // 1. Buscar motoristas para traduzir IDs no histórico
             const { data: motoristas } = await supabaseClient.from('motoristas').select('user_id, nome');
             listaMotoristasMap = {};
             if (motoristas) {
                 motoristas.forEach(m => listaMotoristasMap[m.user_id] = m.nome);
             }
 
-            // 2. Busca os pneus
             const { data: pneusData, error: errorPneus } = await supabaseClient
                 .from('pneus')
                 .select('*')
@@ -519,7 +533,6 @@
 
             if (errorPneus) return console.error(errorPneus);
 
-            // 3. Busca as últimas calibragens
             const { data: calibragensData, error: errorCalib } = await supabaseClient
                 .from('calibragens')
                 .select('pneu_id, pressao_psi, created_at')
@@ -543,6 +556,24 @@
             aplicarFiltrosTabela();
         }
 
+        // ANIMAÇÃO DO KPI VALOR
+        function animarValor(idElemento, valorFinal) {
+            const elemento = document.getElementById(idElemento);
+            let valorAtual = 0;
+            const duracao = 1000;
+            const passos = duracao / 16; 
+            const incremento = valorFinal / passos;
+
+            const timer = setInterval(() => {
+                valorAtual += incremento;
+                if (valorAtual >= valorFinal) {
+                    valorAtual = valorFinal;
+                    clearInterval(timer);
+                }
+                elemento.innerText = formatarDinheiro(valorAtual);
+            }, 16);
+        }
+
         function calcularKPIs() {
             let total = todosPneus.length;
             let estoque = 0;
@@ -560,11 +591,13 @@
 
             document.getElementById('kpi-total').innerText = total;
             document.getElementById('kpi-estoque').innerText = estoque;
-            document.getElementById('kpi-valor').innerText = formatarDinheiro(valorEstoque);
+            
+            // Chama a animação em vez de setar direto
+            animarValor('kpi-valor', valorEstoque);
+            
             document.getElementById('kpi-criticos').innerText = criticos;
         }
 
-        // --- FILTROS DE KPI ---
         function toggleFiltroKPI(tipo, elemento) {
             if (filtroKPIAtivo === tipo) { filtroKPIAtivo = null; } 
             else { filtroKPIAtivo = tipo; }
@@ -587,7 +620,7 @@
                 
                 let matchStatus = statusFiltro === "" || p.status === statusFiltro;
                 if (filtroKPIAtivo === 'estoque') matchStatus = p.status === 'estoque';
-                if (filtroKPIAtivo === 'valor') matchStatus = p.status === 'estoque'; // Valor está atrelado ao estoque
+                if (filtroKPIAtivo === 'valor') matchStatus = p.status === 'estoque';
                 if (filtroKPIAtivo === 'criticos') {
                     let sulco = p.sulco_atual !== null ? p.sulco_atual : p.sulco_inicial;
                     matchStatus = sulco <= 3 && p.status !== 'desativado';
@@ -597,11 +630,10 @@
                 return matchTexto && matchStatus;
             });
 
-            // REGRA: Desativados sempre por último
             filtrados.sort((a, b) => {
                 if (a.status === 'desativado' && b.status !== 'desativado') return 1;
                 if (a.status !== 'desativado' && b.status === 'desativado') return -1;
-                return 0; // Mantém a ordem original para os outros
+                return 0; 
             });
 
             renderizarTabela(filtrados);
@@ -639,7 +671,6 @@
                 const tr = document.createElement('tr');
                 tr.className = rowClass;
                 
-                // MENU DE 3 PONTINHOS E OBSERVAÇÃO FIXA
                 tr.innerHTML = `
                     <td class="px-6 py-4 font-bold text-gray-900 dark:text-white uppercase">${escapeHTML(p.numero_fogo)}</td>
                     <td class="px-6 py-4">
@@ -664,18 +695,16 @@
                     </td>
                     <td class="px-6 py-4 text-center flex items-center justify-center gap-2 relative">
                         
-                        <!-- BOTAO OBSERVACAO FIXO -->
                         <button onclick="abrirModalObservacao('${p.id}', '${escapeHTML(p.numero_fogo)}')" class="text-gray-400 hover:text-purple-500 transition-colors p-1" title="Adicionar Observação">
                             <i data-lucide="message-square" class="w-5 h-5"></i>
                         </button>
 
-                        <!-- MENU 3 PONTINHOS -->
                         <div class="relative inline-block text-left">
                             <button onclick="toggleDropdown(event, '${p.id}')" class="text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors p-1">
                                 <i data-lucide="more-vertical" class="w-5 h-5"></i>
                             </button>
                             
-                            <div id="dropdown-${p.id}" class="hidden absolute right-0 mt-1 w-36 bg-white dark:bg-slate-800 rounded-md shadow-lg z-50 border border-gray-200 dark:border-slate-700 overflow-hidden text-left">
+                            <div id="dropdown-${p.id}" class="hidden absolute right-0 mt-1 w-36 bg-white dark:bg-slate-800 rounded-md shadow-lg z-[100] border border-gray-200 dark:border-slate-700 overflow-hidden text-left">
                                 <button onclick="editarPneu('${p.id}')" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 flex items-center gap-2">
                                     <i data-lucide="edit" class="w-4 h-4"></i> Editar
                                 </button>
@@ -695,7 +724,6 @@
             lucide.createIcons();
         }
 
-        // Fecha dropdowns ao clicar fora
         document.addEventListener('click', (e) => {
             if (!e.target.closest('.relative')) {
                 document.querySelectorAll('[id^="dropdown-"]').forEach(el => el.classList.add('hidden'));
@@ -818,9 +846,8 @@
             }
         });
 
-        // --- FUNÇÃO DE ATIVAR/DESATIVAR PNEU ---
         async function toggleStatusPneu(id, statusAtual) {
-            let novoStatus = 'estoque'; // Se ativar, volta pro estoque
+            let novoStatus = 'estoque';
             let msg = 'Deseja realmente ATIVAR este pneu? Ele voltará para o estoque.';
 
             if (statusAtual !== 'desativado') {
@@ -879,10 +906,35 @@
                 osData.forEach(os => custoTotal += parseFloat(os.custo || 0));
             }
 
+            // CONTAGEM DE RECAPAGENS
+            const { data: recapsData } = await supabaseClient
+                .from('historico_pneu')
+                .select('id')
+                .eq('pneu_id', id)
+                .eq('tipo_evento', 'reforma');
+            
+            const qtdRecaps = recapsData ? recapsData.length : 0;
+
+            // LOCALIZAÇÃO ATUAL
+            let localAtual = pneuHistoricoAtual.status.toUpperCase();
+            if (pneuHistoricoAtual.status === 'em_uso' && pneuHistoricoAtual.veiculo_id) {
+                const { data: veiculoData } = await supabaseClient.from('veiculos').select('placa').eq('id', pneuHistoricoAtual.veiculo_id).single();
+                if (veiculoData) {
+                    localAtual = `${veiculoData.placa} (${pneuHistoricoAtual.posicao})`;
+                }
+            }
+
+            // Preenche os dados no cabeçalho e no PDF
             document.getElementById('pdf-info-fogo').innerText = pneuHistoricoAtual.numero_fogo;
             document.getElementById('pdf-info-dot').innerText = pneuHistoricoAtual.dot || 'S/ Info';
-            document.getElementById('pdf-info-local').innerText = pneuHistoricoAtual.status === 'em_uso' ? `Veículo (${pneuHistoricoAtual.posicao})` : pneuHistoricoAtual.status.toUpperCase();
-            document.getElementById('pdf-info-custo').innerText = formatarDinheiro(custoTotal);
+            
+            document.getElementById('pdf-info-local').innerText = localAtual;
+            document.getElementById('pdf-info-local-print').innerText = localAtual;
+
+            document.getElementById('pdf-info-recaps').innerText = qtdRecaps;
+            
+            document.getElementById('pdf-info-custo').innerText = formatarDinheiro(pneuHistoricoAtual.valor_pago || 0);
+            document.getElementById('pdf-info-custo-print').innerText = formatarDinheiro(custoTotal); // PDF mostra o custo de manutenção
 
             document.getElementById('modal-historico-pneu').classList.remove('hidden');
             
@@ -953,7 +1005,7 @@
             lucide.createIcons();
         }
 
-        // --- OBSERVAÇÃO (SUBSTITUINDO O PROMPT) ---
+        // --- OBSERVAÇÃO ---
         function abrirModalObservacao(pneuId, numeroFogo) {
             document.getElementById('id_pneu_obs').value = pneuId;
             document.getElementById('pneu-obs-nome').innerText = numeroFogo;
@@ -985,7 +1037,6 @@
             } else {
                 fecharModal('modal-observacao');
                 btn.innerHTML = 'Salvar Observação'; btn.disabled = false;
-                // Se o histórico estiver aberto para este pneu, atualiza
                 if (pneuHistoricoAtual && pneuHistoricoAtual.id === pneuId) {
                     abrirHistoricoPneu(pneuId);
                 }
