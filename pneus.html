@@ -3,17 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Pneus | Karaz</title>
-    <!-- FAVICON -->
+    <title>Pneus | Karaz</title>
     <link rel="icon" type="image/png" href="logo.png">
     
     <script>
-        // Evita o flash de tema na troca de páginas
-        if (localStorage.theme === 'light') {
-            document.documentElement.classList.remove('dark');
-        } else {
-            document.documentElement.classList.add('dark');
-        }
+        if (localStorage.theme === 'light') { document.documentElement.classList.remove('dark'); } 
+        else { document.documentElement.classList.add('dark'); }
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -32,9 +27,7 @@
     </script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Biblioteca para gerar o PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <!-- BIBLIOTECA DO EXCEL ADICIONADA AQUI -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body class="bg-gray-100 text-gray-800 dark:bg-darkbg dark:text-gray-100 font-sans h-screen flex overflow-hidden transition-colors duration-300 antialiased">
@@ -42,33 +35,34 @@
     <!-- SIDEBAR -->
     <aside id="sidebar" class="w-64 bg-white dark:bg-darkcard border-r border-gray-200 dark:border-slate-700 transition-all duration-300 flex flex-col z-20">
         <div>
-                        <div class="h-16 flex items-center justify-center border-b border-gray-200 dark:border-slate-700 px-4">
-                <a href="dashboard.html" class="flex items-center justify-center w-full">
-                    <!-- Logo para Tema Claro -->
+            <div class="h-16 flex items-center justify-center border-b border-gray-200 dark:border-slate-700 px-4">
+                <a href="dashboard.html" class="flex items-center justify-center w-full logo-full">
                     <img src="logo-light.png" alt="Karaz Sistema" class="h-8 object-contain dark:hidden">
-                    <!-- Logo para Tema Escuro -->
                     <img src="logo-dark.png" alt="Karaz Sistema" class="h-8 object-contain hidden dark:block">
+                </a>
+                <a href="dashboard.html" class="hidden logo-small items-center justify-center w-full">
+                    <img src="logo-app.png" alt="KZ" class="w-8 h-8 object-contain rounded-md dark:hidden">
+                    <img src="logo.png" alt="KZ" class="w-8 h-8 object-contain rounded-md hidden dark:block">
                 </a>
             </div>
             <nav class="p-3 space-y-1">
                 <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
-                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i><span class="menu-text text-sm">Dashboard</span>
+                    <i data-lucide="layout-dashboard" class="w-5 h-5 shrink-0"></i><span class="menu-text text-sm">Dashboard</span>
                 </a>
                 <a href="veiculos.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
-                    <i data-lucide="truck" class="w-5 h-5"></i><span class="menu-text text-sm">Veículos</span>
+                    <i data-lucide="truck" class="w-5 h-5 shrink-0"></i><span class="menu-text text-sm">Veículos</span>
                 </a>
-                <!-- Menu Ativo -->
                 <a href="pneus.html" class="flex items-center gap-3 px-3 py-2.5 bg-brand/10 text-brand rounded-md font-medium transition-colors">
-                    <i data-lucide="circle-dot" class="w-5 h-5"></i><span class="menu-text text-sm">Pneus</span>
+                    <i data-lucide="circle-dot" class="w-5 h-5 shrink-0"></i><span class="menu-text text-sm">Pneus</span>
                 </a>
                 <a href="ordens-servico.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
-                    <i data-lucide="wrench" class="w-5 h-5"></i><span class="menu-text text-sm">Ordens de Serviço</span>
+                    <i data-lucide="wrench" class="w-5 h-5 shrink-0"></i><span class="menu-text text-sm">Ordens de Serviço</span>
                 </a>
                 <a href="cadastros.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
-                    <i data-lucide="database" class="w-5 h-5"></i><span class="menu-text text-sm">Cadastros Gerais</span>
+                    <i data-lucide="database" class="w-5 h-5 shrink-0"></i><span class="menu-text text-sm">Cadastros Gerais</span>
                 </a>
                 <a href="auditoria.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
-                    <i data-lucide="shield-check" class="w-5 h-5"></i><span class="menu-text text-sm">Auditoria</span>
+                    <i data-lucide="shield-check" class="w-5 h-5 shrink-0"></i><span class="menu-text text-sm">Auditoria</span>
                 </a>
             </nav>
         </div>
@@ -81,35 +75,42 @@
                 <button id="toggle-sidebar" class="p-1.5 text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors rounded-md"><i data-lucide="menu" class="w-5 h-5"></i></button>
                 <h2 class="text-base font-semibold text-gray-800 dark:text-gray-200">Estoque de Pneus</h2>
             </div>
-            <div class="flex items-center gap-5">
+            
+            <div class="flex items-center gap-4">
                 <button id="toggle-theme" class="p-1.5 text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors">
-                    <i data-lucide="moon" class="w-5 h-5 hidden dark:block"></i><i data-lucide="sun" class="w-5 h-5 block dark:hidden"></i>
+                    <i data-lucide="moon" class="w-5 h-5 hidden dark:block"></i>
+                    <i data-lucide="sun" class="w-5 h-5 block dark:hidden"></i>
                 </button>
+                
+                <button onclick="abrirConfigPC()" class="p-1.5 text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors">
+                    <i data-lucide="settings" class="w-5 h-5"></i>
+                </button>
+                
                 <div class="h-5 w-px bg-gray-300 dark:bg-slate-700"></div>
-                <div class="flex items-center gap-3">
-                    <p id="user-email" class="text-sm font-medium text-gray-800 dark:text-gray-200 hidden sm:block">...</p>
-                    <button id="btn-logout" class="p-2 text-gray-400 hover:text-red-500 transition-colors"><i data-lucide="log-out" class="w-5 h-5"></i></button>
+                <div class="text-right hidden sm:block">
+                    <p id="user-email" class="text-sm font-medium text-gray-800 dark:text-gray-200">carregando...</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Administrador</p>
                 </div>
             </div>
         </header>
 
         <main class="flex-1 overflow-y-auto p-6 bg-gray-50 dark:bg-darkbg">
             
-            <!-- CARDS DE KPI -->
+            <!-- CARDS DE KPI (FILTRÁVEIS) -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                <div class="bg-white dark:bg-darkcard p-4 rounded-lg border border-gray-200 dark:border-slate-700 flex flex-col justify-center">
+                <div onclick="toggleFiltroKPI('total', this)" class="card-filtro-kpi bg-white dark:bg-darkcard p-4 rounded-lg border-2 border-transparent hover:border-gray-300 dark:hover:border-slate-600 cursor-pointer transition-all">
                     <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Total de Pneus</p>
                     <p class="text-2xl font-bold text-gray-900 dark:text-white" id="kpi-total">0</p>
                 </div>
-                <div class="bg-white dark:bg-darkcard p-4 rounded-lg border border-gray-200 dark:border-slate-700 flex flex-col justify-center">
+                <div onclick="toggleFiltroKPI('estoque', this)" class="card-filtro-kpi bg-white dark:bg-darkcard p-4 rounded-lg border-2 border-transparent hover:border-blue-300 dark:hover:border-blue-700 cursor-pointer transition-all border-l-4 border-l-blue-500">
                     <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Em Estoque</p>
                     <p class="text-2xl font-bold text-blue-500" id="kpi-estoque">0</p>
                 </div>
-                <div class="bg-white dark:bg-darkcard p-4 rounded-lg border border-gray-200 dark:border-slate-700 flex flex-col justify-center">
+                <div onclick="toggleFiltroKPI('valor', this)" class="card-filtro-kpi bg-white dark:bg-darkcard p-4 rounded-lg border-2 border-transparent hover:border-green-300 dark:hover:border-green-700 cursor-pointer transition-all border-l-4 border-l-green-500">
                     <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Valor em Estoque</p>
                     <p class="text-2xl font-bold text-green-500" id="kpi-valor">R$ 0,00</p>
                 </div>
-                <div class="bg-white dark:bg-darkcard p-4 rounded-lg border border-gray-200 dark:border-slate-700 flex flex-col justify-center">
+                <div onclick="toggleFiltroKPI('criticos', this)" class="card-filtro-kpi bg-white dark:bg-darkcard p-4 rounded-lg border-2 border-transparent hover:border-red-300 dark:hover:border-red-700 cursor-pointer transition-all border-l-4 border-l-red-500">
                     <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Pneus Críticos</p>
                     <p class="text-2xl font-bold text-red-500" id="kpi-criticos">0</p>
                 </div>
@@ -129,15 +130,16 @@
                         <option value="reparo">Em Reparo</option>
                         <option value="reforma">Recapagem</option>
                         <option value="descarte">Descarte</option>
+                        <option value="desativado">Desativado</option>
                     </select>
                 </div>
                 
                 <div class="flex gap-2 w-full sm:w-auto">
-                    <!-- NOVO BOTÃO DE EXPORTAR -->
-                    <button onclick="exportarExcelPneus()" class="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
-                        <i data-lucide="download" class="w-4 h-4"></i> Exportar Excel
+                    <!-- BOTÃO EXPORTAR SECUNDÁRIO -->
+                    <button onclick="exportarExcelPneus()" class="w-full sm:w-auto bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
+                        <i data-lucide="download" class="w-4 h-4"></i> Exportar Lista
                     </button>
-
+                    <!-- BOTÃO NOVO PNEU PRIMÁRIO -->
                     <button onclick="abrirModal()" class="w-full sm:w-auto bg-brand hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
                         <i data-lucide="plus" class="w-4 h-4"></i> Novo Pneu
                     </button>
@@ -174,7 +176,7 @@
             </div>
             
             <form id="form-pneu" class="p-6">
-                 <input type="hidden" id="id_pneu_editando">
+                <input type="hidden" id="id_pneu_editando">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                     <div>
                         <label class="block text-sm font-medium mb-1">Nº de Fogo <span class="text-red-500">*</span></label>
@@ -214,7 +216,6 @@
                         <label class="block text-sm font-medium mb-1">Status Inicial</label>
                         <select id="status" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
                             <option value="estoque">Estoque</option>
-                            <option value="em_uso">Em Uso (Instalação Direta)</option>
                         </select>
                     </div>
                     <div>
@@ -230,7 +231,6 @@
 
                 <div id="erro-modal" class="hidden text-red-500 text-sm bg-red-500/10 p-3 rounded-md mb-4"></div>
 
-                <!-- BOTÃO DE IMPORTAR MOVIDO PARA CÁ (MODAL DE PNEU) -->
                 <div class="pt-4 flex flex-col sm:flex-row justify-between items-center border-t border-gray-200 dark:border-slate-700 gap-4">
                     <button type="button" onclick="abrirModalImportarPneus()" class="w-full sm:w-auto px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 hover:bg-gray-200 dark:bg-slate-700 dark:hover:bg-slate-600 rounded-md transition-colors flex items-center justify-center gap-2">
                         <i data-lucide="upload" class="w-4 h-4"></i> Importar Excel
@@ -245,11 +245,30 @@
         </div>
     </div>
 
+    <!-- MODAL DE OBSERVAÇÃO -->
+    <div id="modal-observacao" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-md border border-gray-200 dark:border-slate-700 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center">
+                <h3 class="text-lg font-semibold text-brand flex items-center gap-2"><i data-lucide="message-square" class="w-5 h-5"></i> Adicionar Observação</h3>
+                <button onclick="fecharModal('modal-observacao')" class="text-gray-400 hover:text-red-500"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="p-6">
+                <input type="hidden" id="id_pneu_obs">
+                <p class="text-sm text-gray-500 mb-4">Digite a observação para o pneu <strong id="pneu-obs-nome" class="text-brand uppercase"></strong>:</p>
+                <textarea id="texto-observacao" rows="4" placeholder="Descreva a observação..." class="w-full p-3 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg focus:outline-none focus:border-brand"></textarea>
+                
+                <div class="pt-4 flex justify-end gap-3 mt-4">
+                    <button type="button" onclick="fecharModal('modal-observacao')" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-md transition-colors">Cancelar</button>
+                    <button type="button" onclick="salvarObservacao()" id="btn-salvar-obs" class="px-4 py-2 text-sm font-medium text-white bg-brand hover:bg-orange-700 rounded-md transition-colors">Salvar Observação</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL DE HISTÓRICO DO PNEU -->
     <div id="modal-historico-pneu" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-6xl border border-gray-200 dark:border-slate-700 overflow-hidden flex flex-col max-h-[90vh]">
             
-            <!-- Cabeçalho -->
             <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-800/30">
                 <div class="flex items-center gap-4">
                     <div class="w-10 h-10 bg-brand/10 rounded-full flex items-center justify-center">
@@ -264,6 +283,9 @@
                     <button onclick="exportarPDFPneu()" class="bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white px-3 py-1.5 rounded text-xs font-medium transition-colors flex items-center gap-1">
                         <i data-lucide="file-text" class="w-4 h-4"></i> PDF
                     </button>
+                    <button onclick="exportarExcelHistorico()" class="bg-green-500/10 text-green-500 hover:bg-green-500 hover:text-white px-3 py-1.5 rounded text-xs font-medium transition-colors flex items-center gap-1">
+                        <i data-lucide="table" class="w-4 h-4"></i> Excel
+                    </button>
                     <button onclick="window.print()" class="bg-brand/10 text-brand hover:bg-brand hover:text-white px-3 py-1.5 rounded text-xs font-medium transition-colors flex items-center gap-1">
                         <i data-lucide="printer" class="w-4 h-4"></i> Imprimir
                     </button>
@@ -271,7 +293,6 @@
                 </div>
             </div>
 
-            <!-- Filtros de Colunas -->
             <div class="px-6 py-3 border-b border-gray-200 dark:border-slate-700 bg-white dark:bg-darkcard flex flex-wrap gap-4 text-xs items-center">
                 <span class="font-bold text-gray-500 uppercase tracking-wider">Colunas Visíveis:</span>
                 <label class="flex items-center gap-1 cursor-pointer hover:text-brand transition-colors"><input type="checkbox" checked onchange="toggleColunaHist('col-data', this.checked)" class="rounded text-brand focus:ring-brand"> Data</label>
@@ -280,22 +301,40 @@
                 <label class="flex items-center gap-1 cursor-pointer hover:text-brand transition-colors"><input type="checkbox" checked onchange="toggleColunaHist('col-executor', this.checked)" class="rounded text-brand focus:ring-brand"> Executor</label>
             </div>
 
-            <!-- ÁREA DE IMPRESSÃO -->
             <div class="flex-1 overflow-auto p-6 bg-gray-50 dark:bg-darkbg" id="area-impressao-pneu">
                 
-                <!-- Cabeçalho exclusivo para o PDF -->
-                <div id="logo-pdf-pneu" class="hidden mb-6 flex justify-between items-end border-b-2 border-brand pb-4">
-                    <div class="flex items-center gap-3">
-                        <img src="logo.png" alt="Logo Karaz" class="h-10 w-auto object-contain" onerror="this.style.display='none'">
-                        <h1 class="text-2xl font-bold text-gray-800">Karaz <span class="text-brand">Sistema</span></h1>
+                <!-- Cabeçalho exclusivo para o PDF / Impressão -->
+                <div id="logo-pdf-pneu" class="hidden mb-6 flex flex-col border-b-2 border-brand pb-4">
+                    <div class="flex justify-between items-end mb-4">
+                        <div class="flex items-center gap-3">
+                            <img src="logo.png" alt="Logo Karaz" class="h-10 w-auto object-contain" onerror="this.style.display='none'">
+                            <h1 class="text-2xl font-bold text-gray-800">Karaz <span class="text-brand">Sistema</span></h1>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-xs text-gray-500 uppercase font-bold tracking-widest">Relatório de Vida Útil</p>
+                        </div>
                     </div>
-                    <div class="text-right">
-                        <p class="text-xs text-gray-500 uppercase font-bold tracking-widest">Relatório de Vida Útil</p>
-                        <p class="text-sm font-medium text-gray-800" id="pdf-pneu-info">...</p>
+                    
+                    <div class="grid grid-cols-4 gap-4 bg-gray-100 p-4 rounded text-sm text-gray-700">
+                        <div>
+                            <p class="font-bold text-xs uppercase text-gray-500">Nº de Fogo</p>
+                            <p class="font-bold text-lg" id="pdf-info-fogo">-</p>
+                        </div>
+                        <div>
+                            <p class="font-bold text-xs uppercase text-gray-500">DOT</p>
+                            <p class="font-medium" id="pdf-info-dot">-</p>
+                        </div>
+                        <div>
+                            <p class="font-bold text-xs uppercase text-gray-500">Localização Atual</p>
+                            <p class="font-medium" id="pdf-info-local">-</p>
+                        </div>
+                        <div>
+                            <p class="font-bold text-xs uppercase text-gray-500">Custo Total (Manutenção)</p>
+                            <p class="font-medium text-red-500" id="pdf-info-custo">-</p>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Tabela -->
                 <table class="w-full text-left border-collapse bg-white dark:bg-darkcard rounded-lg overflow-hidden shadow-sm" id="tabela-historico-pneu">
                     <thead class="bg-gray-100 dark:bg-slate-800 text-xs uppercase text-gray-500 dark:text-gray-400">
                         <tr>
@@ -312,7 +351,7 @@
         </div>
     </div>
 
-    <!-- MODAL DE IMPORTAÇÃO EXCEL (PNEUS) -->
+    <!-- MODAL DE IMPORTAÇÃO EXCEL -->
     <div id="modal-importar-pneus" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-md border border-gray-200 dark:border-slate-700">
             <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center">
@@ -338,7 +377,51 @@
         </div>
     </div>
 
-    <!-- SCRIPTS -->
+    <!-- MODAL DE CONFIGURAÇÃO (PC) -->
+    <div id="modal-config-pc" class="hidden fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
+            <div class="p-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-800/30">
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Configurações</h3>
+                <button onclick="fecharConfigPC()" class="text-gray-400 hover:text-red-500"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="p-6 space-y-6">
+                <div>
+                    <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Conta Logada</p>
+                    <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700">
+                        <div class="w-8 h-8 rounded-full bg-brand/10 flex items-center justify-center text-brand">
+                            <i data-lucide="user" class="w-4 h-4"></i>
+                        </div>
+                        <div class="overflow-hidden">
+                            <p id="pc-config-email" class="text-sm font-bold text-gray-900 dark:text-white truncate">...</p>
+                            <p class="text-xs text-gray-500 truncate">Administrador</p>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="confirmarSairPC()" class="w-full bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white p-3 rounded-lg font-bold transition-colors flex items-center justify-center gap-2">
+                    <i data-lucide="log-out" class="w-5 h-5"></i> Sair do Sistema
+                </button>
+            </div>
+            <div class="p-4 border-t border-gray-200 dark:border-slate-700 text-center">
+                <p id="pc-app-versao" class="text-xs text-gray-400 font-mono">Carregando versão...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE CONFIRMAÇÃO DE SAÍDA (PC) -->
+    <div id="modal-sair-pc" class="hidden fixed inset-0 bg-black/70 z-[200] flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-sm border border-gray-200 dark:border-slate-700 p-6 text-center">
+            <div class="w-16 h-16 bg-red-100 dark:bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="log-out" class="w-8 h-8 text-red-500"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Sair do Sistema?</h3>
+            <p class="text-sm text-gray-500 mb-6">Você precisará digitar seu e-mail e senha novamente.</p>
+            <div class="flex gap-3 w-full">
+                <button onclick="document.getElementById('modal-sair-pc').classList.add('hidden')" class="flex-1 py-2 bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 font-bold rounded-lg transition-colors">Cancelar</button>
+                <button onclick="fazerLogoutPC()" class="flex-1 py-2 bg-red-500 hover:bg-red-600 text-white font-bold rounded-lg shadow-lg shadow-red-500/30 transition-colors">Sim, Sair</button>
+            </div>
+        </div>
+    </div>
+
     <script src="js/supabase-client.js"></script>
     <script>
         lucide.createIcons();
@@ -349,17 +432,22 @@
             else { document.getElementById('user-email').innerText = session.user.email; }
         });
 
-        document.getElementById('btn-logout').addEventListener('click', async () => {
-            await supabaseClient.auth.signOut(); window.location.href = "login.html";
-        });
-
         const sidebar = document.getElementById('sidebar');
         const menuTexts = document.querySelectorAll('.menu-text');
+        const logoFull = document.querySelectorAll('.logo-full');
+        const logoSmall = document.querySelectorAll('.logo-small');
+
         document.getElementById('toggle-sidebar').addEventListener('click', () => {
             if (sidebar.classList.contains('w-64')) {
-                sidebar.classList.replace('w-64', 'w-20'); menuTexts.forEach(el => el.classList.add('hidden'));
+                sidebar.classList.replace('w-64', 'w-20'); 
+                menuTexts.forEach(el => el.classList.add('hidden'));
+                logoFull.forEach(el => { el.classList.add('hidden'); el.classList.remove('flex'); });
+                logoSmall.forEach(el => { el.classList.remove('hidden'); el.classList.add('flex'); });
             } else {
-                sidebar.classList.replace('w-20', 'w-64'); menuTexts.forEach(el => el.classList.remove('hidden'));
+                sidebar.classList.replace('w-20', 'w-64'); 
+                menuTexts.forEach(el => el.classList.remove('hidden'));
+                logoFull.forEach(el => { el.classList.remove('hidden'); el.classList.add('flex'); });
+                logoSmall.forEach(el => { el.classList.add('hidden'); el.classList.remove('flex'); });
             }
         });
 
@@ -369,8 +457,45 @@
             html.classList.toggle('dark'); localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
         });
 
+        // --- CONFIGURAÇÃO PC ---
+        function abrirConfigPC() {
+            document.getElementById('pc-config-email').innerText = document.getElementById('user-email').innerText;
+            document.getElementById('modal-config-pc').classList.remove('hidden');
+            carregarVersaoPC();
+            lucide.createIcons();
+        }
+
+        function fecharConfigPC() { 
+            document.getElementById('modal-config-pc').classList.add('hidden'); 
+        }
+
+        function confirmarSairPC() { 
+            document.getElementById('modal-sair-pc').classList.remove('hidden'); 
+        }
+
+        async function fazerLogoutPC() {
+            await supabaseClient.auth.signOut(); 
+            window.location.href = "login.html";
+        }
+
+        async function carregarVersaoPC() {
+            document.getElementById('pc-app-versao').innerText = "Buscando versão...";
+            try {
+                const response = await fetch('https://api.github.com/repos/lucaslmcterraplenagem-beep/Karaz/commits/main');
+                if (!response.ok) throw new Error('API Limit');
+                const data = await response.json();
+                const versaoHash = data.sha.substring(0, 7);
+                const dataCommit = new Date(data.commit.author.date).toLocaleDateString('pt-BR');
+                document.getElementById('pc-app-versao').innerText = `Karaz Web v${versaoHash} (${dataCommit})`;
+            } catch (error) {
+                document.getElementById('pc-app-versao').innerText = `Karaz Web (Modo Offline)`;
+            }
+        }
+
         // --- LÓGICA DE DADOS ---
         let todosPneus = [];
+        let listaMotoristasMap = {}; // Para traduzir IDs de usuário para nomes
+        let filtroKPIAtivo = null;
         const tabela = document.getElementById('tabela-pneus');
         const avisoVazio = document.getElementById('aviso-vazio');
 
@@ -379,7 +504,14 @@
         };
 
         async function carregarPneus() {
-            // 1. Busca os pneus
+            // 1. Buscar motoristas para traduzir IDs no histórico
+            const { data: motoristas } = await supabaseClient.from('motoristas').select('user_id, nome');
+            listaMotoristasMap = {};
+            if (motoristas) {
+                motoristas.forEach(m => listaMotoristasMap[m.user_id] = m.nome);
+            }
+
+            // 2. Busca os pneus
             const { data: pneusData, error: errorPneus } = await supabaseClient
                 .from('pneus')
                 .select('*')
@@ -387,7 +519,7 @@
 
             if (errorPneus) return console.error(errorPneus);
 
-            // 2. Busca as últimas calibragens de todos os pneus de uma vez (otimização)
+            // 3. Busca as últimas calibragens
             const { data: calibragensData, error: errorCalib } = await supabaseClient
                 .from('calibragens')
                 .select('pneu_id, pressao_psi, created_at')
@@ -395,24 +527,20 @@
 
             if (errorCalib) console.error(errorCalib);
 
-            // 3. Cria um "dicionário" com a última pressão de cada pneu
             const pressaoMap = {};
             if (calibragensData) {
                 calibragensData.forEach(c => {
-                    if (!pressaoMap[c.pneu_id]) {
-                        pressaoMap[c.pneu_id] = c.pressao_psi;
-                    }
+                    if (!pressaoMap[c.pneu_id]) pressaoMap[c.pneu_id] = c.pressao_psi;
                 });
             }
 
-            // 4. Junta os dados
             todosPneus = pneusData.map(p => ({
                 ...p,
                 pressao_atual: pressaoMap[p.id] || null
             }));
             
             calcularKPIs();
-            renderizarTabela(todosPneus);
+            aplicarFiltrosTabela();
         }
 
         function calcularKPIs() {
@@ -427,7 +555,7 @@
                     valorEstoque += (p.valor_pago || 0);
                 }
                 let sulco = p.sulco_atual !== null ? p.sulco_atual : p.sulco_inicial;
-                if (sulco <= 3) criticos++;
+                if (sulco <= 3 && p.status !== 'desativado') criticos++;
             });
 
             document.getElementById('kpi-total').innerText = total;
@@ -435,6 +563,52 @@
             document.getElementById('kpi-valor').innerText = formatarDinheiro(valorEstoque);
             document.getElementById('kpi-criticos').innerText = criticos;
         }
+
+        // --- FILTROS DE KPI ---
+        function toggleFiltroKPI(tipo, elemento) {
+            if (filtroKPIAtivo === tipo) { filtroKPIAtivo = null; } 
+            else { filtroKPIAtivo = tipo; }
+            
+            document.querySelectorAll('.card-filtro-kpi').forEach(card => card.classList.remove('ring-2', 'ring-brand', 'border-brand'));
+            if (filtroKPIAtivo) elemento.classList.add('ring-2', 'ring-brand', 'border-brand');
+
+            aplicarFiltrosTabela();
+        }
+
+        function aplicarFiltrosTabela() {
+            const termoBusca = document.getElementById('input-busca').value.toLowerCase();
+            const statusFiltro = document.getElementById('filtro-status').value;
+            
+            let filtrados = todosPneus.filter(p => {
+                const matchTexto = p.numero_fogo.toLowerCase().includes(termoBusca) || 
+                                   p.marca.toLowerCase().includes(termoBusca) || 
+                                   (p.modelo && p.modelo.toLowerCase().includes(termoBusca)) ||
+                                   (p.dot && p.dot.toLowerCase().includes(termoBusca));
+                
+                let matchStatus = statusFiltro === "" || p.status === statusFiltro;
+                if (filtroKPIAtivo === 'estoque') matchStatus = p.status === 'estoque';
+                if (filtroKPIAtivo === 'valor') matchStatus = p.status === 'estoque'; // Valor está atrelado ao estoque
+                if (filtroKPIAtivo === 'criticos') {
+                    let sulco = p.sulco_atual !== null ? p.sulco_atual : p.sulco_inicial;
+                    matchStatus = sulco <= 3 && p.status !== 'desativado';
+                }
+                if (filtroKPIAtivo === 'total') matchStatus = true;
+
+                return matchTexto && matchStatus;
+            });
+
+            // REGRA: Desativados sempre por último
+            filtrados.sort((a, b) => {
+                if (a.status === 'desativado' && b.status !== 'desativado') return 1;
+                if (a.status !== 'desativado' && b.status === 'desativado') return -1;
+                return 0; // Mantém a ordem original para os outros
+            });
+
+            renderizarTabela(filtrados);
+        }
+
+        document.getElementById('input-busca').addEventListener('input', aplicarFiltrosTabela);
+        document.getElementById('filtro-status').addEventListener('change', aplicarFiltrosTabela);
 
         function renderizarTabela(lista) {
             tabela.innerHTML = '';
@@ -453,15 +627,19 @@
                 if (p.status === 'reforma') { badgeClass = 'bg-yellow-500/10 text-yellow-500'; statusTexto = 'Recapagem'; }
                 if (p.status === 'reparo') { badgeClass = 'bg-orange-500/10 text-orange-500'; statusTexto = 'Em Reparo'; }
                 if (p.status === 'descarte') { badgeClass = 'bg-red-500/10 text-red-500'; statusTexto = 'Descarte'; }
+                if (p.status === 'desativado') { badgeClass = 'bg-slate-800 text-slate-400 font-bold'; statusTexto = 'DESATIVADO'; }
 
                 let sulcoColor = 'text-green-500';
                 let sulcoAtual = p.sulco_atual !== null ? p.sulco_atual : p.sulco_inicial;
                 if (sulcoAtual <= 5) sulcoColor = 'text-yellow-500';
                 if (sulcoAtual <= 3) sulcoColor = 'text-red-500';
 
+                const rowClass = p.status === 'desativado' ? "opacity-50 bg-gray-100 dark:bg-slate-800/20 group" : "hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors group";
+
                 const tr = document.createElement('tr');
-                tr.className = "hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors";
+                tr.className = rowClass;
                 
+                // MENU DE 3 PONTINHOS E OBSERVAÇÃO FIXA
                 tr.innerHTML = `
                     <td class="px-6 py-4 font-bold text-gray-900 dark:text-white uppercase">${escapeHTML(p.numero_fogo)}</td>
                     <td class="px-6 py-4">
@@ -476,29 +654,40 @@
                         <span class="font-bold ${sulcoColor}">${sulcoAtual} mm</span> 
                         <span class="text-xs text-gray-500">/ ${p.sulco_inicial} mm</span>
                     </td>
-                     <!-- NOVA COLUNA DE PRESSÃO AQUI -->
                     <td class="px-6 py-4">
                         <span class="font-bold ${p.pressao_atual ? 'text-brand' : 'text-gray-400'}">
                             ${p.pressao_atual ? p.pressao_atual + ' PSI' : 'S/ Info'}
                         </span>
                     </td>
-
                     <td class="px-6 py-4">
                         <span class="px-2 py-1 text-xs font-medium rounded-full ${badgeClass}">${statusTexto}</span>
                     </td>
-                    <td class="px-6 py-4 text-center flex items-center justify-center gap-3">
-                    <button onclick="editarPneu('${p.id}')" class="text-gray-400 hover:text-blue-500 transition-colors" title="Editar Pneu">
-                            <i data-lucide="edit" class="w-5 h-5"></i>
-                        </button>
-                        <button onclick="abrirHistoricoPneu('${p.id}')" class="text-gray-400 hover:text-brand transition-colors" title="Ver Histórico Completo">
-                            <i data-lucide="history" class="w-5 h-5"></i>
-                        </button>
-                        <button onclick="adicionarObservacao('${p.id}')" class="text-gray-400 hover:text-purple-500 transition-colors" title="Adicionar Observação">
+                    <td class="px-6 py-4 text-center flex items-center justify-center gap-2 relative">
+                        
+                        <!-- BOTAO OBSERVACAO FIXO -->
+                        <button onclick="abrirModalObservacao('${p.id}', '${escapeHTML(p.numero_fogo)}')" class="text-gray-400 hover:text-purple-500 transition-colors p-1" title="Adicionar Observação">
                             <i data-lucide="message-square" class="w-5 h-5"></i>
                         </button>
-                        
-                            <i data-lucide="trash-2" class="w-5 h-5"></i>
-                        </button>
+
+                        <!-- MENU 3 PONTINHOS -->
+                        <div class="relative inline-block text-left">
+                            <button onclick="toggleDropdown(event, '${p.id}')" class="text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors p-1">
+                                <i data-lucide="more-vertical" class="w-5 h-5"></i>
+                            </button>
+                            
+                            <div id="dropdown-${p.id}" class="hidden absolute right-0 mt-1 w-36 bg-white dark:bg-slate-800 rounded-md shadow-lg z-50 border border-gray-200 dark:border-slate-700 overflow-hidden text-left">
+                                <button onclick="editarPneu('${p.id}')" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 flex items-center gap-2">
+                                    <i data-lucide="edit" class="w-4 h-4"></i> Editar
+                                </button>
+                                <button onclick="abrirHistoricoPneu('${p.id}')" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 flex items-center gap-2">
+                                    <i data-lucide="history" class="w-4 h-4"></i> Histórico
+                                </button>
+                                <div class="border-t border-gray-200 dark:border-slate-700"></div>
+                                <button onclick="toggleStatusPneu('${p.id}', '${p.status}')" class="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 flex items-center gap-2 font-medium">
+                                    <i data-lucide="power" class="w-4 h-4"></i> ${p.status === 'desativado' ? 'Ativar' : 'Desativar'}
+                                </button>
+                            </div>
+                        </div>
                     </td>
                 `;
                 tabela.appendChild(tr);
@@ -506,26 +695,20 @@
             lucide.createIcons();
         }
 
-        // --- FILTROS ---
-        const buscar = (termo, statusFiltro) => {
-            const termoLower = termo.toLowerCase();
-            const filtrados = todosPneus.filter(p => {
-                const matchTexto = p.numero_fogo.toLowerCase().includes(termoLower) || 
-                                   p.marca.toLowerCase().includes(termoLower) || 
-                                   (p.modelo && p.modelo.toLowerCase().includes(termoLower)) ||
-                                   (p.dot && p.dot.toLowerCase().includes(termoLower));
-                const matchStatus = statusFiltro === "" || p.status === statusFiltro;
-                return matchTexto && matchStatus;
-            });
-            renderizarTabela(filtrados);
-        };
+        // Fecha dropdowns ao clicar fora
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.relative')) {
+                document.querySelectorAll('[id^="dropdown-"]').forEach(el => el.classList.add('hidden'));
+            }
+        });
 
-        document.getElementById('input-busca').addEventListener('input', (e) => {
-            buscar(e.target.value, document.getElementById('filtro-status').value);
-        });
-        document.getElementById('filtro-status').addEventListener('change', (e) => {
-            buscar(document.getElementById('input-busca').value, e.target.value);
-        });
+        function toggleDropdown(event, id) {
+            event.stopPropagation();
+            const dropdown = document.getElementById(`dropdown-${id}`);
+            const isHidden = dropdown.classList.contains('hidden');
+            document.querySelectorAll('[id^="dropdown-"]').forEach(el => el.classList.add('hidden'));
+            if (isHidden) dropdown.classList.remove('hidden');
+        }
 
         // --- MODAL E SALVAMENTO ---
         const modal = document.getElementById('modal-pneu');
@@ -534,25 +717,18 @@
         function abrirModal() { 
             document.getElementById('erro-modal').classList.add('hidden');
             document.getElementById('form-pneu').reset(); 
-            
-            // Limpa o ID de edição (indica que é um NOVO cadastro)
             document.getElementById('id_pneu_editando').value = '';
             document.querySelector('#modal-pneu h3').innerText = 'Cadastrar Novo Pneu';
-            
-            // Trava o status para evitar edição incorreta na criação
             document.getElementById('status').value = 'estoque';
-
             modal.classList.remove('hidden'); 
         }
 
-        // FUNÇÃO: Abrir o modal preenchido para editar
         function editarPneu(id) {
             const pneu = todosPneus.find(p => p.id === id);
             if (!pneu) return;
 
             document.getElementById('erro-modal').classList.add('hidden');
             
-            // Preenche os campos
             document.getElementById('id_pneu_editando').value = pneu.id;
             document.getElementById('numero_fogo').value = pneu.numero_fogo;
             document.getElementById('marca').value = pneu.marca;
@@ -565,9 +741,9 @@
             document.getElementById('status').value = pneu.status;
 
             document.querySelector('#modal-pneu h3').innerText = 'Editar Pneu';
-
             modal.classList.remove('hidden');
         }
+
         function fecharModal(id) { 
             if(typeof id === 'string') document.getElementById(id).classList.add('hidden');
             else modal.classList.add('hidden'); 
@@ -578,8 +754,7 @@
             const btn = document.getElementById('btn-salvar');
             const erroDiv = document.getElementById('erro-modal');
             
-            btn.innerHTML = 'Salvando...';
-            btn.disabled = true;
+            btn.innerHTML = 'Salvando...'; btn.disabled = true;
             erroDiv.classList.add('hidden');
 
             const session = await supabaseClient.auth.getSession();
@@ -599,26 +774,21 @@
             let result;
 
             if (idEditando) {
-                // --- É UMA EDIÇÃO (UPDATE) ---
                 dadosPneu.status = document.getElementById('status').value;
-                
-                // Atualiza o sulco inicial (cuidado: se já houver histórico, isso pode afetar cálculos de vida útil)
                 dadosPneu.sulco_inicial = parseFloat(document.getElementById('sulco_inicial').value);
 
                 result = await supabaseClient.from('pneus').update(dadosPneu).eq('id', idEditando);
 
                 if (!result.error) {
-                    // Registra no histórico do pneu
                     await supabaseClient.from('historico_pneu').insert([{
                         pneu_id: idEditando,
-                        tipo_evento: 'observacao', // Usando 'observacao' como padrão ou crie um 'edicao' no banco
+                        tipo_evento: 'observacao',
                         descricao: `Dados cadastrais do pneu alterados.`,
                         usuario_id: userId
                     }]);
                 }
 
             } else {
-                // --- É UM CADASTRO NOVO (INSERT) ---
                 dadosPneu.sulco_inicial = parseFloat(document.getElementById('sulco_inicial').value);
                 dadosPneu.sulco_atual = parseFloat(document.getElementById('sulco_inicial').value);
                 dadosPneu.status = document.getElementById('status').value;
@@ -640,31 +810,40 @@
                 if (msg.includes("pneus_numero_fogo_key")) msg = "Erro: Este Nº de Fogo já está cadastrado em outro pneu.";
                 erroDiv.innerText = msg;
                 erroDiv.classList.remove('hidden');
-                btn.innerHTML = 'Salvar Pneu';
-                btn.disabled = false;
+                btn.innerHTML = 'Salvar Pneu'; btn.disabled = false;
             } else {
                 fecharModal('modal-pneu');
                 carregarPneus();
-                btn.innerHTML = 'Salvar Pneu';
-                btn.disabled = false;
+                btn.innerHTML = 'Salvar Pneu'; btn.disabled = false;
             }
         });
 
-        // --- FUNÇÃO DE EXCLUIR PNEU ---
-        async function excluirPneu(id, numero_fogo) {
-            const msg = `⚠️ ATENÇÃO: EXCLUIR PNEU DEFINITIVAMENTE ⚠️\n\nVocê está prestes a apagar o pneu Nº de Fogo ${numero_fogo}.\n\n- Esta ação NÃO PODE SER DESFEITA.\n- O histórico do pneu será apagado.\n- Se o pneu estiver instalado em um veículo, a exclusão será bloqueada.\n- A ação ficará gravada permanentemente na Auditoria do sistema.\n\nDeseja realmente continuar?`;
-            
-            if(!window.confirm(msg)) return;
+        // --- FUNÇÃO DE ATIVAR/DESATIVAR PNEU ---
+        async function toggleStatusPneu(id, statusAtual) {
+            let novoStatus = 'estoque'; // Se ativar, volta pro estoque
+            let msg = 'Deseja realmente ATIVAR este pneu? Ele voltará para o estoque.';
 
-            const { error } = await supabaseClient.from('pneus').delete().eq('id', id);
+            if (statusAtual !== 'desativado') {
+                novoStatus = 'desativado';
+                msg = 'Deseja DESATIVAR este pneu? Ele não aparecerá em mapas ou ordens de serviço.';
+            }
+
+            if(!confirm(msg)) return;
+
+            const session = await supabaseClient.auth.getSession();
+            const userId = session.data.session.user.id;
+
+            const { error } = await supabaseClient.from('pneus').update({ status: novoStatus }).eq('id', id);
             
             if (error) {
-                if(error.code === '23503') {
-                    alert("Erro: Não é possível excluir. Este pneu possui histórico de instalação ou está em uso. Mude o status para 'Descarte' em vez de excluir.");
-                } else {
-                    alert("Erro ao excluir: " + error.message);
-                }
+                alert("Erro: " + error.message);
             } else {
+                await supabaseClient.from('historico_pneu').insert([{
+                    pneu_id: id,
+                    tipo_evento: 'observacao',
+                    descricao: `Status do pneu alterado para: ${novoStatus.toUpperCase()}`,
+                    usuario_id: userId
+                }]);
                 carregarPneus();
             }
         }
@@ -688,7 +867,22 @@
 
             document.getElementById('hist-titulo').innerText = `Histórico: ${pneuHistoricoAtual.numero_fogo}`;
             document.getElementById('hist-subtitulo').innerText = `${pneuHistoricoAtual.marca} ${pneuHistoricoAtual.medida} | DOT: ${pneuHistoricoAtual.dot || '-'}`;
-            document.getElementById('pdf-pneu-info').innerText = `Pneu: ${pneuHistoricoAtual.numero_fogo} | Sulco Inicial: ${pneuHistoricoAtual.sulco_inicial}mm`;
+            
+            // CALCULO DE CUSTO TOTAL (OS)
+            let custoTotal = 0;
+            const { data: osData } = await supabaseClient
+                .from('ordens_servico')
+                .select('custo')
+                .or(`pneu_saindo_id.eq.${id},pneu_entrando_id.eq.${id}`);
+            
+            if (osData) {
+                osData.forEach(os => custoTotal += parseFloat(os.custo || 0));
+            }
+
+            document.getElementById('pdf-info-fogo').innerText = pneuHistoricoAtual.numero_fogo;
+            document.getElementById('pdf-info-dot').innerText = pneuHistoricoAtual.dot || 'S/ Info';
+            document.getElementById('pdf-info-local').innerText = pneuHistoricoAtual.status === 'em_uso' ? `Veículo (${pneuHistoricoAtual.posicao})` : pneuHistoricoAtual.status.toUpperCase();
+            document.getElementById('pdf-info-custo').innerText = formatarDinheiro(custoTotal);
 
             document.getElementById('modal-historico-pneu').classList.remove('hidden');
             
@@ -704,7 +898,7 @@
                 .order('created_at', { ascending: false });
 
             if (error) {
-                tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-red-500">Erro ao carregar histórico. Verifique o console (F12).</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-red-500">Erro ao carregar histórico.</td></tr>';
                 return;
             }
 
@@ -715,7 +909,6 @@
                 return;
             }
 
-            // Troque o data.forEach por este for...of
             for (const h of data) {
                 const dataFormatada = new Date(h.created_at).toLocaleString('pt-BR');
                 
@@ -729,7 +922,6 @@
                 if(h.tipo_evento === 'observacao') { badgeEvento = 'bg-purple-500/10 text-purple-500'; textoEvento = 'Observação'; }
                 if(h.tipo_evento === 'os_concluida') { badgeEvento = 'bg-indigo-500/10 text-indigo-500'; textoEvento = 'OS Concluída'; }
                 
-                // Lógica da Foto
                 let linkFoto = '';
                 if (h.foto_url) {
                     if (!h.foto_url.startsWith('http')) {
@@ -742,21 +934,42 @@
                     }
                 }
 
+                let nomeExecutor = 'Sistema';
+                if (h.usuario_id && listaMotoristasMap[h.usuario_id]) {
+                    nomeExecutor = listaMotoristasMap[h.usuario_id];
+                } else if (h.usuario_id) {
+                    nomeExecutor = 'ID: ' + h.usuario_id.substring(0, 5) + '...';
+                }
+
                 tbody.innerHTML += `
                     <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
                         <td class="px-4 py-3 col-data text-xs text-gray-500">${dataFormatada}</td>
                         <td class="px-4 py-3 col-evento"><span class="px-2 py-1 rounded text-[10px] font-bold uppercase ${badgeEvento}">${textoEvento}</span></td>
                         <td class="px-4 py-3 col-desc">${escapeHTML(h.descricao)} ${linkFoto}</td>
-                        <td class="px-4 py-3 col-executor text-xs">ID: ${h.usuario_id ? h.usuario_id.substring(0, 8) : 'Sistema'}</td>
+                        <td class="px-4 py-3 col-executor text-xs">${escapeHTML(nomeExecutor)}</td>
                     </tr>
                 `;
             }
-            lucide.createIcons(); // Recria os ícones após o loop
+            lucide.createIcons();
         }
 
-        async function adicionarObservacao(pneuId) {
-            const texto = prompt("Digite a observação para este pneu:");
-            if(!texto || texto.trim() === '') return;
+        // --- OBSERVAÇÃO (SUBSTITUINDO O PROMPT) ---
+        function abrirModalObservacao(pneuId, numeroFogo) {
+            document.getElementById('id_pneu_obs').value = pneuId;
+            document.getElementById('pneu-obs-nome').innerText = numeroFogo;
+            document.getElementById('texto-observacao').value = '';
+            document.getElementById('modal-observacao').classList.remove('hidden');
+            document.getElementById('texto-observacao').focus();
+        }
+
+        async function salvarObservacao() {
+            const pneuId = document.getElementById('id_pneu_obs').value;
+            const texto = document.getElementById('texto-observacao').value;
+            const btn = document.getElementById('btn-salvar-obs');
+
+            if (!texto || texto.trim() === '') return alert("Digite uma observação.");
+
+            btn.innerHTML = 'Salvando...'; btn.disabled = true;
 
             const session = await supabaseClient.auth.getSession();
             const { error } = await supabaseClient.from('historico_pneu').insert([{
@@ -766,55 +979,23 @@
                 usuario_id: session.data.session.user.id
             }]);
 
-            if(error) alert("Erro ao salvar observação: " + error.message);
-            else {
-                alert("Observação registrada no histórico!");
-                if(pneuHistoricoAtual && pneuHistoricoAtual.id === pneuId) {
+            if (error) {
+                alert("Erro ao salvar: " + error.message);
+                btn.innerHTML = 'Salvar Observação'; btn.disabled = false;
+            } else {
+                fecharModal('modal-observacao');
+                btn.innerHTML = 'Salvar Observação'; btn.disabled = false;
+                // Se o histórico estiver aberto para este pneu, atualiza
+                if (pneuHistoricoAtual && pneuHistoricoAtual.id === pneuId) {
                     abrirHistoricoPneu(pneuId);
                 }
             }
         }
 
-        function exportarPDFPneu() {
-            const elemento = document.getElementById('area-impressao-pneu');
-            const logo = document.getElementById('logo-pdf-pneu');
-            
-            logo.classList.remove('hidden');
-
-            const opt = {
-                margin:       10,
-                filename:     `Historico_Pneu_${pneuHistoricoAtual.numero_fogo}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2 },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-            
-            const isDark = document.documentElement.classList.contains('dark');
-            if(isDark) {
-                elemento.style.backgroundColor = 'white';
-                elemento.style.color = 'black';
-                const tabela = document.getElementById('tabela-historico-pneu');
-                tabela.classList.remove('dark:bg-darkcard');
-                tabela.classList.add('bg-white', 'text-black');
-            }
-
-            html2pdf().set(opt).from(elemento).save().then(() => {
-                logo.classList.add('hidden');
-                if(isDark) {
-                    elemento.style.backgroundColor = '';
-                    elemento.style.color = '';
-                    const tabela = document.getElementById('tabela-historico-pneu');
-                    tabela.classList.add('dark:bg-darkcard');
-                    tabela.classList.remove('bg-white', 'text-black');
-                }
-            });
-        }
-
         // ==========================================
-        // --- LÓGICA DE EXPORTAÇÃO E IMPORTAÇÃO EXCEL (PNEUS) ---
+        // --- EXPORTAÇÃO E IMPORTAÇÃO ---
         // ==========================================
-        
-        // Função para baixar a lista completa de pneus
+
         function exportarExcelPneus() {
             if (!todosPneus || todosPneus.length === 0) {
                 return alert("Não há pneus cadastrados para exportar.");
@@ -848,7 +1029,12 @@
             XLSX.writeFile(wb, `Relatorio_Pneus_Karaz_${dataHoje}.xlsx`);
         }
 
-        // Função para baixar o modelo de importação
+        function exportarExcelHistorico() {
+            const tabela = document.getElementById('tabela-historico-pneu');
+            const wb = XLSX.utils.table_to_book(tabela, { sheet: "Historico" });
+            XLSX.writeFile(wb, `Historico_${pneuHistoricoAtual.numero_fogo}.xlsx`);
+        }
+
         function baixarModeloExcelPneus() {
             const cabecalhos = [
                 ["Numero_Fogo", "Marca", "Modelo", "Medida", "DOT", "Sulco_Inicial", "Valor_Pago"]
@@ -929,9 +1115,9 @@
                                 medida: medida,
                                 dot: dot,
                                 sulco_inicial: sulco_inicial,
-                                sulco_atual: sulco_inicial, // Inicialmente é o mesmo
+                                sulco_atual: sulco_inicial,
                                 valor_pago: valor_pago,
-                                status: 'estoque', // Importados sempre entram como estoque
+                                status: 'estoque',
                                 observacao: 'Importado via planilha Excel'
                             });
                         } else {
@@ -948,7 +1134,7 @@
                     const { data: insertData, error } = await supabaseClient.from('pneus').insert(pneusParaInserir);
 
                     if (error) {
-                        if (error.code === '23505') { // Chave duplicada (numero_fogo)
+                        if (error.code === '23505') { 
                             throw new Error("Um ou mais Números de Fogo já estão cadastrados no sistema.");
                         }
                         throw new Error(error.message);
@@ -960,8 +1146,8 @@
                     
                     setTimeout(() => {
                         fecharModalImportarPneus();
-                        fecharModal('modal-pneu'); // Fecha o modal de novo pneu caso esteja aberto
-                        carregarPneus(); // Atualiza a tabela
+                        fecharModal('modal-pneu');
+                        carregarPneus(); 
                     }, 2000);
 
                 } catch (err) {
@@ -975,27 +1161,58 @@
             reader.readAsArrayBuffer(file);
         }
 
+        function exportarPDFPneu() {
+            const elemento = document.getElementById('area-impressao-pneu');
+            const logo = document.getElementById('logo-pdf-pneu');
+            
+            logo.classList.remove('hidden');
+
+            const opt = {
+                margin:       10,
+                filename:     `Historico_Pneu_${pneuHistoricoAtual.numero_fogo}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            const isDark = document.documentElement.classList.contains('dark');
+            if(isDark) {
+                elemento.style.backgroundColor = 'white';
+                elemento.style.color = 'black';
+                const tabela = document.getElementById('tabela-historico-pneu');
+                tabela.classList.remove('dark:bg-darkcard');
+                tabela.classList.add('bg-white', 'text-black');
+            }
+
+            html2pdf().set(opt).from(elemento).save().then(() => {
+                logo.classList.add('hidden');
+                if(isDark) {
+                    elemento.style.backgroundColor = '';
+                    elemento.style.color = '';
+                    const tabela = document.getElementById('tabela-historico-pneu');
+                    tabela.classList.add('dark:bg-darkcard');
+                    tabela.classList.remove('bg-white', 'text-black');
+                }
+            });
+        }
+
         carregarPneus();
 
-        // ==========================================
-        // TEMPO REAL (REALTIME) - TELA DE PNEUS
-        // ==========================================
+        // REALTIME
         supabaseClient.channel('realtime-pneus')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'pneus' }, payload => {
-                console.log('Mudança detectada nos pneus!');
-                // Atualiza a lista de pneus (se não tiver um modal aberto digitando)
                 if (document.getElementById('modal-pneu').classList.contains('hidden') && 
                     document.getElementById('modal-historico-pneu').classList.contains('hidden') &&
-                    document.getElementById('modal-importar-pneus').classList.contains('hidden')) {
+                    document.getElementById('modal-importar-pneus').classList.contains('hidden') &&
+                    document.getElementById('modal-observacao').classList.contains('hidden')) {
                     carregarPneus();
                 }
             })
-             // OUVINTE NOVO: Ouve as calibragens para atualizar a pressão na tela
             .on('postgres_changes', { event: '*', schema: 'public', table: 'calibragens' }, payload => {
                 if (document.getElementById('modal-pneu').classList.contains('hidden') && 
                     document.getElementById('modal-historico-pneu').classList.contains('hidden') &&
-                    document.getElementById('modal-importar-pneus').classList.contains('hidden')) {
-                    console.log('Nova pressão detectada!');
+                    document.getElementById('modal-importar-pneus').classList.contains('hidden') &&
+                    document.getElementById('modal-observacao').classList.contains('hidden')) {
                     carregarPneus();
                 }
             })
