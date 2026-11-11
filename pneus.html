@@ -117,8 +117,9 @@
             </div>
 
             <!-- FILTROS E AÇÕES -->
-            <div class="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
-                <div class="flex w-full sm:w-auto gap-4">
+            <!-- CORREÇÃO: Ajuste do flexbox para os botões ficarem lado a lado como em Veículos -->
+            <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                <div class="flex flex-col sm:flex-row w-full md:w-auto gap-4">
                     <div class="relative w-full sm:w-96">
                         <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-gray-400"></i>
                         <input type="text" id="input-busca" placeholder="Buscar por Nº Fogo, Marca, Modelo..." class="w-full pl-10 pr-4 py-2 bg-white dark:bg-darkcard border border-gray-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:border-brand transition-colors">
@@ -134,31 +135,31 @@
                     </select>
                 </div>
                 
-                <div class="flex gap-2 w-full sm:w-auto justify-end">
+                <div class="flex gap-2 w-full md:w-auto justify-end">
                     <!-- BOTÃO EXPORTAR SECUNDÁRIO -->
-                    <button onclick="exportarExcelPneus()" class="w-full sm:w-auto bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
+                    <button onclick="exportarExcelPneus()" class="w-full sm:w-auto bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 whitespace-nowrap">
                         <i data-lucide="download" class="w-4 h-4"></i> Exportar Lista
                     </button>
                     <!-- BOTÃO NOVO PNEU PRIMÁRIO -->
-                    <button onclick="abrirModal()" class="w-full sm:w-auto bg-brand hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
+                    <button onclick="abrirModal()" class="w-full sm:w-auto bg-brand hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 whitespace-nowrap">
                         <i data-lucide="plus" class="w-4 h-4"></i> Novo Pneu
                     </button>
                 </div>
             </div>
 
             <!-- TABELA -->
-            <!-- CORREÇÃO: Removido overflow-x-auto para o dropdown não ficar preso -->
-            <div class="bg-white dark:bg-darkcard border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden">
+            <!-- CORREÇÃO: Removido o overflow-hidden da div externa para o dropdown poder "vazar" -->
+            <div class="bg-white dark:bg-darkcard border border-gray-200 dark:border-slate-700 rounded-lg">
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="bg-gray-50 dark:bg-slate-800/50 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider">
-                            <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Nº de Fogo</th>
+                            <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700 rounded-tl-lg">Nº de Fogo</th>
                             <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Marca / Modelo</th>
                             <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Medida / DOT</th>
                             <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Sulco (Atual/Inicial)</th>
                             <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Pressão (PSI)</th>
                             <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Status</th>
-                            <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700 text-center">Ações</th>
+                            <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700 text-center rounded-tr-lg">Ações</th>
                         </tr>
                     </thead>
                     <tbody id="tabela-pneus" class="text-sm divide-y divide-gray-200 dark:divide-slate-700"></tbody>
@@ -294,7 +295,6 @@
                 </div>
             </div>
 
-            <!-- NOVAS INFORMAÇÕES DO PNEU -->
             <div class="px-6 py-4 bg-gray-100 dark:bg-slate-800/50 flex flex-wrap gap-6 text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-slate-700">
                 <div>
                     <p class="font-bold text-xs uppercase text-gray-500">Localização Atual</p>
@@ -320,7 +320,6 @@
 
             <div class="flex-1 overflow-auto p-6 bg-gray-50 dark:bg-darkbg" id="area-impressao-pneu">
                 
-                <!-- Cabeçalho exclusivo para o PDF / Impressão -->
                 <div id="logo-pdf-pneu" class="hidden mb-6 flex flex-col border-b-2 border-brand pb-4">
                     <div class="flex justify-between items-end mb-4">
                         <div class="flex items-center gap-3">
