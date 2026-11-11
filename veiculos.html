@@ -133,7 +133,6 @@
                 </div>
                 
                 <div class="flex gap-2 w-full sm:w-auto">
-                    <!-- BOTÃO EXPORTAR SECUNDÁRIO -->
                     <button onclick="exportarVeiculosExcel()" class="w-full sm:w-auto bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
                         <i data-lucide="download" class="w-4 h-4"></i> Exportar Lista
                     </button>
@@ -143,16 +142,17 @@
                 </div>
             </div>
 
-            <div class="bg-white dark:bg-darkcard border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden">
+            <!-- CORREÇÃO: Removido o overflow-hidden para o dropdown não ser cortado -->
+            <div class="bg-white dark:bg-darkcard border border-gray-200 dark:border-slate-700 rounded-lg">
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="bg-gray-50 dark:bg-slate-800/50 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider">
-                            <th class="px-4 py-3 font-medium border-b border-gray-200 dark:border-slate-700 w-36">Saúde</th>
+                            <th class="px-4 py-3 font-medium border-b border-gray-200 dark:border-slate-700 w-36 rounded-tl-lg">Saúde</th>
                             <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Placa / Prefixo</th>
                             <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Modelo</th>
                             <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Eixos / Pneus</th>
                             <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">KM / Horas</th>
-                            <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700 text-center">Ações</th>
+                            <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700 text-center rounded-tr-lg">Ações</th>
                         </tr>
                     </thead>
                     <tbody id="tabela-veiculos" class="text-sm divide-y divide-gray-200 dark:divide-slate-700"></tbody>
@@ -288,7 +288,7 @@
                 <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" checked onchange="toggleColuna('col-horas', this.checked)" class="rounded text-brand focus:ring-brand"> Horas</label>
                 <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" checked onchange="toggleColuna('col-user', this.checked)" class="rounded text-brand focus:ring-brand"> Usuário</label>
                 
-                <!-- COLUNAS DO VEÍCULO -->
+                <!-- NOVAS COLUNAS -->
                 <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" checked onchange="toggleColuna('col-placa', this.checked)" class="rounded text-brand focus:ring-brand"> Placa</label>
                 <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" checked onchange="toggleColuna('col-prefixo', this.checked)" class="rounded text-brand focus:ring-brand"> Prefixo</label>
                 <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" checked onchange="toggleColuna('col-modelo', this.checked)" class="rounded text-brand focus:ring-brand"> Modelo</label>
@@ -311,7 +311,7 @@
                             <th class="px-4 py-3 col-km">KM</th>
                             <th class="px-4 py-3 col-horas">Horas</th>
                             <th class="px-4 py-3 col-user">Usuário</th>
-                            <!-- COLUNAS DO VEÍCULO -->
+                            <!-- NOVAS COLUNAS -->
                             <th class="px-4 py-3 col-placa">Placa</th>
                             <th class="px-4 py-3 col-prefixo">Prefixo</th>
                             <th class="px-4 py-3 col-modelo">Modelo</th>
@@ -422,7 +422,6 @@
         let veiculoHistoricoAtual = null;
         let filtroAtivo = null;
 
-        // --- VARIÁVEIS PARA O MODAL DE CONFIRMAÇÃO ---
         let veiculoAcaoId = null;
         let veiculoAcaoStatus = null;
 
@@ -570,7 +569,6 @@
             document.getElementById('kpi-sem-afericao').innerText = semAfericao;
         }
 
-        // Normalizador de texto para busca (remove acentos, espaços, traços)
         const normalizeString = (str) => {
             if (!str) return '';
             return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[\s\-\.]/g, "");
@@ -628,8 +626,6 @@
                 const tr = document.createElement('tr');
                 tr.className = rowClass;
                 
-                // REDUÇÃO DE ALTURA: py-4 -> py-3
-                // PLACA E PREFIXO LADO A LADO
                 tr.innerHTML = `
                     <td class="px-4 py-3 w-36">
                         <div class="flex items-center gap-2">
@@ -639,7 +635,6 @@
                     </td>
                     <td class="px-6 py-3">
                         <div class="flex items-center gap-3">
-                            <!-- PLACA MERCOSUL COM LARGURA FIXA -->
                             <div class="inline-flex flex-col border border-gray-300 dark:border-slate-600 rounded shadow-sm overflow-hidden shrink-0 w-[90px]">
                                 <div class="bg-[#003399] text-white text-[7px] text-center font-bold py-0.5 px-1 tracking-widest leading-none">BRASIL</div>
                                 <div class="bg-white text-black text-center font-bold text-xs leading-none py-1 uppercase">${escapeHTML(v.placa)}</div>
@@ -663,17 +658,14 @@
                         <div class="text-xs text-gray-500">${v.horas_atual} h</div>
                     </td>
                     <td class="px-6 py-3 text-center flex items-center justify-center gap-2 relative">
-                        <!-- MAPA FORA DO MENU -->
                         <a href="mapa-veiculo.html?id=${v.id}" class="text-gray-400 hover:text-brand transition-colors p-1" title="Mapa de Pneus"><i data-lucide="map" class="w-5 h-5"></i></a>
                         
-                        <!-- BOTÃO 3 PONTINHOS -->
                         <div class="relative inline-block text-left">
                             <button onclick="toggleDropdown(event, '${v.id}')" class="text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors p-1">
                                 <i data-lucide="more-vertical" class="w-5 h-5"></i>
                             </button>
                             
-                            <!-- DROPDOWN MENU -->
-                            <div id="dropdown-${v.id}" class="hidden absolute right-0 mt-1 w-36 bg-white dark:bg-slate-800 rounded-md shadow-lg z-50 border border-gray-200 dark:border-slate-700 overflow-hidden text-left">
+                            <div id="dropdown-${v.id}" class="hidden absolute right-0 mt-1 w-36 bg-white dark:bg-slate-800 rounded-md shadow-lg z-[100] border border-gray-200 dark:border-slate-700 overflow-hidden text-left">
                                 <button onclick="editarVeiculo('${v.id}')" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 flex items-center gap-2">
                                     <i data-lucide="edit" class="w-4 h-4"></i> Editar
                                 </button>
@@ -693,7 +685,6 @@
             lucide.createIcons();
         }
 
-        // Fecha dropdowns ao clicar fora
         document.addEventListener('click', (e) => {
             if (!e.target.closest('.relative')) {
                 document.querySelectorAll('[id^="dropdown-"]').forEach(el => el.classList.add('hidden'));
@@ -701,16 +692,11 @@
         });
 
         function toggleDropdown(event, id) {
-            event.stopPropagation(); // Impede que o clique feche o menu na hora
+            event.stopPropagation();
             const dropdown = document.getElementById(`dropdown-${id}`);
             const isHidden = dropdown.classList.contains('hidden');
-            
-            // Fecha todos os outros
             document.querySelectorAll('[id^="dropdown-"]').forEach(el => el.classList.add('hidden'));
-            
-            if (isHidden) {
-                dropdown.classList.remove('hidden');
-            }
+            if (isHidden) dropdown.classList.remove('hidden');
         }
 
         document.getElementById('input-busca').addEventListener('input', renderizarTabela);
@@ -768,7 +754,6 @@
         function exportarVeiculosExcel() {
             if (todosVeiculos.length === 0) return alert("Não há veículos para exportar.");
             
-            // Filtra apenas os que estão visíveis na tela no momento (se houver filtro)
             const termoBusca = normalizeString(document.getElementById('input-busca').value);
             const veiculosFiltrados = todosVeiculos.filter(v => {
                 const matchTexto = normalizeString(v.placa).includes(termoBusca) || 
