@@ -29,12 +29,10 @@
     <aside id="sidebar" class="w-64 bg-white dark:bg-darkcard border-r border-gray-200 dark:border-slate-700 transition-all duration-300 flex flex-col z-20">
         <div>
             <div class="h-16 flex items-center justify-center border-b border-gray-200 dark:border-slate-700 px-4">
-                <!-- Logo Completa (Aparece quando aberto) -->
                 <a href="dashboard.html" class="flex items-center justify-center w-full logo-full">
                     <img src="logo-light.png" alt="Karaz Sistema" class="h-8 object-contain dark:hidden">
                     <img src="logo-dark.png" alt="Karaz Sistema" class="h-8 object-contain hidden dark:block">
                 </a>
-                <!-- Símbolo KZ (Aparece quando fechado) -->
                 <a href="dashboard.html" class="hidden logo-small items-center justify-center w-full">
                     <img src="logo-app.png" alt="KZ" class="w-8 h-8 object-contain rounded-md dark:hidden">
                     <img src="logo.png" alt="KZ" class="w-8 h-8 object-contain rounded-md hidden dark:block">
@@ -80,7 +78,6 @@
                     <i data-lucide="moon" class="w-5 h-5 hidden dark:block"></i><i data-lucide="sun" class="w-5 h-5 block dark:hidden"></i>
                 </button>
                 
-                <!-- BOTÃO DE CONFIGURAÇÃO ADICIONADO AQUI -->
                 <button onclick="abrirConfigPC()" class="p-1.5 text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors">
                     <i data-lucide="settings" class="w-5 h-5"></i>
                 </button>
@@ -97,52 +94,61 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
                 
                 <!-- ÁREA DO MAPA -->
-                <div class="lg:col-span-2 bg-white dark:bg-darkcard rounded-xl border border-gray-200 dark:border-slate-700 p-6 flex flex-col items-center justify-start relative overflow-hidden pt-12">
+                <div class="lg:col-span-2 bg-white dark:bg-darkcard rounded-xl border border-gray-200 dark:border-slate-700 flex flex-col relative overflow-hidden">
                     
-                    <div class="absolute top-6 left-6 flex items-start gap-4">
-                        <!-- Placa Mercosul -->
-                        <div class="inline-flex flex-col border-2 border-gray-900 dark:border-white rounded-md overflow-hidden w-28 shadow-sm mt-1">
-                            <div class="bg-[#003399] text-white text-[9px] text-center font-bold py-0.5 tracking-widest">BRASIL</div>
-                            <div id="placa-visual" class="bg-white text-black text-center font-bold text-xl leading-none py-1.5 uppercase">...</div>
-                        </div>
-                        
-                        <!-- Informações -->
-                        <div>
-                            <div class="flex items-center gap-2 mb-1">
-                                <h3 id="modelo-visual" class="font-bold text-gray-900 dark:text-white text-lg">Carregando...</h3>
-                                <span id="prefixo-visual" class="text-[10px] uppercase font-bold bg-gray-200 dark:bg-slate-700 px-2 py-0.5 rounded text-gray-700 dark:text-gray-300 hidden"></span>
+                    <!-- Informações do Veículo (Fixo no topo) -->
+                    <div class="p-6 pb-0 z-10">
+                        <div class="flex items-start gap-4">
+                            <div class="inline-flex flex-col border-2 border-gray-900 dark:border-white rounded-md overflow-hidden w-28 shadow-sm mt-1">
+                                <div class="bg-[#003399] text-white text-[9px] text-center font-bold py-0.5 tracking-widest">BRASIL</div>
+                                <div id="placa-visual" class="bg-white text-black text-center font-bold text-xl leading-none py-1.5 uppercase">...</div>
                             </div>
-                            <p id="marca-visual" class="text-sm text-gray-500">...</p>
+                            <div>
+                                <div class="flex items-center gap-2 mb-1">
+                                    <h3 id="modelo-visual" class="font-bold text-gray-900 dark:text-white text-lg">Carregando...</h3>
+                                    <span id="prefixo-visual" class="text-[10px] uppercase font-bold bg-gray-200 dark:bg-slate-700 px-2 py-0.5 rounded text-gray-700 dark:text-gray-300 hidden"></span>
+                                </div>
+                                <p id="marca-visual" class="text-sm text-gray-500">...</p>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- CHASSI ESTILIZADO -->
-                    <div class="relative mt-32 mb-10 flex flex-col items-center w-full max-w-lg">
+                    <!-- Container do Mapa -->
+                    <div class="flex-1 relative flex items-center justify-center p-6">
                         
-                        <!-- Cabine (Frente) - Aumentada -->
-                        <div class="w-64 h-20 bg-slate-200 dark:bg-slate-700 rounded-t-2xl border-4 border-b-0 border-slate-400 dark:border-slate-500 flex items-center justify-center z-10 relative shadow-md">
-                            <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Frente</span>
+                        <!-- Estepes (Fixo na esquerda) -->
+                        <div id="container-estepes" class="absolute left-6 top-1/2 -translate-y-1/2 flex flex-col items-center gap-4 hidden">
+                            <!-- Renderizado via JS -->
                         </div>
 
-                        <!-- Container dos Eixos - Altura e Distância Aumentadas -->
-                        <div id="eixos-container" class="relative w-full flex flex-col items-center gap-24 pt-8 pb-12 z-0 mt-4">
-                            <!-- Linha central vertical (Chassi) - Engrossada -->
-                            <div class="absolute top-0 bottom-0 left-1/2 w-8 bg-slate-300 dark:bg-slate-600 border-x-2 border-slate-400 dark:border-slate-500 -translate-x-1/2 z-0"></div>
-                            <!-- Eixos entram aqui via JS -->
-                        </div>
-                    </div>
+                        <!-- Chassi Central -->
+                        <div class="relative flex flex-col items-center ml-20">
+                            
+                            <!-- Cabine (Frente) -->
+                            <div class="w-64 h-20 bg-slate-200 dark:bg-slate-700 rounded-t-2xl border-4 border-b-0 border-slate-400 dark:border-slate-500 flex items-center justify-center z-10 relative shadow-md">
+                                <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Frente</span>
+                            </div>
 
-                    <div class="mt-8 flex gap-6 text-sm text-gray-500">
-                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-green-500"></div> Bom</div>
-                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-yellow-500"></div> Atenção</div>
-                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-red-500"></div> Trocar</div>
-                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full border-2 border-dashed border-gray-400"></div> Vazio</div>
+                            <!-- Eixos -->
+                            <div id="eixos-container" class="relative w-full flex flex-col items-center gap-24 pt-8 pb-12 z-0 mt-4">
+                                <!-- Linha central vertical (Chassi) -->
+                                <div class="absolute top-0 bottom-0 left-1/2 w-8 bg-slate-300 dark:bg-slate-600 border-x-2 border-slate-400 dark:border-slate-500 -translate-x-1/2 z-0"></div>
+                                <!-- Eixos via JS -->
+                            </div>
+                        </div>
+
+                        <!-- Legenda de Cores (Fixada no canto inferior direito) -->
+                        <div class="absolute bottom-6 right-6 flex flex-wrap gap-4 text-xs font-medium bg-white/90 dark:bg-darkcard/90 p-3 rounded-lg border border-gray-200 dark:border-slate-700 shadow-sm backdrop-blur-sm">
+                            <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded-full bg-green-500"></div> Bom</div>
+                            <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded-full bg-yellow-500"></div> Atenção</div>
+                            <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded-full bg-red-500"></div> Trocar</div>
+                            <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded-full border-2 border-dashed border-gray-400"></div> Vazio</div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- PAINEL LATERAL -->
                 <div class="flex flex-col gap-4">
-                    <!-- DADOS DO VEÍCULO -->
                     <div class="bg-white dark:bg-darkcard p-5 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm">
                         <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 border-b border-gray-200 dark:border-slate-700 pb-2">Dados do Veículo</h4>
                         
@@ -315,7 +321,6 @@
     <script>
         lucide.createIcons();
         
-        // --- LÓGICA DE UI ---
         supabaseClient.auth.getSession().then(({ data: { session } }) => {
             if (!session) { window.location.href = "login.html"; } 
             else { document.getElementById('user-email').innerText = session.user.email; }
@@ -490,8 +495,12 @@
         }
 
         function renderizarChassi() {
-            const container = document.getElementById('eixos-container');
-            container.innerHTML = '';
+            const containerEixos = document.getElementById('eixos-container');
+            const containerEstepes = document.getElementById('container-estepes');
+            
+            containerEixos.innerHTML = '';
+            containerEstepes.innerHTML = '';
+            containerEstepes.classList.add('hidden');
 
             let configArr = [];
             if(veiculoAtual.configuracao_eixos) {
@@ -500,7 +509,6 @@
                 let eixos = veiculoAtual.quantidade_eixos || 2;
                 for(let i=0; i<eixos; i++) configArr.push(i===0 ? 2 : 4);
             }
-            let estepes = veiculoAtual.quantidade_estepes || 0;
 
             configArr.forEach((qtdStr, indexEixo) => {
                 let qtd = parseInt(qtdStr);
@@ -532,12 +540,12 @@
                 ladoDireitoHtml += '</div>';
 
                 eixoDiv.innerHTML = labelEixo.outerHTML + barraEixo + `${ladoEsquerdoHtml}<div class="w-16"></div>${ladoDireitoHtml}`;
-                container.appendChild(eixoDiv);
+                containerEixos.appendChild(eixoDiv);
             });
 
+            let estepes = veiculoAtual.quantidade_estepes || 0;
             if (estepes > 0) {
-                const estepeDiv = document.createElement('div');
-                estepeDiv.className = "mt-12 pt-8 border-t-2 border-slate-300 dark:border-slate-600 border-dashed w-full z-10";
+                containerEstepes.classList.remove('hidden');
                 
                 let htmlEstepes = '';
                 for (let i = 1; i <= estepes; i++) {
@@ -545,13 +553,11 @@
                     const pneuAqui = pneusDoVeiculo.find(p => p.posicao === posicao);
                     htmlEstepes += gerarPneuHTML(pneuAqui, posicao, true);
                 }
-                estepeDiv.innerHTML = `
-                    <p class="text-[10px] text-center text-slate-500 mb-3 font-bold uppercase tracking-widest">Estepes</p>
-                    <div class="grid grid-cols-4 sm:grid-cols-6 gap-3 justify-center max-w-sm mx-auto">
-                        ${htmlEstepes}
-                    </div>
+                
+                containerEstepes.innerHTML = `
+                    <p class="text-[10px] text-center text-slate-500 mb-2 font-bold uppercase tracking-widest">Estepes</p>
+                    <div class="flex flex-col gap-4">${htmlEstepes}</div>
                 `;
-                container.appendChild(estepeDiv);
             }
             lucide.createIcons();
         }
@@ -569,7 +575,6 @@
                 if (pneu.pressao_atual > 0) pressaoColor = 'bg-green-400'; 
                 if (pneu.pressao_atual > 0 && pneu.pressao_atual < 80) pressaoColor = 'bg-red-500';
 
-                // Pneu Aumentado com 4 Informações
                 return `
                     <div onclick="selecionarPneu('${pneu.id}')" class="relative w-16 h-24 rounded-full border-2 shadow-md cursor-pointer transition-transform ${cor} ${ringClass} flex flex-col items-center justify-center py-1">
                         <div class="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full ${pressaoColor} border border-white/50" title="Status de Pressão"></div>
