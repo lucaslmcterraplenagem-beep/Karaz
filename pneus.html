@@ -118,7 +118,7 @@
 
             <!-- FILTROS E AÇÕES -->
             <div class="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
-                <div class="flex w-full gap-4">
+                <div class="flex w-full sm:w-auto gap-4">
                     <div class="relative w-full sm:w-96">
                         <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-gray-400"></i>
                         <input type="text" id="input-busca" placeholder="Buscar por Nº Fogo, Marca, Modelo..." class="w-full pl-10 pr-4 py-2 bg-white dark:bg-darkcard border border-gray-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:border-brand transition-colors">
@@ -134,21 +134,22 @@
                     </select>
                 </div>
                 
-                <div class="flex flex-wrap gap-2 w-full sm:w-auto justify-end">
+                <div class="flex gap-2 w-full sm:w-auto justify-end">
                     <!-- BOTÃO EXPORTAR SECUNDÁRIO -->
-                    <button onclick="exportarExcelPneus()" class="whitespace-nowrap w-full sm:w-auto bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
+                    <button onclick="exportarExcelPneus()" class="w-full sm:w-auto bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
                         <i data-lucide="download" class="w-4 h-4"></i> Exportar Lista
                     </button>
                     <!-- BOTÃO NOVO PNEU PRIMÁRIO -->
-                    <button onclick="abrirModal()" class="whitespace-nowrap w-full sm:w-auto bg-brand hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
+                    <button onclick="abrirModal()" class="w-full sm:w-auto bg-brand hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
                         <i data-lucide="plus" class="w-4 h-4"></i> Novo Pneu
                     </button>
                 </div>
             </div>
 
             <!-- TABELA -->
-            <div class="bg-white dark:bg-darkcard border border-gray-200 dark:border-slate-700 rounded-lg overflow-x-auto">
-                <table class="w-full text-left border-collapse min-w-[800px]">
+            <!-- CORREÇÃO: Removido overflow-x-auto para o dropdown não ficar preso -->
+            <div class="bg-white dark:bg-darkcard border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden">
+                <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="bg-gray-50 dark:bg-slate-800/50 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider">
                             <th class="px-6 py-3 font-medium border-b border-gray-200 dark:border-slate-700">Nº de Fogo</th>
