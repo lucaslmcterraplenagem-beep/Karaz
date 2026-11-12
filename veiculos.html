@@ -101,10 +101,10 @@
                     <p class="text-2xl font-bold text-gray-900 dark:text-white" id="kpi-total-veiculos">0</p>
                 </div>
                 
-                <div onclick="toggleFiltro('sem_afericao', this)" class="card-filtro bg-white dark:bg-darkcard p-4 rounded-lg border-2 border-transparent hover:border-orange-300 dark:hover:border-orange-700 cursor-pointer transition-all flex flex-col justify-between border-l-4 border-l-orange-500">
-                    <div class="flex justify-between items-start">
-                        <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Sem Aferição há ></p>
-                        <select id="input-dias-afericao" onclick="event.stopPropagation()" onchange="calcularKPIs()" class="bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded text-xs text-gray-800 dark:text-gray-200 focus:outline-none focus:border-brand py-0.5 px-1 -mt-1 cursor-pointer">
+                <div onclick="toggleFiltro('sem_afericao', this)" id="card-sem-afericao" class="card-filtro bg-white dark:bg-darkcard p-4 rounded-lg border-2 border-transparent hover:border-orange-300 dark:hover:border-orange-700 cursor-pointer transition-all flex flex-col justify-between border-l-4 border-l-green-500">
+                    <div class="flex justify-between items-start gap-2">
+                        <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Sem aferição há mais de</p>
+                        <select id="input-dias-afericao" onclick="event.stopPropagation()" onchange="calcularKPIs()" class="bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded text-xs text-gray-800 dark:text-gray-200 focus:outline-none focus:border-brand py-0.5 px-1 -mt-1 cursor-pointer shrink-0">
                             <option value="1">1 dia</option>
                             <option value="5">5 dias</option>
                             <option value="15">15 dias</option>
@@ -112,7 +112,7 @@
                             <option value="60">60 dias</option>
                         </select>
                     </div>
-                    <p class="text-2xl font-bold text-orange-500" id="kpi-sem-afericao">0</p>
+                    <p class="text-lg font-bold text-green-500" id="kpi-sem-afericao">Todos em dia ✓</p>
                 </div>
 
                 <div onclick="toggleFiltro('atencao', this)" class="card-filtro bg-white dark:bg-darkcard p-4 rounded-lg border-2 border-transparent hover:border-yellow-300 dark:hover:border-yellow-700 cursor-pointer transition-all border-l-4 border-l-yellow-500">
@@ -566,7 +566,20 @@
                 }
             });
             
-            document.getElementById('kpi-sem-afericao').innerText = semAfericao;
+            const kpiSemAfericaoEl = document.getElementById('kpi-sem-afericao');
+            const cardSemAfericaoEl = document.getElementById('card-sem-afericao');
+
+            if (semAfericao === 0) {
+                kpiSemAfericaoEl.innerText = 'Todos em dia ✓';
+                kpiSemAfericaoEl.className = 'text-lg font-bold text-green-500';
+                cardSemAfericaoEl.classList.remove('border-l-orange-500');
+                cardSemAfericaoEl.classList.add('border-l-green-500');
+            } else {
+                kpiSemAfericaoEl.innerHTML = `${semAfericao} <span class="text-sm font-normal">de ${ativos.length}</span>`;
+                kpiSemAfericaoEl.className = 'text-2xl font-bold text-orange-500';
+                cardSemAfericaoEl.classList.remove('border-l-green-500');
+                cardSemAfericaoEl.classList.add('border-l-orange-500');
+            }
         }
 
         const normalizeString = (str) => {
@@ -809,6 +822,7 @@
             gerarCamposEixos();
             btnProximo.classList.remove('hidden');
             btnSalvar.innerText = 'Finalizar Cadastro';
+            btnSalvar.disabled = false;
             voltarParaAba1();
             modal.classList.remove('hidden'); 
         }
@@ -928,6 +942,7 @@
             btnProximo.classList.remove('hidden');
             voltarParaAba1();
             btnSalvar.innerText = 'Salvar Alterações';
+            btnSalvar.disabled = false;
             modal.classList.remove('hidden');
         }
 
