@@ -95,16 +95,22 @@
         </header>
 
         <main class="flex-1 overflow-y-auto p-6 bg-gray-50 dark:bg-darkbg">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                <div onclick="toggleFiltro('total', this)" class="card-filtro bg-white dark:bg-darkcard p-4 rounded-lg border-2 border-transparent hover:border-gray-300 dark:hover:border-slate-600 cursor-pointer transition-all">
-                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Total de Veículos</p>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                <!-- CARD TOTAL COM DROPDOWN DE MODELO -->
+                <div onclick="toggleFiltro('total', this)" class="card-filtro bg-white dark:bg-darkcard p-4 rounded-lg border-2 border-transparent hover:border-gray-300 dark:hover:border-slate-600 cursor-pointer transition-all flex flex-col justify-between">
+                    <div class="flex justify-between items-start gap-2">
+                        <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Total de Veículos</p>
+                        <select id="select-modelo" onclick="event.stopPropagation()" onchange="alterarFiltroModelo()" class="bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded text-xs text-gray-800 dark:text-gray-200 focus:outline-none focus:border-brand py-0.5 px-1 -mt-1 cursor-pointer shrink-0 max-w-[120px] truncate">
+                            <option value="">Todos os Modelos</option>
+                        </select>
+                    </div>
                     <p class="text-2xl font-bold text-gray-900 dark:text-white" id="kpi-total-veiculos">0</p>
                 </div>
                 
                 <div onclick="toggleFiltro('sem_afericao', this)" id="card-sem-afericao" class="card-filtro bg-white dark:bg-darkcard p-4 rounded-lg border-2 border-transparent hover:border-orange-300 dark:hover:border-orange-700 cursor-pointer transition-all flex flex-col justify-between border-l-4 border-l-green-500">
                     <div class="flex justify-between items-start gap-2">
                         <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Sem aferição há mais de</p>
-                        <select id="input-dias-afericao" onclick="event.stopPropagation()" onchange="calcularKPIs()" class="bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded text-xs text-gray-800 dark:text-gray-200 focus:outline-none focus:border-brand py-0.5 px-1 -mt-1 cursor-pointer shrink-0">
+                        <select id="input-dias-afericao" onclick="event.stopPropagation()" onchange="alterarFiltroDias()" class="bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded text-xs text-gray-800 dark:text-gray-200 focus:outline-none focus:border-brand py-0.5 px-1 -mt-1 cursor-pointer shrink-0">
                             <option value="1">1 dia</option>
                             <option value="5">5 dias</option>
                             <option value="15">15 dias</option>
@@ -126,6 +132,15 @@
                 </div>
             </div>
 
+            <!-- ÁREA DE FILTROS ATIVOS (BADGES) -->
+            <div id="filtros-ativos" class="hidden flex-wrap gap-2 items-center mb-6 text-sm">
+                <span class="text-gray-500 font-medium mr-1"><i data-lucide="filter" class="w-4 h-4 inline pb-0.5"></i> Filtros Ativos:</span>
+                <!-- As badges serão injetadas aqui pelo JS -->
+                <button onclick="limparTodosFiltros()" class="text-brand hover:underline font-medium ml-auto flex items-center gap-1">
+                    <i data-lucide="x-circle" class="w-4 h-4"></i> Limpar Tudo
+                </button>
+            </div>
+
            <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
                 <div class="relative w-full sm:w-96">
                     <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-gray-400"></i>
@@ -142,7 +157,6 @@
                 </div>
             </div>
 
-            <!-- CORREÇÃO: Removido o overflow-hidden para o dropdown não ser cortado -->
             <div class="bg-white dark:bg-darkcard border border-gray-200 dark:border-slate-700 rounded-lg">
                 <table class="w-full text-left border-collapse">
                     <thead>
@@ -157,7 +171,7 @@
                     </thead>
                     <tbody id="tabela-veiculos" class="text-sm divide-y divide-gray-200 dark:divide-slate-700"></tbody>
                 </table>
-                <div id="aviso-vazio" class="p-8 text-center text-gray-500 dark:text-gray-400 text-sm hidden">Nenhum veículo encontrado.</div>
+                <div id="aviso-vazio" class="p-8 text-center text-gray-500 dark:text-gray-400 text-sm hidden">Nenhum veículo encontrado com os filtros atuais.</div>
             </div>
         </main>
     </div>
@@ -420,7 +434,11 @@
         let todosHistoricos = [];
         let veiculoEditandoId = null;
         let veiculoHistoricoAtual = null;
+        
+        // Variáveis de Filtro
         let filtroAtivo = null;
+        let filtroModelo = "";
+        let termoBusca = "";
 
         let veiculoAcaoId = null;
         let veiculoAcaoStatus = null;
@@ -498,7 +516,93 @@
             document.querySelectorAll('.card-filtro').forEach(card => card.classList.remove('border-brand', 'ring-1', 'ring-brand/30'));
             if (filtroAtivo) elementoCard.classList.add('border-brand', 'ring-1', 'ring-brand/30');
 
+            calcularKPIs();
             renderizarTabela();
+            atualizarBadgesFiltros();
+        }
+
+        function alterarFiltroModelo() {
+            filtroModelo = document.getElementById('select-modelo').value;
+            calcularKPIs();
+            renderizarTabela();
+            atualizarBadgesFiltros();
+        }
+
+        function alterarFiltroDias() {
+            calcularKPIs();
+            renderizarTabela();
+            atualizarBadgesFiltros();
+        }
+
+        function limparTodosFiltros() {
+            filtroAtivo = null;
+            filtroModelo = "";
+            document.getElementById('select-modelo').value = "";
+            document.getElementById('input-dias-afericao').value = "30";
+            document.getElementById('input-busca').value = "";
+            termoBusca = "";
+            
+            document.querySelectorAll('.card-filtro').forEach(card => card.classList.remove('border-brand', 'ring-1', 'ring-brand/30'));
+
+            calcularKPIs();
+            renderizarTabela();
+            atualizarBadgesFiltros();
+        }
+
+        function atualizarBadgesFiltros() {
+            const container = document.getElementById('filtros-ativos');
+            container.innerHTML = '<span class="text-gray-500 font-medium mr-1"><i data-lucide="filter" class="w-4 h-4 inline pb-0.5"></i> Filtros Ativos:</span>';
+            
+            let temFiltro = false;
+
+            if (filtroModelo) {
+                temFiltro = true;
+                container.innerHTML += `
+                    <span class="bg-brand/10 text-brand px-2.5 py-1 rounded-full text-xs font-medium border border-brand/20 flex items-center gap-1">
+                        Modelo: ${filtroModelo}
+                        <button onclick="document.getElementById('select-modelo').value=''; alterarFiltroModelo();" class="hover:text-red-500"><i data-lucide="x" class="w-3 h-3"></i></button>
+                    </span>
+                `;
+            }
+
+            if (filtroAtivo) {
+                temFiltro = true;
+                let label = "";
+                if (filtroAtivo === 'total') label = "Apenas Ativos";
+                if (filtroAtivo === 'sem_afericao') label = "Sem Aferição";
+                if (filtroAtivo === 'atencao') label = "Pneus em Atenção";
+                if (filtroAtivo === 'trocar') label = "Pneus p/ Trocar";
+
+                container.innerHTML += `
+                    <span class="bg-brand/10 text-brand px-2.5 py-1 rounded-full text-xs font-medium border border-brand/20 flex items-center gap-1">
+                        Status: ${label}
+                        <button onclick="document.querySelectorAll('.card-filtro').forEach(c=>c.classList.remove('border-brand', 'ring-1', 'ring-brand/30')); filtroAtivo=null; calcularKPIs(); renderizarTabela(); atualizarBadgesFiltros();" class="hover:text-red-500"><i data-lucide="x" class="w-3 h-3"></i></button>
+                    </span>
+                `;
+            }
+
+            if (filtroAtivo === 'sem_afericao') {
+                let dias = document.getElementById('input-dias-afericao').value;
+                container.innerHTML += `
+                    <span class="bg-orange-500/10 text-orange-500 px-2.5 py-1 rounded-full text-xs font-medium border border-orange-500/20">
+                        > ${dias} dias sem aferição
+                    </span>
+                `;
+            }
+
+            if (temFiltro) {
+                container.innerHTML += `
+                    <button onclick="limparTodosFiltros()" class="text-brand hover:underline font-medium ml-auto flex items-center gap-1 text-xs">
+                        <i data-lucide="x-circle" class="w-4 h-4"></i> Limpar Tudo
+                    </button>
+                `;
+                container.classList.remove('hidden');
+                container.classList.add('flex');
+            } else {
+                container.classList.add('hidden');
+                container.classList.remove('flex');
+            }
+            lucide.createIcons();
         }
 
         const tabela = document.getElementById('tabela-veiculos');
@@ -508,6 +612,15 @@
             const { data: veiculos } = await supabaseClient.from('veiculos').select('*').order('created_at', { ascending: false });
             todosVeiculos = veiculos || [];
             
+            // Popula o Select de Modelos
+            const selectModelo = document.getElementById('select-modelo');
+            const modelosUnicos = [...new Set(todosVeiculos.map(v => v.modelo))].sort();
+            selectModelo.innerHTML = '<option value="">Todos os Modelos</option>';
+            modelosUnicos.forEach(m => {
+                selectModelo.innerHTML += `<option value="${m}">${m}</option>`;
+            });
+            selectModelo.value = filtroModelo; // Mantém a seleção atual se houver
+
             const { data: pneus } = await supabaseClient.from('pneus').select('id, veiculo_id, sulco_atual, sulco_inicial').eq('status', 'em_uso');
             todosPneus = pneus || [];
 
@@ -516,16 +629,34 @@
 
             calcularKPIs();
             renderizarTabela();
+            atualizarBadgesFiltros();
         }
 
         function calcularKPIs() {
+            // 1. Filtrar veículos por modelo (se houver seleção)
             let ativos = todosVeiculos.filter(v => v.ativo);
-            document.getElementById('kpi-total-veiculos').innerText = ativos.length;
+            let totalGeralAtivos = ativos.length;
 
+            if (filtroModelo) {
+                ativos = ativos.filter(v => v.modelo === filtroModelo);
+            }
+            let totalExibido = ativos.length;
+
+            // Atualiza KPI Total (mostrando "15" ou "15 de 37" se houver filtro)
+            const kpiTotalEl = document.getElementById('kpi-total-veiculos');
+            if (filtroModelo) {
+                kpiTotalEl.innerHTML = `${totalExibido} <span class="text-sm font-normal text-gray-500">de ${totalGeralAtivos}</span>`;
+            } else {
+                kpiTotalEl.innerText = totalGeralAtivos;
+            }
+
+            // 2. Calcular Pneus (Atenção / Trocar) com base nos veículos filtrados
             let qtdAtencao = 0;
             let qtdTrocar = 0;
+            const veiculosIds = ativos.map(v => v.id);
+            const pneusFiltrados = todosPneus.filter(p => veiculosIds.includes(p.veiculo_id));
 
-            todosPneus.forEach(p => {
+            pneusFiltrados.forEach(p => {
                 let sulco = p.sulco_atual !== null ? p.sulco_atual : p.sulco_inicial;
                 if (sulco <= 3) { qtdTrocar++; }
                 else if (sulco <= 5) { qtdAtencao++; }
@@ -534,6 +665,7 @@
             document.getElementById('kpi-pneus-atencao').innerText = qtdAtencao;
             document.getElementById('kpi-pneus-trocar').innerText = qtdTrocar;
 
+            // 3. Calcular Sem Aferição
             let diasLimite = parseInt(document.getElementById('input-dias-afericao').value) || 30;
             let hoje = new Date();
             let semAfericao = 0;
@@ -575,7 +707,7 @@
                 cardSemAfericaoEl.classList.remove('border-l-orange-500');
                 cardSemAfericaoEl.classList.add('border-l-green-500');
             } else {
-                kpiSemAfericaoEl.innerHTML = `${semAfericao} <span class="text-sm font-normal">de ${ativos.length}</span>`;
+                kpiSemAfericaoEl.innerHTML = `${semAfericao} <span class="text-sm font-normal">de ${totalExibido}</span>`;
                 kpiSemAfericaoEl.className = 'text-2xl font-bold text-orange-500';
                 cardSemAfericaoEl.classList.remove('border-l-green-500');
                 cardSemAfericaoEl.classList.add('border-l-orange-500');
@@ -592,12 +724,17 @@
             tabela.innerHTML = '';
             
             let listaFiltrada = todosVeiculos.filter(v => {
+                // Filtro de Modelo
+                if (filtroModelo && v.modelo !== filtroModelo) return false;
+
+                // Filtro de Busca Textual
                 const matchTexto = normalizeString(v.placa).includes(termoBusca) || 
                                    normalizeString(v.modelo).includes(termoBusca) || 
                                    normalizeString(v.prefixo).includes(termoBusca) ||
                                    normalizeString(v.chassi).includes(termoBusca);
-                                   
                 if (!matchTexto) return false;
+
+                // Filtros de Card
                 if (!filtroAtivo) return true;
                 if (filtroAtivo === 'total') return v.ativo;
 
@@ -769,6 +906,8 @@
             
             const termoBusca = normalizeString(document.getElementById('input-busca').value);
             const veiculosFiltrados = todosVeiculos.filter(v => {
+                if (filtroModelo && v.modelo !== filtroModelo) return false;
+
                 const matchTexto = normalizeString(v.placa).includes(termoBusca) || 
                                    normalizeString(v.modelo).includes(termoBusca) || 
                                    normalizeString(v.prefixo).includes(termoBusca) ||
