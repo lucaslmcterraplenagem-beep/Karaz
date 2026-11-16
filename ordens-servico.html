@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-       <title>Ordens de Serviço | Karaz</title>
-    <!-- FAVICON -->
+    <title>Ordens de Serviço | Karaz</title>
     <link rel="icon" type="image/png" href="logo.png">
     
     <script>
@@ -23,47 +22,67 @@
     </script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    <!-- ADICIONADO: Biblioteca para gerar o PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body class="bg-gray-100 text-gray-800 dark:bg-darkbg dark:text-gray-100 font-sans h-screen flex overflow-hidden transition-colors duration-300 antialiased">
 
-    <!-- SIDEBAR -->
-    <aside id="sidebar" class="w-64 bg-white dark:bg-darkcard border-r border-gray-200 dark:border-slate-700 transition-all duration-300 flex flex-col z-20">
+    <!-- SIDEBAR RETRÁTIL (PADRONIZADA) -->
+    <aside id="sidebar" class="w-64 bg-white dark:bg-darkcard border-r border-gray-200 dark:border-slate-700 transition-all duration-300 flex flex-col justify-between z-20">
         <div>
-                       <div class="h-16 flex items-center justify-center border-b border-gray-200 dark:border-slate-700 px-4">
-                <a href="dashboard.html" class="flex items-center justify-center w-full">
-                    <!-- Logo para Tema Claro -->
+            <div class="h-16 flex items-center justify-center border-b border-gray-200 dark:border-slate-700 px-4">
+                <a href="dashboard.html" class="flex items-center justify-center w-full logo-full">
                     <img src="logo-light.png" alt="Karaz Sistema" class="h-8 object-contain dark:hidden">
-                    <!-- Logo para Tema Escuro -->
                     <img src="logo-dark.png" alt="Karaz Sistema" class="h-8 object-contain hidden dark:block">
+                </a>
+                <a href="dashboard.html" class="hidden logo-small items-center justify-center w-full">
+                    <img src="logo-app.png" alt="KZ" class="w-8 h-8 object-contain rounded-md dark:hidden">
+                    <img src="logo.png" alt="KZ" class="w-8 h-8 object-contain rounded-md hidden dark:block">
                 </a>
             </div>
             <nav class="p-3 space-y-1">
-                <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 rounded-md font-medium transition-colors"><i data-lucide="layout-dashboard" class="w-5 h-5"></i><span class="menu-text text-sm">Dashboard</span></a>
-                <a href="veiculos.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 rounded-md font-medium transition-colors"><i data-lucide="truck" class="w-5 h-5"></i><span class="menu-text text-sm">Veículos</span></a>
-                <a href="pneus.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 rounded-md font-medium transition-colors"><i data-lucide="disc" class="w-5 h-5"></i><span class="menu-text text-sm">Pneus</span></a>
-                <a href="ordens-servico.html" class="flex items-center gap-3 px-3 py-2.5 bg-brand/10 text-brand rounded-md font-medium transition-colors"><i data-lucide="wrench" class="w-5 h-5"></i><span class="menu-text text-sm">Ordens de Serviço</span></a>
-                <a href="cadastros.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 rounded-md font-medium transition-colors"><i data-lucide="database" class="w-5 h-5"></i><span class="menu-text text-sm">Cadastros Gerais</span></a>
-                <a href="auditoria.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 rounded-md font-medium transition-colors"><i data-lucide="shield-check" class="w-5 h-5"></i><span class="menu-text text-sm">Auditoria</span></a>
+                <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
+                    <i data-lucide="layout-dashboard" class="w-5 h-5 shrink-0"></i><span class="menu-text text-sm">Dashboard</span>
+                </a>
+                <a href="veiculos.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
+                    <i data-lucide="truck" class="w-5 h-5 shrink-0"></i><span class="menu-text text-sm">Veículos</span>
+                </a>
+                <a href="pneus.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
+                    <i data-lucide="circle-dot" class="w-5 h-5 shrink-0"></i><span class="menu-text text-sm">Pneus</span>
+                </a>
+                <a href="ordens-servico.html" class="flex items-center gap-3 px-3 py-2.5 bg-brand/10 text-brand rounded-md font-medium transition-colors">
+                    <i data-lucide="wrench" class="w-5 h-5 shrink-0"></i><span class="menu-text text-sm">Ordens de Serviço</span>
+                </a>
+                <a href="cadastros.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
+                    <i data-lucide="database" class="w-5 h-5 shrink-0"></i><span class="menu-text text-sm">Cadastros Gerais</span>
+                </a>
+                <a href="auditoria.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700/50 hover:text-gray-900 dark:hover:text-white rounded-md font-medium transition-colors">
+                    <i data-lucide="shield-check" class="w-5 h-5 shrink-0"></i><span class="menu-text text-sm">Auditoria</span>
+                </a>
             </nav>
         </div>
     </aside>
 
     <!-- CONTEÚDO PRINCIPAL -->
     <div class="flex-1 flex flex-col h-screen overflow-hidden">
+        <!-- HEADER PADRONIZADO -->
         <header class="h-16 bg-white dark:bg-darkcard border-b border-gray-200 dark:border-slate-700 flex items-center justify-between px-6 transition-colors duration-300">
             <div class="flex items-center gap-4">
                 <button id="toggle-sidebar" class="p-1.5 text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors rounded-md"><i data-lucide="menu" class="w-5 h-5"></i></button>
                 <h2 class="text-base font-semibold text-gray-800 dark:text-gray-200">Gestão de OS</h2>
             </div>
-            <div class="flex items-center gap-5">
-                <button id="toggle-theme" class="p-1.5 text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors"><i data-lucide="moon" class="w-5 h-5 hidden dark:block"></i><i data-lucide="sun" class="w-5 h-5 block dark:hidden"></i></button>
+            
+            <div class="flex items-center gap-4">
+                <button id="toggle-theme" class="p-1.5 text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors">
+                    <i data-lucide="moon" class="w-5 h-5 hidden dark:block"></i>
+                    <i data-lucide="sun" class="w-5 h-5 block dark:hidden"></i>
+                </button>
+                <button onclick="abrirConfigPC()" class="p-1.5 text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors">
+                    <i data-lucide="settings" class="w-5 h-5"></i>
+                </button>
                 <div class="h-5 w-px bg-gray-300 dark:bg-slate-700"></div>
-                <div class="flex items-center gap-3">
-                    <p id="user-email" class="text-sm font-medium text-gray-800 dark:text-gray-200 hidden sm:block">...</p>
-                    <button id="btn-logout" class="p-2 text-gray-400 hover:text-red-500 transition-colors"><i data-lucide="log-out" class="w-5 h-5"></i></button>
+                <div class="text-right hidden sm:block">
+                    <p id="user-email" class="text-sm font-medium text-gray-800 dark:text-gray-200">carregando...</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Administrador</p>
                 </div>
             </div>
         </header>
@@ -115,7 +134,7 @@
         </main>
     </div>
 
-    <!-- MODAL DE ABERTURA DE OS (INTACTO) -->
+    <!-- MODAL DE ABERTURA DE OS -->
     <div id="modal-os" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 backdrop-blur-md">
         <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-6xl border border-gray-200 dark:border-slate-700 overflow-hidden flex flex-col max-h-[95vh]">
             
@@ -138,11 +157,13 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium mb-1">KM Atual <span class="text-red-500">*</span></label>
-                            <input type="number" id="km_abertura" required class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
+                            <!-- ADICIONADO min="0" -->
+                            <input type="number" min="0" id="km_abertura" required class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
                         </div>
                         <div>
                             <label class="block text-sm font-medium mb-1">Horas (Opcional)</label>
-                            <input type="number" step="0.1" id="hora_atual" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
+                            <!-- ADICIONADO min="0" -->
+                            <input type="number" step="0.1" min="0" id="hora_atual" class="w-full px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-brand">
                         </div>
                     </div>
                     <div>
@@ -234,12 +255,9 @@
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- ADICIONADO: MODAL DE DETALHES DA OS E PDF  -->
-    <!-- ========================================== -->
+    <!-- MODAL DE DETALHES DA OS E PDF  -->
     <div id="modal-detalhes-os" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-2xl border border-gray-200 dark:border-slate-700 overflow-hidden flex flex-col max-h-[90vh]">
-            <!-- Cabeçalho do Modal -->
             <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-800/30">
                 <h3 class="text-lg font-bold text-brand flex items-center gap-2"><i data-lucide="file-text" class="w-5 h-5"></i> Detalhes da OS</h3>
                 <div class="flex gap-2">
@@ -248,9 +266,53 @@
                     <button onclick="document.getElementById('modal-detalhes-os').classList.add('hidden')" class="text-gray-400 hover:text-red-500 ml-2"><i data-lucide="x" class="w-6 h-6"></i></button>
                 </div>
             </div>
-            <!-- Área que será exportada para PDF -->
             <div id="area-impressao-os" class="p-6 overflow-y-auto bg-white text-gray-800">
                 <!-- Conteúdo dinâmico via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE CONFIGURAÇÃO (PC) -->
+    <div id="modal-config-pc" class="hidden fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
+            <div class="p-4 border-b border-gray-200 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-800/30">
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Configurações</h3>
+                <button onclick="fecharConfigPC()" class="text-gray-400 hover:text-red-500"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="p-6 space-y-6">
+                <div>
+                    <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Conta Logada</p>
+                    <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700">
+                        <div class="w-8 h-8 rounded-full bg-brand/10 flex items-center justify-center text-brand">
+                            <i data-lucide="user" class="w-4 h-4"></i>
+                        </div>
+                        <div class="overflow-hidden">
+                            <p id="pc-config-email" class="text-sm font-bold text-gray-900 dark:text-white truncate">...</p>
+                            <p class="text-xs text-gray-500 truncate">Administrador</p>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="confirmarSairPC()" class="w-full bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white p-3 rounded-lg font-bold transition-colors flex items-center justify-center gap-2">
+                    <i data-lucide="log-out" class="w-5 h-5"></i> Sair do Sistema
+                </button>
+            </div>
+            <div class="p-4 border-t border-gray-200 dark:border-slate-700 text-center">
+                <p id="pc-app-versao" class="text-xs text-gray-400 font-mono">Carregando versão...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE CONFIRMAÇÃO DE SAÍDA (PC) -->
+    <div id="modal-sair-pc" class="hidden fixed inset-0 bg-black/70 z-[200] flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-darkcard rounded-xl shadow-2xl w-full max-w-sm border border-gray-200 dark:border-slate-700 p-6 text-center">
+            <div class="w-16 h-16 bg-red-100 dark:bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="log-out" class="w-8 h-8 text-red-500"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Sair do Sistema?</h3>
+            <p class="text-sm text-gray-500 mb-6">Você precisará digitar seu e-mail e senha novamente.</p>
+            <div class="flex gap-3 w-full">
+                <button onclick="document.getElementById('modal-sair-pc').classList.add('hidden')" class="flex-1 py-2 bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 font-bold rounded-lg transition-colors">Cancelar</button>
+                <button onclick="fazerLogoutPC()" class="flex-1 py-2 bg-red-500 hover:bg-red-600 text-white font-bold rounded-lg shadow-lg shadow-red-500/30 transition-colors">Sim, Sair</button>
             </div>
         </div>
     </div>
@@ -271,30 +333,82 @@
 
         const urlParams = new URLSearchParams(window.location.search);
 
-        // --- AUTENTICAÇÃO E UI ---
+        // Função de Segurança para Prevenir XSS
+        const escapeHTML = (str) => {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        };
+
+        // --- UI LÓGICA (PADRONIZADA) ---
         supabaseClient.auth.getSession().then(({ data: { session } }) => {
             if (!session) { window.location.href = "login.html"; } 
             else { document.getElementById('user-email').innerText = session.user.email; }
         });
 
-        document.getElementById('btn-logout').addEventListener('click', async () => {
-            await supabaseClient.auth.signOut(); window.location.href = "login.html";
-        });
-
         const sidebar = document.getElementById('sidebar');
         const menuTexts = document.querySelectorAll('.menu-text');
+        const logoFull = document.querySelectorAll('.logo-full');
+        const logoSmall = document.querySelectorAll('.logo-small');
+
         document.getElementById('toggle-sidebar').addEventListener('click', () => {
             if (sidebar.classList.contains('w-64')) {
-                sidebar.classList.replace('w-64', 'w-20'); menuTexts.forEach(el => el.classList.add('hidden'));
+                sidebar.classList.replace('w-64', 'w-20'); 
+                menuTexts.forEach(el => el.classList.add('hidden'));
+                logoFull.forEach(el => { el.classList.add('hidden'); el.classList.remove('flex'); });
+                logoSmall.forEach(el => { el.classList.remove('hidden'); el.classList.add('flex'); });
             } else {
-                sidebar.classList.replace('w-20', 'w-64'); menuTexts.forEach(el => el.classList.remove('hidden'));
+                sidebar.classList.replace('w-20', 'w-64'); 
+                menuTexts.forEach(el => el.classList.remove('hidden'));
+                logoFull.forEach(el => { el.classList.remove('hidden'); el.classList.add('flex'); });
+                logoSmall.forEach(el => { el.classList.add('hidden'); el.classList.remove('flex'); });
             }
         });
+
         const html = document.documentElement;
         if (localStorage.theme === 'light') html.classList.remove('dark');
         document.getElementById('toggle-theme').addEventListener('click', () => {
             html.classList.toggle('dark'); localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
         });
+
+        // --- CONFIGURAÇÃO PC ---
+        function abrirConfigPC() {
+            document.getElementById('pc-config-email').innerText = document.getElementById('user-email').innerText;
+            document.getElementById('modal-config-pc').classList.remove('hidden');
+            carregarVersaoPC();
+            lucide.createIcons();
+        }
+
+        function fecharConfigPC() { 
+            document.getElementById('modal-config-pc').classList.add('hidden'); 
+        }
+
+        function confirmarSairPC() { 
+            document.getElementById('modal-sair-pc').classList.remove('hidden'); 
+        }
+
+        async function fazerLogoutPC() {
+            await supabaseClient.auth.signOut(); 
+            window.location.href = "login.html";
+        }
+
+        async function carregarVersaoPC() {
+            document.getElementById('pc-app-versao').innerText = "Buscando versão...";
+            try {
+                const response = await fetch('https://api.github.com/repos/lucaslmcterraplenagem-beep/Karaz/commits/main');
+                if (!response.ok) throw new Error('API Limit');
+                const data = await response.json();
+                const versaoHash = data.sha.substring(0, 7);
+                const dataCommit = new Date(data.commit.author.date).toLocaleDateString('pt-BR');
+                document.getElementById('pc-app-versao').innerText = `Karaz Web v${versaoHash} (${dataCommit})`;
+            } catch (error) {
+                document.getElementById('pc-app-versao').innerText = `Karaz Web (Modo Offline)`;
+            }
+        }
 
         // --- CARREGAR DADOS ---
         async function carregarDados() {
@@ -303,7 +417,7 @@
             const selectVeiculo = document.getElementById('veiculo_id');
             selectVeiculo.innerHTML = '<option value="">Selecione o veículo...</option>';
             listaVeiculos.forEach(v => {
-                selectVeiculo.innerHTML += `<option value="${v.id}" data-km="${v.km_atual}" data-horas="${v.horas_atual || 0}">${v.placa} - ${v.modelo}</option>`;
+                selectVeiculo.innerHTML += `<option value="${v.id}" data-km="${v.km_atual}" data-horas="${v.horas_atual || 0}">${escapeHTML(v.placa)} - ${escapeHTML(v.modelo)}</option>`;
             });
 
             const { data: motoristas } = await supabaseClient.from('motoristas').select('*').order('nome');
@@ -314,8 +428,8 @@
             selectExecutor.innerHTML = '<option value="">Selecione o executor...</option>';
 
             listaMotoristas.forEach(m => {
-                selectSolicitante.innerHTML += `<option value="${m.id}">${m.nome}</option>`;
-                selectExecutor.innerHTML += `<option value="${m.nome}">${m.nome}</option>`;
+                selectSolicitante.innerHTML += `<option value="${m.id}">${escapeHTML(m.nome)}</option>`;
+                selectExecutor.innerHTML += `<option value="${escapeHTML(m.nome)}">${escapeHTML(m.nome)}</option>`;
             });
 
             const { data: fornecedores } = await supabaseClient.from('fornecedores').select('*').order('nome');
@@ -323,7 +437,7 @@
             const selectFornecedor = document.getElementById('fornecedor_id');
             selectFornecedor.innerHTML = '<option value="">Selecione o fornecedor...</option>';
             listaFornecedores.forEach(f => {
-                selectFornecedor.innerHTML += `<option value="${f.id}">${f.nome}</option>`;
+                selectFornecedor.innerHTML += `<option value="${f.id}">${escapeHTML(f.nome)}</option>`;
             });
 
             const { data: est } = await supabaseClient.from('pneus').select('*').eq('status', 'estoque');
@@ -451,8 +565,8 @@
                 if (sulco <= 5) cor = 'bg-yellow-500 border-yellow-600 text-white';
                 if (sulco <= 3) cor = 'bg-red-500 border-red-600 text-white';
                 
-                return `<div id="${idBtn}" onclick="selecionarPneu('${pneu.id}', '${pneu.numero_fogo}', '${posicao}')" class="relative z-10 w-10 h-16 rounded-full border-2 shadow cursor-pointer hover:scale-110 transition-transform ${cor} flex flex-col items-center justify-center">
-                            <span class="text-[8px] font-bold leading-tight text-center px-1">${pneu.numero_fogo}</span>
+                return `<div id="${idBtn}" data-id="${pneu.id}" data-fogo="${escapeHTML(pneu.numero_fogo)}" data-pos="${posicao}" class="btn-pneu-map relative z-10 w-10 h-16 rounded-full border-2 shadow cursor-pointer hover:scale-110 transition-transform ${cor} flex flex-col items-center justify-center">
+                            <span class="text-[8px] font-bold leading-tight text-center px-1">${escapeHTML(pneu.numero_fogo)}</span>
                         </div>`;
             } else {
                 return `<div id="${idBtn}" class="relative z-10 w-10 h-16 rounded-full border-2 border-dashed border-gray-400 bg-gray-200/50 dark:bg-slate-800/50 shadow-inner flex items-center justify-center opacity-50 cursor-not-allowed" title="Posição Vazia">
@@ -460,6 +574,17 @@
                         </div>`;
             }
         }
+
+        // Listener seguro para os botões do mapa
+        document.getElementById('eixos-container-os').addEventListener('click', (e) => {
+            const btn = e.target.closest('.btn-pneu-map');
+            if (btn) {
+                const id = btn.getAttribute('data-id');
+                const fogo = btn.getAttribute('data-fogo');
+                const pos = btn.getAttribute('data-pos');
+                selecionarPneu(id, fogo, pos);
+            }
+        });
 
         function selecionarPneu(id, numeroFogo, posicao) {
             pneuSaindoId = id;
@@ -482,14 +607,14 @@
             const selectSlot = document.getElementById('select_novo_pneu_slot');
             selectSlot.innerHTML = '<option value="">Posição...</option>';
             pneusDoVeiculoOS.forEach(p => {
-                if(p.id !== id) selectSlot.innerHTML += `<option value="${p.posicao}">${p.posicao} (Trocar com ${p.numero_fogo})</option>`;
+                if(p.id !== id) selectSlot.innerHTML += `<option value="${p.posicao}">${p.posicao} (Trocar com ${escapeHTML(p.numero_fogo)})</option>`;
             });
             selectSlot.innerHTML += `<option value="ESTEPE-1">Estepe</option>`;
 
             const selectEstoque = document.getElementById('select_novo_pneu_id');
             selectEstoque.innerHTML = '<option value="">Escolha do Estoque...</option>';
             estoquePneus.forEach(p => {
-                selectEstoque.innerHTML += `<option value="${p.id}">${p.numero_fogo} - ${p.marca}</option>`;
+                selectEstoque.innerHTML += `<option value="${p.id}">${escapeHTML(p.numero_fogo)} - ${escapeHTML(p.marca)}</option>`;
             });
         }
 
@@ -509,16 +634,41 @@
             }
         }
 
-        // --- SALVAR E GERENCIAR ---
+        // --- SALVAR E GERENCIAR (COM VALIDAÇÕES) ---
         async function salvarOS() {
             const btn = document.getElementById('btn-salvar');
             const vId = document.getElementById('veiculo_id').value;
-            const km = document.getElementById('km_abertura').value;
+            const kmInput = document.getElementById('km_abertura').value;
+            const horaInput = document.getElementById('hora_atual').value;
             const solicitante = document.getElementById('solicitante_id').value;
             const servicoPneu = document.getElementById('select_servico_pneu').value;
             
-            if(!vId || !km || !solicitante || !pneuSaindoId || !servicoPneu) {
+            if(!vId || !kmInput || !solicitante || !pneuSaindoId || !servicoPneu) {
                 alert("Preencha todos os campos obrigatórios e selecione o pneu e o serviço.");
+                return;
+            }
+
+            // Validações de KM e Horas
+            const selectVeiculo = document.getElementById('veiculo_id');
+            const opt = selectVeiculo.options[selectVeiculo.selectedIndex];
+            const kmBase = parseFloat(opt.dataset.km) || 0;
+            const horaBase = parseFloat(opt.dataset.horas) || 0;
+            
+            const km = parseFloat(kmInput);
+            const hora = parseFloat(horaInput) || 0;
+
+            if (km < 0 || hora < 0) {
+                alert("Atenção: Os valores de KM e Horas não podem ser negativos.");
+                return;
+            }
+
+            if (km < kmBase) {
+                alert(`Atenção: O KM digitado (${km}) é menor que o último registro do veículo (${kmBase}).`);
+                return;
+            }
+
+            if (hora < horaBase) {
+                alert(`Atenção: As Horas digitadas (${hora}) são menores que o último registro do veículo (${horaBase}).`);
                 return;
             }
 
@@ -555,8 +705,8 @@
             const novaOS = {
                 veiculo_id: vId,
                 tipo: servicoPneu, 
-                km_abertura: parseFloat(km),
-                hora_atual: parseFloat(document.getElementById('hora_atual').value) || 0,
+                km_abertura: km,
+                hora_atual: hora,
                 descricao: `Serviço de ${servicoPneu} no pneu ${pneuSaindoPosicao}`,
                 status: 'aberta',
                 aberta_por: session.data.session.user.id,
@@ -632,27 +782,33 @@
 
                 const data = new Date(o.created_at).toLocaleDateString('pt-BR');
                 
-                // --- ALTERAÇÃO AQUI: Adicionado o botão de Detalhes permanentemente ---
-                let botoes = `<button onclick="abrirDetalhesOS('${o.id}')" class="text-brand border border-brand/30 px-2 py-1 rounded text-xs mr-2 hover:bg-brand hover:text-white transition-colors" title="Ver Detalhes"><i data-lucide="eye" class="w-3 h-3 inline"></i> Detalhes</button>`;
+                let botoes = `<button data-id="${o.id}" class="btn-detalhes-os text-brand border border-brand/30 px-2 py-1 rounded text-xs mr-2 hover:bg-brand hover:text-white transition-colors" title="Ver Detalhes"><i data-lucide="eye" class="w-3 h-3 inline"></i> Detalhes</button>`;
                 
                 if (o.status === 'aberta') botoes += `<button onclick="mudarStatus('${o.id}', 'em_andamento')" class="text-yellow-500 border border-yellow-500/30 px-2 py-1 rounded text-xs hover:bg-yellow-500 hover:text-white transition-colors">Iniciar</button>`;
                 else if (o.status === 'em_andamento') botoes += `<button onclick="concluirOS('${o.id}')" class="text-green-500 border border-green-500/30 px-2 py-1 rounded text-xs hover:bg-green-500 hover:text-white transition-colors">Concluir</button>`;
-                // ---------------------------------------------------------------------
 
                 tabela.innerHTML += `
                     <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
-                        <td class="px-6 py-4"><div class="font-bold uppercase">${o.os_numero || 'S/N'}</div><div class="text-xs text-gray-500">${data}</div></td>
-                        <td class="px-6 py-4"><div class="font-bold uppercase">${o.veiculos?.placa}</div><div class="text-xs text-gray-500">${o.veiculos?.modelo}</div></td>
-                        <td class="px-6 py-4"><div class="font-medium capitalize">${o.tipo}</div><div class="text-xs text-gray-500 truncate max-w-xs">${o.descricao}</div></td>
+                        <td class="px-6 py-4"><div class="font-bold uppercase">${escapeHTML(o.os_numero || 'S/N')}</div><div class="text-xs text-gray-500">${data}</div></td>
+                        <td class="px-6 py-4"><div class="font-bold uppercase">${escapeHTML(o.veiculos?.placa || '')}</div><div class="text-xs text-gray-500">${escapeHTML(o.veiculos?.modelo || '')}</div></td>
+                        <td class="px-6 py-4"><div class="font-medium capitalize">${escapeHTML(o.tipo)}</div><div class="text-xs text-gray-500 truncate max-w-xs">${escapeHTML(o.descricao)}</div></td>
                         <td class="px-6 py-4"><span class="px-2 py-1 text-xs font-medium rounded-full ${badgeClass} block w-max mb-1">${statusTexto}</span><div class="text-xs font-medium">R$ ${o.custo || '0,00'}</div></td>
                         <td class="px-6 py-4 text-right">${botoes}</td>
                     </tr>
                 `;
             });
+
+            // Listener seguro para os botões de detalhes
+            document.querySelectorAll('.btn-detalhes-os').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    abrirDetalhesOS(e.currentTarget.getAttribute('data-id'));
+                });
+            });
+
             lucide.createIcons();
         }
 
-          async function mudarStatus(id, novoStatus) {
+        async function mudarStatus(id, novoStatus) {
             const { error } = await supabaseClient.rpc('mudar_status_os', { 
                 p_os_id: id, 
                 p_novo_status: novoStatus 
@@ -663,7 +819,6 @@
                 buscarOS();
             }
         }
-
 
         async function concluirOS(id) {
             if(!confirm("Concluir esta OS? As movimentações de pneus serão aplicadas.")) return;
@@ -680,16 +835,12 @@
             else { alert("OS Concluída!"); buscarOS(); }
         }
 
-        // ==========================================
-        // NOVO: LÓGICA DO MODAL DE DETALHES E PDF
-        // ==========================================
+        // --- LÓGICA DO MODAL DE DETALHES E PDF ---
         function abrirDetalhesOS(id) {
             const os = todasOS.find(o => o.id === id);
             if(!os) return;
 
             const data = new Date(os.created_at).toLocaleString('pt-BR');
-            
-            // Formatação do custo
             const custoFormatado = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(os.custo || 0);
 
             document.getElementById('area-impressao-os').innerHTML = `
@@ -700,13 +851,13 @@
 
                 <div class="grid grid-cols-2 gap-6 text-sm mb-6">
                     <div class="space-y-2">
-                        <p><strong>OS Nº:</strong> <span class="uppercase">${os.os_numero || 'S/N'}</span></p>
+                        <p><strong>OS Nº:</strong> <span class="uppercase">${escapeHTML(os.os_numero || 'S/N')}</span></p>
                         <p><strong>Data de Abertura:</strong> ${data}</p>
-                        <p><strong>Veículo:</strong> <span class="uppercase font-bold">${os.veiculos?.placa}</span> - ${os.veiculos?.modelo}</p>
+                        <p><strong>Veículo:</strong> <span class="uppercase font-bold">${escapeHTML(os.veiculos?.placa || '')}</span> - ${escapeHTML(os.veiculos?.modelo || '')}</p>
                     </div>
                     <div class="space-y-2">
-                        <p><strong>Status:</strong> <span class="capitalize font-bold">${os.status.replace('_', ' ')}</span></p>
-                        <p><strong>Tipo de Serviço:</strong> <span class="capitalize">${os.tipo}</span></p>
+                        <p><strong>Status:</strong> <span class="capitalize font-bold">${escapeHTML(os.status.replace('_', ' '))}</span></p>
+                        <p><strong>Tipo de Serviço:</strong> <span class="capitalize">${escapeHTML(os.tipo)}</span></p>
                         <p><strong>Custo Total:</strong> <span class="font-bold text-brand">${custoFormatado}</span></p>
                     </div>
                 </div>
@@ -715,12 +866,12 @@
                     <div class="grid grid-cols-2 gap-4">
                         <p><strong>KM Registrado:</strong> ${os.km_abertura} km</p>
                         <p><strong>Horímetro:</strong> ${os.hora_atual || '0'} h</p>
-                        <p><strong>Executor:</strong> ${os.executor || 'Não informado'}</p>
-                        <p><strong>Local do Serviço:</strong> ${os.local_servico || 'Interno'}</p>
+                        <p><strong>Executor:</strong> ${escapeHTML(os.executor || 'Não informado')}</p>
+                        <p><strong>Local do Serviço:</strong> ${escapeHTML(os.local_servico || 'Interno')}</p>
                     </div>
                     <div class="pt-3 border-t border-gray-200 dark:border-slate-700">
                         <p class="mb-1"><strong>Descrição da Execução:</strong></p>
-                        <p>${os.descricao}</p>
+                        <p>${escapeHTML(os.descricao)}</p>
                     </div>
                 </div>
                 
@@ -736,10 +887,8 @@
                 </div>
             `;
 
-            // Garantir fundo branco para a impressão ficar correta no modo dark
             document.getElementById('area-impressao-os').style.backgroundColor = 'white';
-            document.getElementById('area-impressao-os').style.color = '#1f2937'; // gray-800
-            // Remove classes dark do container de impressão
+            document.getElementById('area-impressao-os').style.color = '#1f2937';
             document.getElementById('area-impressao-os').classList.remove('dark:bg-darkcard', 'dark:text-gray-200');
 
             document.getElementById('modal-detalhes-os').classList.remove('hidden');
