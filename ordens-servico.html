@@ -334,15 +334,7 @@
         const urlParams = new URLSearchParams(window.location.search);
 
         // Função de Segurança para Prevenir XSS
-        const escapeHTML = (str) => {
-            if (!str) return '';
-            return String(str)
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#039;');
-        };
+    
 
         // --- UI LÓGICA (PADRONIZADA) ---
         supabaseClient.auth.getSession().then(({ data: { session } }) => {
